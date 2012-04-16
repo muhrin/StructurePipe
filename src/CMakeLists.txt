@@ -36,18 +36,18 @@ set(spipe_Source_Files__common
   common/StructureData.cpp
   common/UtilityFunctions.cpp
 )
-source_group("source Files\\common" FILES ${spipe_Source_Files__common})
+source_group("Source Files\\common" FILES ${spipe_Source_Files__common})
 
 set(spipe_Header_Files__
   StructurePipe.h
   StructurePipeConfig.h
 )
-source_group("Header Files\\common" FILES ${spipe_Header_Files__})
+source_group("Header Files" FILES ${spipe_Header_Files__})
 
 set(spipe_Source_Files__
   StructurePipe.cpp
 )
-source_group("Source Files\\common" FILES ${spipe_Source_Files__})
+source_group("Source Files" FILES ${spipe_Source_Files__})
 
 set(spipe_Header_Files
   ${spipe_Header_Files__blocks}
@@ -73,6 +73,7 @@ include_directories(
 )
 
 
+include_directories(.)
 add_executable(spipe ${spipe_Files})
 
 add_dependencies(spipe sslib)
