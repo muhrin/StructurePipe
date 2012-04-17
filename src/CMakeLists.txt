@@ -81,7 +81,7 @@ add_dependencies(spipe sslib)
 
 # Libraries we need to link to
   target_link_libraries(spipe
-    ${Boost_FILESYSTEM_LIBRARY_RELEASE}
-    ${Boost_SYSTEM_LIBRARY_RELEASE}	# filesystem depends on this
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     sslib
   )
