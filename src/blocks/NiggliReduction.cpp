@@ -21,7 +21,7 @@
 namespace spipe { namespace blocks {
 
 NiggliReduction::NiggliReduction():
-Block("Niggli reduction")
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Niggli reduction")
 {}
 
 void NiggliReduction::in(spipe::common::StructureData & data)
@@ -31,3 +31,4 @@ void NiggliReduction::in(spipe::common::StructureData & data)
 	myOutput->in(data);
 }
 }}
+

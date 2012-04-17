@@ -29,7 +29,7 @@
 namespace spipe { namespace blocks {
 
 RemoveDuplicates::RemoveDuplicates(sstbx::utility::IStructureSet & structureSet):
-Block("Remove duplicates"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Remove duplicates"),
 myStructureSet(structureSet)
 {}
 

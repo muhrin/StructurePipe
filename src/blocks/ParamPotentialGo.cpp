@@ -35,7 +35,7 @@ namespace spipe { namespace blocks {
 ParamPotentialGo::ParamPotentialGo(
 	::sstbx::potential::IParameterisable & paramPotential,
 	::sstbx::potential::IGeomOptimiser & optimiser):
-Block("Parameterised potential geometry optimisation"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Parameterised potential geometry optimisation"),
 myParamPotential(paramPotential),
 myOptimiser(optimiser)
 {
@@ -144,3 +144,4 @@ void ParamPotentialGo::setPotentialParams(const ::arma::vec & params)
 
 
 }}
+

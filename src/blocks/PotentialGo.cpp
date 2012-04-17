@@ -29,7 +29,7 @@ namespace spipe { namespace blocks {
 
 PotentialGo::PotentialGo(
 	sstbx::potential::IGeomOptimiser & optimiser):
-Block("Potential geometry optimisation"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Potential geometry optimisation"),
 myOptimiser(optimiser)
 {
 }
@@ -50,3 +50,4 @@ void PotentialGo::in(spipe::common::StructureData & data)
 }
 
 }}
+

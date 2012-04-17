@@ -25,7 +25,7 @@
 namespace spipe { namespace blocks {
 
 WriteStructure::WriteStructure(const ::sstbx::io::StructureWriterManager & writerManager):
-Block("Write structures"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Write structures"),
 myWriterManager(writerManager)
 {}
 
@@ -83,3 +83,4 @@ void WriteStructure::generateIoData(
 }
 
 }}
+

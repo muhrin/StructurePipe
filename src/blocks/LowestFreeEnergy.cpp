@@ -19,7 +19,7 @@
 namespace spipe { namespace blocks {
 
 LowestFreeEnergy::LowestFreeEnergy():
-Block("Lowest free energy"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Lowest free energy"),
 myLowest(NULL)
 {}
 

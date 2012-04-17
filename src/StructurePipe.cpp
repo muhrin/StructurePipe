@@ -240,7 +240,7 @@ int main()
 	// Set up the parent pipeline
 	// Param sweep
 	vec from(4), step(4);
-	Col<size_t> steps(4);
+	Col<unsigned int> steps(4);
 	from << 1 << endr << 2 << endr << 2 << endr << 2;
 	step << 0 << endr << 0.05 << endr << 0.05 << endr << 0.05;
 	steps << 0 << endr << 5 << endr << 2 << endr << 0;
@@ -261,3 +261,4 @@ int main()
 
 	return 0;
 }
+

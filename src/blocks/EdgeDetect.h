@@ -110,7 +110,7 @@ EdgeDetect<CompDatTyp>::EdgeMapper::~EdgeMapper()
 
 template <class CompDatTyp>
 EdgeDetect<CompDatTyp>::EdgeDetect(const ::sstbx::utility::IStructureComparator<CompDatTyp> & comparator):
-Block("Edge detect"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Edge detect"),
 myComparator(comparator),
 myCurrentEdgeMapper(NULL)
 {
@@ -135,7 +135,7 @@ void EdgeDetect<CompDatTyp>::pipelineStarting()
 	// From out the number of dimensions if possible
 	if(sData.potSweepNSteps)
 	{
-		const ::arma::Col<size_t> & steps = *sData.potSweepNSteps;
+		const ::arma::Col<unsigned int> & steps = *sData.potSweepNSteps;
 
 		// Get the number of steps for each parameter (can be 0 for some parameters)
 		MultiIdx<size_t> extents(steps.n_rows);

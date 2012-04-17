@@ -31,7 +31,7 @@ public:
 	/** Potential sweep deltas */
 	::boost::optional< ::arma::vec>			potSweepStep;
 	/** Potential sweep number of steps to make */
-	::boost::optional< ::arma::Col<size_t> >	potSweepNSteps;
+	::boost::optional< ::arma::Col<unsigned int> >	potSweepNSteps;
 
 };
 

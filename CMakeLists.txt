@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
 # Paths to libraries - change these! #########
-set(BOOST_ROOT "" CACHE FILEPATH "")
-set(ARMADILLO_ROOT "" CACHE FILEPATH "")
+set(BOOST_ROOT "/homes/muhrin/src/boost_1_48_0/" CACHE FILEPATH "")
+set(ARMADILLO_ROOT "/homes/muhrin/src/armadillo-3.0.1" CACHE FILEPATH "")
 
 
 

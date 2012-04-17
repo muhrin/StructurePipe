@@ -19,7 +19,7 @@
 namespace spipe { namespace blocks {
 
 MakeMap::MakeMap():
-Block("Make map")
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Make map")
 {}
 
 void MakeMap::in(spipe::common::StructureData & data)
@@ -28,3 +28,4 @@ void MakeMap::in(spipe::common::StructureData & data)
 }
 
 }}
+

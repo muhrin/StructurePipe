@@ -37,7 +37,7 @@ public:
 	PotentialParamSweep(
 		const ::arma::vec	&		from,
 		const ::arma::vec	&		step,
-		const ::arma::Col<size_t> & nSteps,
+		const ::arma::Col<unsigned int> & nSteps,
 		IPipelineTyp &				sweepPipeline);
 
 	// From Block /////////////////////////////////
@@ -52,7 +52,7 @@ private:
 	size_t								myNumParams;
 	const ::arma::vec					myFrom;
 	const ::arma::vec					myStep;
-	const ::arma::Col<size_t>			myNSteps;
+	const ::arma::Col<unsigned int>			myNSteps;
 	::sstbx::utility::MultiIdx<size_t>	myStepExtents;
 
 	IPipelineTyp & mySweepPipeline;

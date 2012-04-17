@@ -28,7 +28,7 @@ namespace spipe { namespace blocks {
 RandomStructure::RandomStructure(
 	const size_t numToGenerate,
 	const ::sstbx::build_cell::IStructureGenerator & structureGenerator):
-Block("Random structures"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Random structures"),
 myNumToGenerate(numToGenerate),
 myStructureGenerator(structureGenerator)
 {

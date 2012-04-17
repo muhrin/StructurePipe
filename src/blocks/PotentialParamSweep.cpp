@@ -27,16 +27,15 @@ namespace spipe { namespace blocks {
 PotentialParamSweep::PotentialParamSweep(
 	const ::arma::vec	&		from,
 	const ::arma::vec	&		step,
-	const ::arma::Col<size_t> & nSteps,
+	const ::arma::Col<unsigned int> & nSteps,
 	IPipelineTyp &				sweepPipeline):
-Block("Potential param sweep"),
+pipelib::Block<StructureDataTyp, SharedDataTyp>("Potential param sweep"),
 myFrom(from),
 myStep(step),
 myNSteps(nSteps),
 mySweepPipeline(sweepPipeline),
-myStepExtents(myNSteps.n_rows)
+myStepExtents(nSteps.n_rows)
 {
-
 	SP_ASSERT((myFrom.n_rows == myStep.n_rows) && (myFrom.n_rows == myNSteps.n_rows));
 
 	myNumParams		= myNSteps.n_rows;
@@ -107,3 +106,4 @@ void  PotentialParamSweep::in(StructureDataTyp * const data)
 }
 
 }}
+
