@@ -42,6 +42,7 @@ endif()
     ${ARMADILLO_INCLUDE_DIRS}
   )
 
+add_subdirectory(lib/pipelib)
 add_subdirectory(lib/sslib)
 add_subdirectory(src)
 
