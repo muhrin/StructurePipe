@@ -67,10 +67,10 @@ private:
 			const ::std::string &										filePath);
 		~EdgeMapper();
 
-		size_t											nParams;
-		::sstbx::utility::EdgeMap<CompDatTyp> *			edgeMap;
-		OutputData *									outputData;
-		::std::ofstream									outStream;
+		size_t											              nParams;
+		::sstbx::utility::EdgeMap<CompDatTyp> *		edgeMap;
+		OutputData *									            outputData;
+		::std::ofstream									          outStream;
 	};
 
 	void writeOutput(const FinishedEdgeContainer & finishedEdges);
@@ -144,7 +144,7 @@ void EdgeDetect<CompDatTyp>::pipelineStarting()
 			extents[i] = steps(i);
 		}
 
-		myCurrentEdgeMapper = new EdgeMapper(extents, myComparator, "test.map");
+		myCurrentEdgeMapper = new EdgeMapper(extents, myComparator, "edgedetect.map");
 	}
 }
 

@@ -85,7 +85,7 @@ private:
 	MultiIdx<size_t> externalToInternal(const MultiIdx<size_t> & external);
 	MultiIdx<size_t> internalToExternal(const MultiIdx<size_t> & internal);
 
-	int getMaskValue(const size_t dim, const MultiIdx<int> & dr) const;
+	double getMaskValue(const size_t dim, const MultiIdx<int> & dr) const;
 
 	const IStructureComparator<CompDatTyp> &	myComparator;
 
@@ -96,15 +96,15 @@ private:
 	/* The members of this collection map to the dimensions in paramter space that
 	/* we are creating the edge map for.
 	/**/
-	::std::vector<size_t>						myDimsMap;
+	::std::vector<size_t>					myDimsMap;
 
 	/** The convolution mask for each parameter space point */
-	MultiArray<int>	*							myMask;
+	MultiArray<double>	*					myMask;
 	MultiIdx<int> *								myMaskOrigin;
 
-	MultiArray<EdgeData> *						myEdgeData;
+	MultiArray<EdgeData> *				myEdgeData;
 
-	const size_t								myFilterLength;
+	const size_t								  myFilterLength;
 	::arma::Col<int>							mySmoothing;
 	::arma::Col<int>							myDerivative;
 };
@@ -320,7 +320,7 @@ void EdgeMap<CompDatTyp>::generateMask()
 	const MultiIdx<size_t> maskExtents(myNDims, 3);
 
 	// Generate the convolution mask along the 0th parameter direction
-	myMask = new MultiArray<int>(maskExtents);
+	myMask = new MultiArray<double>(maskExtents);
 	myMask->fill(1);	// Fill with 1 so multiplication works
 
   double sumSq = 0.0;
@@ -371,7 +371,7 @@ MultiIdx<size_t> EdgeMap<CompDatTyp>::externalToInternal(const MultiIdx<size_t> 
 }
 
 template <typename CompDatTyp>
-int EdgeMap<CompDatTyp>::getMaskValue(const size_t dim, const MultiIdx<int> & dr) const
+double EdgeMap<CompDatTyp>::getMaskValue(const size_t dim, const MultiIdx<int> & dr) const
 {
 	MultiIdx<int> relPos(dr.dims);
 	relPos = dr;

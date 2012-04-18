@@ -243,8 +243,7 @@ int main()
 	Col<unsigned int> steps(4);
 	from << 1 << endr << 2 << endr << 2 << endr << 2;
 	step << 0 << endr << 0.05 << endr << 0.05 << endr << 0.05;
-	steps << 0 << endr << 5 << endr << 2 << endr << 0;
-	size_t test = from.n_rows;
+	steps << 0 << endr << 5 << endr << 0 << endr << 2;
 	PotentialParamSweep sweep(from, step, steps, pipe);
 
 	// Edge detection
