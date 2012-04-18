@@ -1,5 +1,6 @@
 # Ignore the build directory completely
 build/
+
 # Visual Studio files solution/project and build files
 *.sln
 *.ncb
@@ -7,6 +8,7 @@ build/
 *.vcproj*
 Debug
 Release
+
 # CMake build files
 CMakeLocal.txt
 CMakeFiles

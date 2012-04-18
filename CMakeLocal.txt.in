@@ -1,3 +1,4 @@
+# Local configuration file, this will be ignored by version control
 
 # Paths to libraries #########
 set(BOOST_ROOT "" CACHE FILEPATH "")

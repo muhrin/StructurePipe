@@ -13,7 +13,7 @@
 // INCLUDES /////////////////////////////////////////////
 #include "SSLib.h"
 
-#include "MultiIdx.h"
+#include "utility/MultiIdx.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 

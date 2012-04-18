@@ -13,10 +13,10 @@
 // INCLUDES /////////////////////////////////////////////
 #include "SSLib.h"
 
-#include "IStructureComparator.h"
-#include "Loops.h"
-#include "MultiArray.h"
-#include "MultiIdx.h"
+#include "utility/IStructureComparator.h"
+#include "utility/Loops.h"
+#include "utility/MultiArray.h"
+#include "utility/MultiIdx.h"
 
 #include <boost/foreach.hpp>
 
@@ -323,16 +323,28 @@ void EdgeMap<CompDatTyp>::generateMask()
 	myMask = new MultiArray<int>(maskExtents);
 	myMask->fill(1);	// Fill with 1 so multiplication works
 
+  double sumSq = 0.0;
+  double maskVal = 0.0;
 	for(Loops<size_t> loops(maskExtents); !loops.isAtEnd(); ++loops)
 	{
 		const MultiIdx<size_t> & pos = *loops;
+    maskVal = 1.0;    // Make 
 		// Do 0th direction
-		(*myMask)[pos] *= myDerivative(pos[0]);
+    maskVal *= myDerivative(pos[0]);
 		// Now do all other directions
 		for(size_t i = 1; i < maskExtents.dims; ++i)
 		{
-			(*myMask)[pos] *= mySmoothing(pos[i]);
+      maskVal *= mySmoothing(pos[i]);
 		}
+    (*myMask)[pos] = maskVal;
+    sumSq += maskVal * maskVal;
+	}
+
+  // Now normalise the entries
+  double norm = std::sqrt(sumSq);
+	for(Loops<size_t> loops(maskExtents); !loops.isAtEnd(); ++loops)
+	{
+    (*myMask)[*loops] /= norm;
 	}
 }
 

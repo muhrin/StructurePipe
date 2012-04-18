@@ -12,7 +12,7 @@
 // INCLUDES /////////////////////////////////////////////
 #include "IStructureSet.h"
 
-#include "IStructureComparator.h"
+#include "utility/IStructureComparator.h"
 #include "common/Structure.h"
 
 #include <boost/foreach.hpp>

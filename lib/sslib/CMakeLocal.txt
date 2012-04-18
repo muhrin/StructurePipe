@@ -1,4 +1,4 @@
 
 # Paths to libraries #########
 set(BOOST_ROOT "" CACHE FILEPATH "")
-set(ARMADILLO_ROOT "" CACHE FILEPATH "")
+set(ARMADILLO_ROOT "C:/Users/martin/Documents/lib/armadillo-2.4.4" CACHE FILEPATH "")

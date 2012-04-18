@@ -2,8 +2,16 @@ cmake_minimum_required(VERSION 2.6)
 
 project(StructurePipe)
 
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeLocal.txt)
+  message(STATUS "Generating local configuration file, CMakeLocal.txt, for this build.  Try changing settings here if there are any problems building.")
+  configure_file(
+    "${PROJECT_SOURCE_DIR}/CMakeLocal.txt.in"
+    "${CMAKE_BINARY_DIR}/CMakeLocal.txt"
+  )
+endif()
+
 # Include local settings
-include(CMakeLocal.txt)
+include("${CMAKE_BINARY_DIR}/CMakeLocal.txt")
 
 # Tell CMake where to find modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
