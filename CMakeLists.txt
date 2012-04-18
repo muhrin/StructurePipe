@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
-# Paths to libraries - change these! #########
-set(BOOST_ROOT "/homes/muhrin/src/boost_1_48_0/" CACHE FILEPATH "")
-set(ARMADILLO_ROOT "C:/Users/martin/Documents/lib/armadillo-2.4.4" CACHE FILEPATH "")
-
-
-
 project(StructurePipe)
+
+# Include local settings
+include(CMakeLocal.txt)
 
 # Tell CMake where to find modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
@@ -27,6 +24,10 @@ set(CMAKE_PREFIX_PATH "${BOOST_ROOT}" "${ARMADILLO_ROOT}")
 
 
 # Boost #
+# Tell Windows builds to look for static boost libraries
+if(WIN32)
+  set(Boost_USE_STATIC_LIBS ON)
+endif(WIN32)
 find_package(Boost 1.36.0 COMPONENTS system filesystem REQUIRED)
 # Armadillo #
 find_package(Armadillo)
@@ -44,6 +45,6 @@ endif()
 
 add_subdirectory(lib/pipelib)
 add_subdirectory(lib/sslib)
-add_subdirectory(src)
+add_subdirectory(src ${CMAKE_BINARY_DIR}/bin)
 
 set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")
