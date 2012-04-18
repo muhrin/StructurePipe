@@ -239,11 +239,29 @@ int main()
 
 	// Set up the parent pipeline
 	// Param sweep
-	vec from(4), step(4);
-	Col<unsigned int> steps(4);
-	from << 1 << endr << 2 << endr << 2 << endr << 2;
-	step << 0 << endr << 0.05 << endr << 0.05 << endr << 0.05;
-	steps << 0 << endr << 5 << endr << 0 << endr << 2;
+	vec from(6), step(6);
+	Col<unsigned int> steps(6);
+	from
+    << 1 << endr // Epsilon
+    << 2 << endr
+    << 2 << endr
+    << 2 << endr // Sigma
+    << 2 << endr
+    << 2 << endr;
+	step
+    << 0 << endr // Epsilon
+    << 0.05 << endr
+    << 0.05 << endr
+    << 0 << endr // Sigma
+    << 0 << endr
+    << 0 << endr;
+	steps
+    << 0 << endr // Epsilon
+    << 4 << endr
+    << 4 << endr
+    << 0 << endr // Sigma
+    << 0 << endr
+    << 0 << endr;
 	PotentialParamSweep sweep(from, step, steps, pipe);
 
 	// Edge detection

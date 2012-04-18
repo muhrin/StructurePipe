@@ -71,7 +71,7 @@ private:
 
 	void initCutoff(const FloatType cutoff);
 
-	void initEpsilonSigmaFromDiagonals();
+	//void initEpsilonSigmaFromDiagonals();
 
 	void resetAccumulators(SimplePairPotentialData<FloatType> & data) const;
 
@@ -147,18 +147,18 @@ void SimplePairPotential<FloatType>::initCutoff(FloatType cutoff)
 	}
 }
 
-template <typename FloatType>
-void SimplePairPotential<FloatType>::initEpsilonSigmaFromDiagonals()
-{
-	for(size_t i = 0; i < myNumSpecies - 1; ++i)
-	{
-		for(size_t j = i + 1; j < myNumSpecies; ++j)
-		{
-			myEpsilon(i, j) = myEpsilon(j, i) = ::std::sqrt(myEpsilon(i, i) * myEpsilon(j, j));
-			mySigma(i, j) = mySigma(j, i) = 0.5 * (mySigma(i, i) + mySigma(j, j));
-		}
-	}
-}
+//template <typename FloatType>
+//void SimplePairPotential<FloatType>::initEpsilonSigmaFromDiagonals()
+//{
+//	for(size_t i = 0; i < myNumSpecies - 1; ++i)
+//	{
+//		for(size_t j = i + 1; j < myNumSpecies; ++j)
+//		{
+//			myEpsilon(i, j) = myEpsilon(j, i) = ::std::sqrt(myEpsilon(i, i) * myEpsilon(j, j));
+//			mySigma(i, j) = mySigma(j, i) = 0.5 * (mySigma(i, i) + mySigma(j, j));
+//		}
+//	}
+//}
 
 template <typename FloatType>
 const ::std::string & SimplePairPotential<FloatType>::getName() const
@@ -169,16 +169,34 @@ const ::std::string & SimplePairPotential<FloatType>::getName() const
 template <typename FloatType>
 size_t SimplePairPotential<FloatType>::getNumParams() const
 {
-	return 2 * myNumSpecies;
+  const float fNumSpecies = myNumSpecies;
+  return (size_t)(fNumSpecies * (fNumSpecies + 1.0));
 }
 
 template <typename FloatType>
 ::arma::Col<FloatType> SimplePairPotential<FloatType>::getParams() const
 {
 	::arma::Col<FloatType> params(getNumParams());
+  const unsigned int paramsEach = getNumParams() / 2.0;
 
-	params.subvec(0, myNumSpecies - 1) = myEpsilon.diag();
-	params.subvec(myNumSpecies, 2 * myNumSpecies - 1) = mySigma.diag();
+  size_t idx = 0;
+
+	// Epsilon
+	for(size_t i = 0; i < myNumSpecies; ++i)
+	{
+		for(size_t j = i; j < myNumSpecies; ++j, ++idx)
+		{
+			params(idx) = myEpsilon(i, j);
+		}
+	}
+	// Sigma
+	for(size_t i = 0; i < myNumSpecies; ++i)
+	{
+		for(size_t j = i; j < myNumSpecies; ++j, ++idx)
+		{
+			params(idx) = mySigma(i, j);
+		}
+	}
 
 	return params;
 }
@@ -191,12 +209,26 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
 		throw "setParams called with wrong number of parameters";
 	}
 
-	// The first numSpecies parameters are epsilons diagonals,
-	// the next numSpecies parameters are sigma diagonals
-	myEpsilon.diag()	= params.subvec(0, myNumSpecies - 1);
-	mySigma.diag()		= params.subvec(myNumSpecies, 2 * myNumSpecies - 1);
+  size_t idx = 0;
 
-	initEpsilonSigmaFromDiagonals();
+	// Epsilon
+	for(size_t i = 0; i < myNumSpecies; ++i)
+	{
+		for(size_t j = i; j < myNumSpecies; ++j, ++idx)
+		{
+			myEpsilon(i, j) = params(idx);
+		}
+	}
+	// Sigma
+	for(size_t i = 0; i < myNumSpecies; ++i)
+	{
+		for(size_t j = i; j < myNumSpecies; ++j, ++idx)
+		{
+			mySigma(i, j) = params(idx);
+		}
+  }
+
+//	initEpsilonSigmaFromDiagonals();
 	// Reset the parameter string
 	myParamString.clear();
 }
