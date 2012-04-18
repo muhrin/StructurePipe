@@ -219,6 +219,7 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
 			myEpsilon(i, j) = params(idx);
 		}
 	}
+  myEpsilon = arma::symmatu(myEpsilon);
 	// Sigma
 	for(size_t i = 0; i < myNumSpecies; ++i)
 	{
@@ -227,6 +228,7 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
 			mySigma(i, j) = params(idx);
 		}
   }
+  mySigma = arma::symmatu(mySigma);
 
 //	initEpsilonSigmaFromDiagonals();
 	// Reset the parameter string
