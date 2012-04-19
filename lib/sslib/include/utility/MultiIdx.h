@@ -49,7 +49,7 @@ public:
 	MultiIdx<IdxTyp> operator-(const MultiIdx<IdxTyp> & rhs) const;
 	MultiIdx<IdxTyp> & operator+=(const MultiIdx<IdxTyp> & rhs);
 	MultiIdx<IdxTyp> & operator-=(const MultiIdx<IdxTyp> & rhs);
-	bool operator==(const MultiIdx<IdxTyp> & rhs) const;
+	bool operator ==(const MultiIdx<IdxTyp> & rhs) const;
 	MultiIdx<int> operator<(const MultiIdx<IdxTyp> & rhs) const;
 
 	// Different index type

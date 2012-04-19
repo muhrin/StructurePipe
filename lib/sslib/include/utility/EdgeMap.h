@@ -256,11 +256,14 @@ bool EdgeMap<CompDatTyp>::update(
 		if(neighbour.compData)
 		{
 			DimDirectionPair reverse(p.first, -p.second);
+      // Calculate the difference between the structures
 			const double difference = getMaskValue(p.first, p.second) * myComparator.compareStructures(*edge.compData, *neighbour.compData);
-			edge.directionValues(p.first) += difference;
-			neighbour.directionValues(p.first) -= difference;
+			edge.directionValues(p.first)       += difference;
+			neighbour.directionValues(p.first)  -= difference;
 
-			typename EdgeData::RemainingContainer::iterator itNeigh = ::std::find(neighbour.dimsToDo.begin(), neighbour.dimsToDo.end(), reverse);
+      // Find ourselves amongst the neighbours neighbour list and remove
+			typename EdgeData::RemainingContainer::iterator itNeigh = 
+        std::find(neighbour.dimsToDo.begin(), neighbour.dimsToDo.end(), reverse);
 			if(itNeigh != neighbour.dimsToDo.end())
 			{
 				neighbour.dimsToDo.erase(itNeigh);
@@ -269,6 +272,8 @@ bool EdgeMap<CompDatTyp>::update(
 			{
 				throw "Neighbour reference not found, the mask should be symmetric!";
 			}
+      // Finished processing this neighbour so remove it from our neighbour list
+			it = edge.dimsToDo.erase(it);
 
 			// Drop the reference counts;
 			--edge.references;
@@ -278,7 +283,7 @@ bool EdgeMap<CompDatTyp>::update(
 			{
 				delete edge.compData;
 				edge.compData = NULL;
-				edge.value	= ::std::sqrt(arma::dot(edge.directionValues, edge.directionValues));
+				edge.value	= std::sqrt(arma::dot(edge.directionValues, edge.directionValues));
 				if(finishedEdges)
 				{
 					finishedEdges->push_back(FinishedEdgePair(pos, edge.value));
@@ -289,16 +294,13 @@ bool EdgeMap<CompDatTyp>::update(
 			{
 				delete neighbour.compData;
 				neighbour.compData = NULL;
-				neighbour.value	= ::std::sqrt(arma::dot(neighbour.directionValues, neighbour.directionValues));
+				neighbour.value	= std::sqrt(arma::dot(neighbour.directionValues, neighbour.directionValues));
 				if(finishedEdges)
 				{
 					finishedEdges->push_back(FinishedEdgePair(internalToExternal(neighPos), neighbour.value));
 				}
 				finishedEdge = true;
 			}
-
-      // Finished processing this neighbour so remove it from our neighbour list
-			it = edge.dimsToDo.erase(it);
 		}
 		else
 		{
