@@ -59,9 +59,9 @@ public:
 		/** The edge detection values along each parameter direction */
 		::arma::Col<double>					directionValues;
 		/** The final edge value (geometric average of direction values)*/
-		double								value;
+		double								      value;
 		/** The number of neighbours that still want to do edge detection against us. */
-		size_t								references;
+		size_t								      references;
 	};
 
 	EdgeMap(
@@ -204,7 +204,8 @@ myEdgeData(NULL)
 				{
 					if(getMaskValue(i, relativePos) != 0)
 					{
-						edge.dimsToDo.push_back(DimDirectionPair(i, relativePos));
+            DimDirectionPair p(DimDirectionPair(i, relativePos));
+						edge.dimsToDo.push_back(p);
 						++edge.references;
 					}
 				}
@@ -241,18 +242,17 @@ bool EdgeMap<CompDatTyp>::update(
 	// Now do comparison with neighbours
 	MultiIdx<size_t> neighPos(myNDims);
 
-	// Keep track of whether we've finished any edges completely
+	// Keep track of whether we've finished any edge points completely
 	bool finishedEdge = false;
 
 	for(typename EdgeData::RemainingContainer::iterator it = edge.dimsToDo.begin();
-		it != edge.dimsToDo.end(); /* increment done in body */)
+		it != edge.dimsToDo.end(); /* increment in body */)
 	{
 		const DimDirectionPair & p = *it;
-		neighPos = idx;
-		neighPos += p.second;
-
+		neighPos = idx + p.second;
 		EdgeData & neighbour = (*myEdgeData)[neighPos];
 
+    // Does the neighbour have comparison data yet?
 		if(neighbour.compData)
 		{
 			DimDirectionPair reverse(p.first, -p.second);
@@ -273,8 +273,6 @@ bool EdgeMap<CompDatTyp>::update(
 			// Drop the reference counts;
 			--edge.references;
 			--neighbour.references;
-
-			it = edge.dimsToDo.erase(it);
 
 			if(edge.references == 0 && edge.dimsToDo.empty())
 			{
@@ -298,12 +296,15 @@ bool EdgeMap<CompDatTyp>::update(
 				}
 				finishedEdge = true;
 			}
+
+      // Finished processing this neighbour so remove it from our neighbour list
+			it = edge.dimsToDo.erase(it);
 		}
 		else
 		{
 			++it;
 		}
-	}
+	} // end for
 
 
 	return finishedEdge;
@@ -314,8 +315,10 @@ void EdgeMap<CompDatTyp>::generateMask()
 {
 	using ::sstbx::utility::Loops;
 
-	myMaskOrigin = new MultiIdx<int>(myNDims);
-	myMaskOrigin->fill(1);
+	myMaskOrigin = new MultiIdx<int>(
+    myNDims,
+    1 /*This needs to be the center of filter*/
+  );
 
 	// Create an extent for the convolution mask (size = 3^myNDims)
 	const MultiIdx<size_t> maskExtents(myNDims, 3);

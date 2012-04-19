@@ -89,7 +89,7 @@ EdgeDetect<CompDatTyp>::EdgeMapper::EdgeMapper(
 	const ::std::string &										filePath):
 nParams(extents.dims),
 edgeMap(new ::sstbx::utility::EdgeMap<CompDatTyp>(comparator, extents)),
-outputData(new OutputData(extents))
+outputData(new OutputData(extents, NULL))
 {
 	// Open the output file in append mode
 	outStream.open(filePath.c_str(), ::std::ios::app);

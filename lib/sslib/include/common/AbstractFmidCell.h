@@ -269,7 +269,7 @@ typename AbstractFmidCell<FloatType>::Vec3 AbstractFmidCell<FloatType>::getVecMi
 				dFrac[1] = b;
 				dFrac[2] = c;
 
-				dRImg = orthogonalise(dFrac) + dR;
+        dRImg = myOrthoMtx * dFrac + dR;
 				
 				modDRSq = dot(dRImg, dRImg);
 				if(modDRSq < minModDRSq)
@@ -322,7 +322,7 @@ void AbstractFmidCell<FloatType>::getAllVectorsWithinCutoff(
 				dFrac[1] = b;
 				dFrac[2] = c;
 
-				dRImg = orthogonalise(dFrac) + dR;
+				dRImg = myOrthoMtx * dFrac + dR;
 
 				
 				if(dot(dRImg, dRImg) < cutoffSq)
@@ -373,13 +373,15 @@ typename AbstractFmidCell<FloatType>::Vec3 AbstractFmidCell<FloatType>::randomPo
 }
 
 template <typename FloatType>
-typename AbstractFmidCell<FloatType>::Vec3 AbstractFmidCell<FloatType>::fractionalise(const typename AbstractFmidCell<FloatType>::Vec3 & cartesian) const
+inline typename AbstractFmidCell<FloatType>::Vec3
+AbstractFmidCell<FloatType>::fractionalise(const typename AbstractFmidCell<FloatType>::Vec3 & cartesian) const
 {
 	return myFracMtx * cartesian;
 }
 
 template <typename FloatType>
-typename AbstractFmidCell<FloatType>::Vec3 AbstractFmidCell<FloatType>::orthogonalise(const typename AbstractFmidCell<FloatType>::Vec3 & frac) const
+inline typename AbstractFmidCell<FloatType>::Vec3
+AbstractFmidCell<FloatType>::orthogonalise(const typename AbstractFmidCell<FloatType>::Vec3 & frac) const
 {
 	return myOrthoMtx * frac;
 }
@@ -415,7 +417,7 @@ typename AbstractFmidCell<FloatType>::Vec3 AbstractFmidCell<FloatType>::wrapVec(
 	using namespace arma;
 
 	// Fractionalise it
-	typename AbstractFmidCell<FloatType>::Vec3 frac = fractionalise(toWrap);
+	typename AbstractFmidCell<FloatType>::Vec3 frac = myFracMtx * toWrap;
 
 	// Wrap it
 	wrapVecFracInplace(frac);
@@ -425,7 +427,8 @@ typename AbstractFmidCell<FloatType>::Vec3 AbstractFmidCell<FloatType>::wrapVec(
 }
 
 template <typename FloatType>
-typename AbstractFmidCell<FloatType>::Vec3 & AbstractFmidCell<FloatType>::wrapVecInplace(typename AbstractFmidCell<FloatType>::Vec3 & toWrap) const
+inline typename AbstractFmidCell<FloatType>::Vec3 &
+AbstractFmidCell<FloatType>::wrapVecInplace(typename AbstractFmidCell<FloatType>::Vec3 & toWrap) const
 {
 	// Fractionalise it
 	toWrap = fractionaliseInplace(toWrap);
@@ -440,7 +443,8 @@ typename AbstractFmidCell<FloatType>::Vec3 & AbstractFmidCell<FloatType>::wrapVe
 }
 
 template <typename FloatType>
-typename AbstractFmidCell<FloatType>::Mat & AbstractFmidCell<FloatType>::wrapVecsInplace(typename AbstractFmidCell::Mat & toWrap) const
+inline typename AbstractFmidCell<FloatType>::Mat &
+AbstractFmidCell<FloatType>::wrapVecsInplace(typename AbstractFmidCell::Mat & toWrap) const
 {
 	// Make sure we have three rows, otherwise this doesn't make sense
 	SSE_ASSERT(toWrap.n_rows == 3);
@@ -558,7 +562,7 @@ void AbstractFmidCell<FloatType>::getAllDistancesWithinCutoff(
 				dFrac[1] = b;
 				dFrac[2] = c;
 
-				dRImg = orthogonalise(dFrac) + dR;
+				dRImg = myOrthoMtx * dFrac + dR;
 				modDRSq = dot(dRImg, dRImg);
 				if(modDRSq < cutoffSq)
 				{
@@ -570,14 +574,16 @@ void AbstractFmidCell<FloatType>::getAllDistancesWithinCutoff(
 }
 
 template <typename FloatType>
-typename AbstractFmidCell<FloatType>::Vec3 & AbstractFmidCell<FloatType>::orthogonaliseInplace(typename AbstractFmidCell<FloatType>::Vec3 & frac) const
+inline typename AbstractFmidCell<FloatType>::Vec3 &
+AbstractFmidCell<FloatType>::orthogonaliseInplace(typename AbstractFmidCell<FloatType>::Vec3 & frac) const
 {
 	frac = myOrthoMtx * frac;
 	return frac;
 }
 
 template <typename FloatType>
-typename AbstractFmidCell<FloatType>::Mat & AbstractFmidCell<FloatType>::orthogonaliseInplace(Mat & fracs) const
+inline typename AbstractFmidCell<FloatType>::Mat &
+AbstractFmidCell<FloatType>::orthogonaliseInplace(Mat & fracs) const
 {
 	SSE_ASSERT(fracs.n_rows == 3);
 

@@ -1,7 +1,7 @@
 /*
  * MultiIdx.h
  *
- * Array of runtime dimension.
+ * An index in discreet n-space where n can be specified at runtime.
  *
  *  Created on: Aug 17, 2011
  *      Author: Martin Uhrin
