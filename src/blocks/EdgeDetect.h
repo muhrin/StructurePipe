@@ -12,7 +12,10 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-#include "common/SharedData.h"
+#include <map>
+#include <vector>
+
+#include <armadillo>
 
 // From SSTbx
 #include <utility/EdgeMap.h>
@@ -25,10 +28,10 @@
 #include <AbstractSimpleBlock.h>
 #include <IPipeline.h>
 
-#include <armadillo>
+// Local includes
+#include "common/StructureData.h"
+#include "common/SharedData.h"
 
-#include <map>
-#include <vector>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
