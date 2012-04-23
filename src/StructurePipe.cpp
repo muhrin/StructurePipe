@@ -163,14 +163,14 @@ int main()
 	// Set up the cell generator
 	RandomCellDescription<> cellDesc;
 	cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
-	cellDesc.setVolume(70);
+	cellDesc.setVolume(40);
 	cellDesc.setVolDelta(0.2);
 	RandomCellGenerator<> cellGenerator(cellDesc);
 
 	// Set up the structure generator
 	StructureDescription strDesc;
-	AtomsDescription * const a1 = new AtomsDescription(sstbx::common::NA, 2);
-	AtomsDescription * const a2 = new AtomsDescription(sstbx::common::CL, 2);
+	AtomsDescription * const a1 = new AtomsDescription(sstbx::common::NA, 1);
+	AtomsDescription * const a2 = new AtomsDescription(sstbx::common::CL, 1);
 	strDesc.addChild(a1);
 	strDesc.addChild(a2);
 	Minsep * const minSep = new Minsep(1.5);
@@ -178,7 +178,7 @@ int main()
 	DefaultCrystalGenerator crystalGenerator(strDesc, cellGenerator);
 
 	// Set up random structure block
-	RandomStructure strBlock(10, crystalGenerator);
+	RandomStructure strBlock(50, crystalGenerator);
 
 	// Set up niggli reduction block
 	NiggliReduction niggli;
@@ -243,8 +243,8 @@ int main()
 	Col<unsigned int> steps(6);
 	from
     << 1 << endr // Epsilon
-    << 2 << endr
-    << 2 << endr
+    << 0.5 << endr
+    << 0.5 << endr
     << 2 << endr // Sigma
     << 2 << endr
     << 2 << endr;
@@ -257,8 +257,8 @@ int main()
     << 0 << endr;
 	steps
     << 0 << endr // Epsilon
-    << 4 << endr
-    << 4 << endr
+    << 20 << endr
+    << 20 << endr
     << 0 << endr // Sigma
     << 0 << endr
     << 0 << endr;

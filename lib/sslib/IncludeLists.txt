@@ -39,6 +39,7 @@ source_group("Header Files\\common" FILES ${sslib_Header_Files__common})
 
 set(sslib_Header_Files__io
   include/io/AdditionalData.h
+  include/io/IStructureReader.h
   include/io/IStructureWriter.h
   include/io/ResReaderWriter.h
   include/io/StructureWriterManager.h

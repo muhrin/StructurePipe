@@ -8,6 +8,12 @@
 // INCLUDES //////////////////////////////////
 #include "UtilityFunctions.h"
 
+// From SSTbx
+#include <io/AdditionalData.h>
+
+// From local
+#include "common/StructureData.h"
+
 // NAMESPACES ////////////////////////////////
 
 namespace spipe { namespace common {
@@ -29,6 +35,58 @@ std::string generateUniqueName()
 	ss << processId << "-" << currTime;
 
 	return ss.str();
+}
+
+void generateIoDataFromStructure(
+  const ::spipe::common::StructureData & strData,
+  sstbx::io::AdditionalData & ioData)
+{
+	if(strData.enthalpy)
+	{
+		ioData.enthalpy.reset(*strData.enthalpy);
+	}
+	if(strData.name)
+	{
+		ioData.name.reset(*strData.name);
+	}
+	if(strData.pressure)
+	{
+		ioData.pressure.reset(*strData.pressure);
+	}
+	if(strData.spaceGroup)
+	{
+		ioData.spaceGroup.reset(*strData.spaceGroup);
+	}
+	if(strData.timesFound)
+	{
+		ioData.timesFound.reset(*strData.timesFound);
+	}
+}
+
+void generateStructureDataFromIo(
+  const sstbx::io::AdditionalData & ioData,
+  spipe::common::StructureData & strData)
+{
+	if(ioData.enthalpy)
+	{
+		strData.enthalpy.reset(*ioData.enthalpy);
+	}
+	if(ioData.name)
+	{
+		strData.name.reset(*ioData.name);
+	}
+	if(ioData.pressure)
+	{
+		strData.pressure.reset(*ioData.pressure);
+	}
+	if(ioData.spaceGroup)
+	{
+		strData.spaceGroup.reset(*ioData.spaceGroup);
+	}
+	if(ioData.timesFound)
+	{
+		strData.timesFound.reset(*ioData.timesFound);
+	}
 }
 
 }}

@@ -32,14 +32,22 @@ double SortedDistanceComparator::compareStructures(
 	const size_t maxI = std::min(
 		dist1.sortedDistances.size(),
 		dist2.sortedDistances.size());
+  double delta = 0.0;
 	double rms = 0.0;
+  double max = 0.0;
+  double d1, d2;
 	for(size_t i = 0; i < maxI; ++i)
 	{
-		rms += pow((dist1.sortedDistances[i] - dist2.sortedDistances[i]), 2);
-	}
-	rms = sqrt(rms);
+    d1 = dist1.sortedDistances[i];
+    d2 = dist2.sortedDistances[i];
 
-	return rms;
+    delta = 2.0 * std::abs(d1 - d2) / (d1 + d2);
+    max   = std::max(max, delta);
+		rms   += delta * delta;
+	}
+	rms = sqrt(rms / maxI);
+
+	return max;
 }
 
 bool SortedDistanceComparator::areSimilar(
@@ -63,7 +71,6 @@ SortedDistanceComparator::generateComparisonData(const sstbx::common::Structure 
 	const double maxDist = 1.75 * data->cell.getLongestVector();
 
 	// Calculate the distances ...
-	vector<double> * const distances = new vector<double>();
 	populateDistanceVector(str, data->sortedDistances, maxDist);
 	// ... and sort them
 	std::sort(data->sortedDistances.begin(), data->sortedDistances.end());
@@ -86,7 +93,7 @@ void SortedDistanceComparator::populateDistanceVector(
 	const size_t numParticles = pos.n_cols;
 	for(size_t i = 0; i < numParticles - 1; ++i)
 	{
-		for(size_t j = i + 1; j < numParticles; ++j)
+		for(size_t j = i; j < numParticles; ++j)
 		{
 			distances.clear();
 

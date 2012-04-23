@@ -41,6 +41,11 @@ public:
 
 	typedef SortedDistanceComparisonData DataTyp;
 
+  // Our compareStructures/areSimilar will hide these in our parent so explicitly
+  // bring them back into scope
+  using AbstractComparator<SortedDistanceComparisonData>::compareStructures;
+  using AbstractComparator<SortedDistanceComparisonData>::areSimilar;
+
 	SortedDistanceComparator(double tolerance = DEFAULT_TOLERANCE);
 
 	virtual double compareStructures(

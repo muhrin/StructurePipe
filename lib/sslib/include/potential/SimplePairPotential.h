@@ -12,18 +12,23 @@
 #define SPP_TYPE typename SimplePairPotential<FloatType>
 
 // INCLUDES ///////////////////////////////////////////////
-#include <armadillo>
 
-#include "IParameterisable.h"
-#include "IPotential.h"
-#include "SimplePairPotentialData.h"
+#include <sstream>
+#include <string>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+
+#include <armadillo>
 
 #include "common/AbstractFmidCell.h"
 #include "common/Structure.h"
 #include "common/Utils.h"
+#include "IParameterisable.h"
+#include "IPotential.h"
+#include "SimplePairPotentialData.h"
 
-#include <sstream>
-#include <string>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -41,13 +46,13 @@ public:
 	typedef typename arma::Col<FloatType>::template fixed<3>	Vec3;
 
 	SimplePairPotential(
-		const size_t &				numSpecies,
+		const size_t &				   numSpecies,
 		const SPP_TYPE::Mat &		epsilon,
 		const SPP_TYPE::Mat &		sigma,
-		const FloatType &			cutoffFactor,
-		const arma::Mat<int> &		beta,
-		const FloatType &			m,
-		const FloatType &			n);
+		const FloatType &			  cutoffFactor,
+		const arma::Mat<int> &	beta,
+		const FloatType &			  m,
+		const FloatType &			  n);
 
 	virtual const ::std::string & getName() const;
 
@@ -57,6 +62,8 @@ public:
 	virtual const ::std::string & getParamString() const;
 	virtual ::arma::Col<FloatType> getParams() const;
 	virtual void setParams(const ::arma::Col<FloatType> & params);
+  virtual std::pair<arma::vec, bool>
+    getParamsFromString(const std::string & str) const;
 
 	// End IParameterisable //////////////////////////////////////////
 
@@ -233,6 +240,108 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
 //	initEpsilonSigmaFromDiagonals();
 	// Reset the parameter string
 	myParamString.clear();
+}
+
+template <typename FloatType>
+std::pair<arma::vec, bool>
+SimplePairPotential<FloatType>::getParamsFromString(const std::string & str) const
+{
+  using boost::trim;
+  using boost::lexical_cast;
+  using boost::bad_lexical_cast;
+  using std::string;
+
+  // Set up our tokenizer to split around space and tab
+	typedef boost::tokenizer<boost::char_separator<char> > Tok;
+	const boost::char_separator<char> sep(" \t");
+
+  std::pair<arma::vec, bool> result;
+  result.second = false;
+
+  // Look for parameter indicators
+  size_t nPos = str.find("n:");
+  size_t ePos = str.find("e:");
+  size_t sPos = str.find("s:");
+
+  // Check to see if they were all gound
+  if(nPos != string::npos && ePos != string::npos && sPos != string::npos)
+  {
+    // Try to get n
+    bool foundN = false;
+    unsigned int nSpecies = 0;
+    try
+    {
+      string nStr = str.substr(nPos + 2, ePos - nPos - 2);
+      trim(nStr);
+      nSpecies = lexical_cast<unsigned int>(nStr);
+      foundN = true;
+    }
+    catch(const bad_lexical_cast &)
+    {
+      foundN = true;
+    }
+
+    if(foundN)
+    { 
+      // Calculate the number of parameters for sigma/epsilon
+      // WARNING: this may cause a problem because of the float/int conversion
+      const unsigned int nTotal = nSpecies * (nSpecies + 1);
+      const unsigned int nEach  = std::floor(nTotal * 0.5 + 0.5);
+      result.first.set_size(nTotal);
+
+      // Try to get epsilon
+      const string eString = str.substr(ePos + 2, sPos - ePos - 2);
+      Tok eToker(eString, sep);
+
+      bool foundE = true;
+      unsigned int i = 0;
+      for(Tok::const_iterator eIt = eToker.begin();
+        i < nEach && eIt != eToker.end();
+        ++i, ++eIt)
+      {
+        try
+        {
+          result.first(i) = lexical_cast<double>(*eIt);
+        }
+        catch(const bad_lexical_cast &)
+        {
+          foundE = false;
+          break;
+        }
+      }
+      foundE &= i == nEach;
+
+      if(foundE)
+      { 
+        // Try to get sigma
+        const string sString = str.substr(sPos + 2);
+        Tok sToker(sString, sep);
+
+        bool foundS = true;
+        unsigned int i = nEach;
+        for(Tok::iterator sIt = sToker.begin();
+          i < nTotal && sIt != sToker.end();
+          ++i, ++sIt)
+        {
+          try
+          {
+            result.first(i) = lexical_cast<double>(*sIt);
+          }
+          catch(const bad_lexical_cast &)
+          {
+            foundS = false;
+            break;
+          }
+        }
+        foundS &= i == nTotal;
+        
+        if(foundS)
+          result.second = true;
+
+      } // end if(foundE)
+    } // end if(foundN)
+  } // end if n, s, e tokens found
+  return result;
 }
 
 template <typename FloatType>

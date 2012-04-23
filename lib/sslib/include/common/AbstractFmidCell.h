@@ -201,13 +201,13 @@ AbstractFmidCell<FloatType>::AbstractFmidCell(const FloatType (&latticeParams)[6
 	myChangeOfBasisMtx.eye();
 }
 
-/*template <typename FloatType>
-cctbx::uctbx::unit_cell * AbstractFmidCell<FloatType>::asCctbxUnitCell() const
-{
-	scitbx::af::double6 params;
-	memcpy(&params.elems, &myLatticeParams, 6 * sizeof(FloatType));
-	return new cctbx::uctbx::unit_cell(params);
-}*/
+//template <typename FloatType>
+//cctbx::uctbx::unit_cell * AbstractFmidCell<FloatType>::asCctbxUnitCell() const
+//{
+//	scitbx::af::double6 params;
+//	memcpy(&params.elems, &myLatticeParams, 6 * sizeof(FloatType));
+//	return new cctbx::uctbx::unit_cell(params);
+//}
 
 template <typename FloatType>
 FloatType AbstractFmidCell<FloatType>::getDistanceMinimumImg(
@@ -643,11 +643,13 @@ void AbstractFmidCell<FloatType>::initOrthoAndFracMatrices()
 	myOrthoMtx.at(1, 1) = myLatticeParams[1] * sin(Constants::DEG_TO_RAD * myLatticeParams[5]);
 	// C - col 2
 	myOrthoMtx.at(0, 2) = myLatticeParams[2] * cos(Constants::DEG_TO_RAD * myLatticeParams[4]);
+  // TODO: CHECK THIS THOUROUGHLY!!
 	myOrthoMtx.at(1, 2) = myLatticeParams[2] * (cos(Constants::DEG_TO_RAD * myLatticeParams[3]) -
-		cos(Constants::DEG_TO_RAD * myLatticeParams[4]) * cos(Constants::DEG_TO_RAD * myLatticeParams[5]));
+    cos(Constants::DEG_TO_RAD * myLatticeParams[4]) * cos(Constants::DEG_TO_RAD * myLatticeParams[5]))
+    / sin(Constants::DEG_TO_RAD * myLatticeParams[5]);
 	myOrthoMtx.at(2, 2) = sqrt(myLatticeParams[2] * myLatticeParams[2] -
-		myOrthoMtx(2, 0) * myOrthoMtx(2, 0) -
-		myOrthoMtx(2, 1) * myOrthoMtx(2, 1));
+		myOrthoMtx(0, 2) * myOrthoMtx(0, 2) -
+		myOrthoMtx(1, 2) * myOrthoMtx(1, 2));
 
 	myFracMtx = inv(myOrthoMtx);
 }
@@ -681,38 +683,36 @@ void AbstractFmidCell<FloatType>::initRest()
 template <typename FloatType>
 typename AbstractFmidCell<FloatType>::Mat33 AbstractFmidCell<FloatType>::compactNiggli()
 {
-/*	using namespace cctbx::uctbx;
+	//using namespace cctbx::uctbx;
 
-	unit_cell * cell = asCctbxUnitCell();
+	//unit_cell * cell = asCctbxUnitCell();
 
-	// Transform this into a reduced cell
-	fast_minimum_reduction<FloatType, int> minReduction(*cell);
+	//// Transform this into a reduced cell
+	//fast_minimum_reduction<FloatType, int> minReduction(*cell);
 
-	// Copy over the reduction to make this a reduced cell
-	const scitbx::mat3<int> & reductionMtx = minReduction.r_inv();
+	//// Copy over the reduction to make this a reduced cell
+	//const scitbx::mat3<int> & reductionMtx = minReduction.r_inv();
 
-	// TODO: Make this work!!
-*/
+	//// TODO: Make this work!!
 
 	typename AbstractFmidCell<FloatType>::Mat33 changeOfBasisMtx;
-	// Account for:
-	// Armadillo	- column-major
-	// Cctbx		- row-major
-/*	for(size_t row = 0; row < 3; ++row)
-	{
-		for(size_t col = 0; col < 3; ++col)
-		{
-			changeOfBasisMtx.at(row, col) = reductionMtx(row, col);
-		}
-	}
+	//// Account for:
+	//// Armadillo	- column-major
+	//// Cctbx		- row-major
+	//for(size_t row = 0; row < 3; ++row)
+	//{
+	//	for(size_t col = 0; col < 3; ++col)
+	//	{
+	//		changeOfBasisMtx.at(row, col) = reductionMtx(row, col);
+	//	}
+	//}
 
-	delete cell;
-	cell = NULL;
+	//delete cell;
+	//cell = NULL;
 
-	// Finally set the new orthogonalisation matrix
-	myOrthoMtx *= changeOfBasisMtx;
-	init(myOrthoMtx);
-*/
+	//// Finally set the new orthogonalisation matrix
+	//myOrthoMtx *= changeOfBasisMtx;
+	//init(myOrthoMtx);
 
 	return changeOfBasisMtx;
 }

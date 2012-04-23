@@ -21,6 +21,21 @@
 #include <boost/any.hpp>
 
 // FORWARD DECLARES ////////////////////////////////
+namespace spipe
+{
+  namespace common
+  {
+    class StructureData;
+  }
+}
+
+namespace sstbx
+{
+  namespace io
+  {
+    struct AdditionalData;
+  }
+}
 
 // DEFINES ////////////////////////////////////////
 #define EPSILON_REL 1e-5;
@@ -40,6 +55,14 @@ namespace spipe { namespace common {
 ProcessId getProcessId();
 
 std::string generateUniqueName();
+
+void generateIoDataFromStructure(
+  const ::spipe::common::StructureData & strData,
+  sstbx::io::AdditionalData & ioData);
+
+void generateStructureDataFromIo(
+  const sstbx::io::AdditionalData & ioData,
+  spipe::common::StructureData & strData);
 
 }}
 

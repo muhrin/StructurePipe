@@ -49,16 +49,16 @@ public:
 
 private:
 
-	size_t								myNumParams;
-	const ::arma::vec					myFrom;
-	const ::arma::vec					myStep;
+	size_t								              myNumParams;
+	const ::arma::vec					          myFrom;
+	const ::arma::vec					          myStep;
 	const ::arma::Col<unsigned int>			myNSteps;
 	::sstbx::utility::MultiIdx<size_t>	myStepExtents;
 
-	IPipelineTyp & mySweepPipeline;
+	IPipelineTyp &                      mySweepPipeline;
 
 	/** Buffer to store structure that have finished their path through the sub pipeline. */
-	::std::vector<StructureDataTyp *>			myBuffer;
+	::std::vector<StructureDataTyp *>		myBuffer;
 
 };
 
