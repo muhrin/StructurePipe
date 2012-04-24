@@ -113,7 +113,7 @@ void ResReaderWriter::writeStructure(
 	const double (&latticeParams)[6] = str.getUnitCell()->getLatticeParams();
 
 	// Do cell parameters
-	strFile << "CELL 1";
+	strFile << "CELL 1.0";
 	for(size_t i = 0; i < 6; ++i)
 	{
 		strFile << " " << latticeParams[i];
@@ -140,12 +140,16 @@ void ResReaderWriter::writeStructure(
 	set<AtomSpeciesId> uniqueSpecies(species.begin(), species.end());
 
 	// Output atom species
-	::std::map<AtomSpeciesId, ::std::string> speciesSymbols;
+	std::map<AtomSpeciesId, std::string> speciesSymbols;
+  std::map<AtomSpeciesId, unsigned int> speciesOrder;
 	strFile << "SFAC";
-	BOOST_FOREACH(AtomSpeciesId id, uniqueSpecies)
+  size_t idx = 0;
+	BOOST_FOREACH(const AtomSpeciesId id, uniqueSpecies)
 	{
 		const ::std::string * const name = speciesDb.getSymbol(id);
 		speciesSymbols[id] = name ? *name : "?";
+    speciesOrder[id]   = idx;
+    ++idx;
 		strFile << " " << speciesSymbols[id];
 	}
 
@@ -154,8 +158,9 @@ void ResReaderWriter::writeStructure(
 	sstbx::common::Atom::Vec3 fracPos;
 	for(size_t i = 0; i < positions.n_cols; ++i)
 	{
+    const AtomSpeciesId id = species[i];
 		fracPos = cell->fractionalise(positions.col(i));
-		strFile << endl << ::std::setprecision(32) << speciesSymbols[species[i]] << " " << 1 << " " <<
+		strFile << endl << ::std::setprecision(32) << speciesSymbols[id] << " " << speciesOrder[id] << " " <<
 			fracPos[0] << " " << fracPos[1] << " " << fracPos[2] << " 1.0";
 	}
 

@@ -150,9 +150,6 @@ void EdgeMap<CompDatTyp>::EdgeData::addNeighbour(
   const DimDirectionPair &  neigh,
   const double              maskVal)
 {
-  // -1 0 1
-  // -2 0 2
-  // -1 0 1
   dimsToDo.push_back(neigh);
   maskTotals(neigh.first) += maskVal;
   ++references;
@@ -187,8 +184,10 @@ myEdgeData(NULL)
 	using ::arma::endr;
 	mySmoothing.set_size(myFilterLength);
 	myDerivative.set_size(myFilterLength);
-  // TODO: TEMPORARILY TRYING CENTRAL DIFFERENCE METHOD
+  // Smoothing mask, set central value to 1 and rest to zero for no smoothing
 	mySmoothing << 0 << endr << 1 << endr << 0;
+  // The 'central difference' method values, although we don't use nagative values
+  // as structure differences can only positive
 	myDerivative << 1 << endr << 0 << endr << 1;
 	generateMask();
 
@@ -289,7 +288,7 @@ bool EdgeMap<CompDatTyp>::update(
         getMaskValue(p.first, p.second) *
         myComparator.compareStructures(*edge.compData, *neighbour.compData);
 			edge.directionValues(p.first)       += difference;
-			neighbour.directionValues(p.first)  -= difference;
+			neighbour.directionValues(p.first)  += difference;
 
       // Find ourselves amongst the neighbours neighbour list and remove
 			typename EdgeData::RemainingContainer::iterator itNeigh = 

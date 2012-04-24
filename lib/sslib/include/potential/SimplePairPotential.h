@@ -91,6 +91,7 @@ private:
 	SPP_TYPE::Mat			myEpsilon;
 	SPP_TYPE::Mat			mySigma;
 	arma::Mat<int>			myBeta;
+  const double        myCutoffFactor;
 
 	/** The powers of the sigma/r terms in the potential */
 	FloatType				myN, myM;
@@ -118,9 +119,10 @@ SimplePairPotential<FloatType>::SimplePairPotential(
 	mySigma(sigma),
 	myBeta(beta),
 	myM(m),
-	myN(n)
+	myN(n),
+  myCutoffFactor(cutoffFactor)
 {
-	initCutoff(cutoffFactor);
+	initCutoff(myCutoffFactor);
 }
 
 
@@ -236,6 +238,9 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
 		}
   }
   mySigma = arma::symmatu(mySigma);
+
+  // Initialise the cutoff matrices
+  initCutoff(myCutoffFactor);
 
 //	initEpsilonSigmaFromDiagonals();
 	// Reset the parameter string

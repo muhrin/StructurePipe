@@ -119,16 +119,25 @@ void ParamPotentialGo::in(spipe::common::StructureData & data)
 	}
 
 	sstbx::potential::StandardData<> * optData = NULL;
-	myOptimiser.optimise(*data.getStructure(), optData);
+	if(myOptimiser.optimise(*data.getStructure(), optData))
+  {
+	  // Copy over information from the optimisation results
+	  data.enthalpy.reset(optData->totalEnthalpy);
+	  data.stressMtx.reset(optData->stressMtx);
 
-	// Copy over information from the optimisation results
-	data.enthalpy.reset(optData->totalEnthalpy);
-	data.stressMtx.reset(optData->stressMtx);
+	  delete optData;
+	  optData = NULL;
 
-	delete optData;
-	optData = NULL;
+	  myOutput->in(data);
+  }
+  else
+  {
+    delete optData;
+    optData = NULL;
 
-	myOutput->in(data);
+    // The structure failed to geometry optimise properly so drop it
+    myPipeline->dropData(data);
+  }
 }
 
 void ParamPotentialGo::setPotentialParams(const ::arma::vec & params)

@@ -162,8 +162,11 @@ int main()
 
 	// Set up the cell generator
 	RandomCellDescription<> cellDesc;
-	cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
-	cellDesc.setVolume(40);
+	//cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
+  cellDesc.setMaxLengthRatio(4.0);
+  cellDesc.setMinAngle(30);
+  cellDesc.setMaxAngle(140);
+	cellDesc.setVolume(47);
 	cellDesc.setVolDelta(0.2);
 	RandomCellGenerator<> cellGenerator(cellDesc);
 
@@ -178,7 +181,7 @@ int main()
 	DefaultCrystalGenerator crystalGenerator(strDesc, cellGenerator);
 
 	// Set up random structure block
-	RandomStructure strBlock(50, crystalGenerator);
+	RandomStructure strBlock(100, crystalGenerator);
 
 	// Set up niggli reduction block
 	NiggliReduction niggli;
@@ -235,6 +238,10 @@ int main()
 	pipe.connect(*barrier, writer2);
 	pipe.connect(writer2, lowest);
 
+  // TEMP
+  // pipe.initialise();
+  // pipe.start();
+
 	using ::spipe::blocks::PotentialParamSweep;
 
 	// Set up the parent pipeline
@@ -243,25 +250,25 @@ int main()
 	Col<unsigned int> steps(6);
 	from
     << 1 << endr // Epsilon
-    << 0.5 << endr
-    << 0.5 << endr
+    << 2 << endr
+    << 2 << endr
     << 2 << endr // Sigma
     << 2 << endr
     << 2 << endr;
 	step
     << 0 << endr // Epsilon
-    << 0.05 << endr
-    << 0.05 << endr
-    << 0 << endr // Sigma
     << 0 << endr
-    << 0 << endr;
+    << 0 << endr
+    << 0 << endr // Sigma
+    << 0.05 << endr
+    << 0.05 << endr;
 	steps
     << 0 << endr // Epsilon
-    << 20 << endr
-    << 20 << endr
-    << 0 << endr // Sigma
     << 0 << endr
-    << 0 << endr;
+    << 0 << endr
+    << 0 << endr // Sigma
+    << 10 << endr
+    << 10 << endr;
 	PotentialParamSweep sweep(from, step, steps, pipe);
 
 	// Edge detection

@@ -69,6 +69,7 @@ set(sslib_Header_Files__utility
   include/utility/PromotableType.h
   include/utility/PropertiesMap.h
   include/utility/SortedDistanceComparator.h
+  include/utility/StableComparison.h
   include/utility/UniqueStructureSet.h
 )
 source_group("Header Files\\utility" FILES ${sslib_Header_Files__utility})

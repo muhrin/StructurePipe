@@ -26,7 +26,7 @@ pipelib::Block<StructureDataTyp, SharedDataTyp>("Niggli reduction")
 
 void NiggliReduction::in(spipe::common::StructureData & data)
 {
-	data.getStructure()->getUnitCell()->compactNiggli();
+	data.getStructure()->getUnitCell()->niggliReduce();
 
 	myOutput->in(data);
 }

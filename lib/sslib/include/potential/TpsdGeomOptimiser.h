@@ -250,7 +250,10 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 
 		// TODO: Temporary escape condition to catch pathological cases!
 		if(dH / h > MAX_DH_TO_H_RATIO)
+    {
+      converged = false;
 			break;
+    }
 
 		const double (&latticeParams)[6] = data.unitCell.getLatticeParams();
 		if(latticeParams[3] < DEFAULT_CELL_ANGLE_THRESHOLD || latticeParams[3] > (180 - DEFAULT_CELL_ANGLE_THRESHOLD))
