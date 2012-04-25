@@ -13,6 +13,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <armadillo>
+
 // From Pipelib //
 
 
@@ -28,6 +30,7 @@
 
 int main(const int argc, const char * const argv[])
 {
+  using boost::filesystem::path;
   using std::cout;
   using std::endl;
   using sstbx::common::Structure;
@@ -71,6 +74,13 @@ int main(const int argc, const char * const argv[])
   // Load the structures from file
   resReader.readStructure(str1, path1);
   resReader.readStructure(str2, path2);
+
+  // Niggli reduce both unit cells
+  str1.getUnitCell()->niggliReduce();
+  str2.getUnitCell()->niggliReduce();
+
+  //resReader.writeStructure(str1, boost::filesystem::path("nig1.res"));
+  //resReader.writeStructure(str2, boost::filesystem::path("nig22.res"));
 
   // Get the comparator
   sstbx::utility::SortedDistanceComparator comparator(tolerance);

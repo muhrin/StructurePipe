@@ -143,7 +143,7 @@ void ResReaderWriter::writeStructure(
 	std::map<AtomSpeciesId, std::string> speciesSymbols;
   std::map<AtomSpeciesId, unsigned int> speciesOrder;
 	strFile << "SFAC";
-  size_t idx = 0;
+  size_t idx = 1;
 	BOOST_FOREACH(const AtomSpeciesId id, uniqueSpecies)
 	{
 		const ::std::string * const name = speciesDb.getSymbol(id);

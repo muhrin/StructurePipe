@@ -238,10 +238,6 @@ int main()
 	pipe.connect(*barrier, writer2);
 	pipe.connect(writer2, lowest);
 
-  // TEMP
-  // pipe.initialise();
-  // pipe.start();
-
 	using ::spipe::blocks::PotentialParamSweep;
 
 	// Set up the parent pipeline
@@ -253,8 +249,8 @@ int main()
     << 2 << endr
     << 2 << endr
     << 2 << endr // Sigma
-    << 2 << endr
-    << 2 << endr;
+    << 1.8 << endr
+    << 0.15 << endr;
 	step
     << 0 << endr // Epsilon
     << 0 << endr

@@ -29,10 +29,13 @@ namespace sstbx { namespace utility {
 
 struct SortedDistanceComparisonData
 {
-	SortedDistanceComparisonData(const ::sstbx::common::AbstractFmidCell<> & _cell):
-		cell(_cell) {}
+	SortedDistanceComparisonData(
+    const ::sstbx::common::AbstractFmidCell<> & _cell ,
+    const double _maxDist):
+		cell(_cell), maxDist(_maxDist) {}
 	const ::sstbx::common::AbstractFmidCell<>	cell;
 	::std::vector<double>						sortedDistances;
+  const double                    maxDist;
 };
 
 class SortedDistanceComparator : public AbstractComparator<SortedDistanceComparisonData>

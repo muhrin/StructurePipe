@@ -136,7 +136,7 @@ public:
 
 	virtual FloatType getVolume() const;
 
-	void setVolume(const FloatType volume);
+	FloatType setVolume(const FloatType volume);
 
 	//typename AbstractFmidCell<FloatType>::Mat33 niggliReduce();
   bool niggliReduce();
@@ -589,11 +589,13 @@ FloatType AbstractFmidCell<FloatType>::getVolume() const
 }
 
 template <typename FloatType>
-void AbstractFmidCell<FloatType>::setVolume(const FloatType volume)
+FloatType AbstractFmidCell<FloatType>::setVolume(const FloatType volume)
 {
 	const FloatType scale = pow(volume / getVolume(), 1.0 / 3.0);
 
 	init(scale * myOrthoMtx);
+
+  return scale;
 }
 
 template <typename FloatType>
@@ -760,6 +762,9 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
     << 0 << 0 << 1 << arma::endr;
   arma::mat33 cob(tmpMat);
 
+#define NIGGLI_DEBUG(step) std::cout << iter << " " << step << " " << A << " "\
+  << B << " " << C << " " << xi << " " << eta << " " << zeta << std::endl;
+//#define NIGGLI_DEBUG(step)
   unsigned int iter;
   for (iter = 0; iter < iterations; ++iter) {
     // Step 1:
@@ -774,6 +779,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       cob *= C1;
       std::swap(A, B);
       std::swap(xi, eta);
+      NIGGLI_DEBUG(1);
     }
 
     // Step 2:
@@ -788,6 +794,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       cob *= C2;
       std::swap(B, C);
       std::swap(eta, zeta);
+      NIGGLI_DEBUG(2);
       continue;
     }
 
@@ -805,6 +812,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       xi   = fabs(xi);
       eta  = fabs(eta);
       zeta = fabs(zeta);
+      NIGGLI_DEBUG(3);
       ++iter;
     }
 
@@ -858,7 +866,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       xi   = -fabs(xi);
       eta  = -fabs(eta);
       zeta = -fabs(zeta);
-      //NIGGLI_DEBUG(4);
+      NIGGLI_DEBUG(4);
       ++iter;
     }
 
@@ -883,7 +891,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       C    = B + C - xi*signXi;
       eta  = eta - zeta*signXi;
       xi   = xi -   2*B*signXi;
-      //NIGGLI_DEBUG(5);
+      NIGGLI_DEBUG(5);
       continue;
     }
 
@@ -908,7 +916,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       C    = A + C - eta*signEta;
       xi   = xi - zeta*signEta;
       eta  = eta - 2*A*signEta;
-      //NIGGLI_DEBUG(6);
+      NIGGLI_DEBUG(6);
       continue;
     }
 
@@ -933,7 +941,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       B    = A + B - zeta*signZeta;
       xi   = xi - eta*signZeta;
       zeta = zeta - 2*A*signZeta;
-      //NIGGLI_DEBUG(7);
+      NIGGLI_DEBUG(7);
       continue;
     }
 
@@ -951,7 +959,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
       C    = sumAllButC + C;
       xi = 2*B + xi + zeta;
       eta  = 2*A + eta + zeta;
-      //NIGGLI_DEBUG(8);
+      NIGGLI_DEBUG(8);
       continue;
     }
 
@@ -978,6 +986,8 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
     //      "the reduction algorithm. Stopping."));
     return false;
   }
+
+  SP_ASSERT(arma::det(cob) == 1);
 
   //Q_ASSERT_X(cob.determinant() == 1, Q_FUNC_INFO,
   //           "Determinant of change of basis matrix must be 1.");
