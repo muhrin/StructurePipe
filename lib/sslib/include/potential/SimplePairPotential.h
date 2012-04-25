@@ -41,6 +41,20 @@ class SimplePairPotential :
 {
 public:
 
+  /**
+  /* Combining rules for setting off-diagonal length/energy scale terms. See
+  /* http://www.sklogwiki.org/SklogWiki/index.php/Combining_rules
+  /* for good reference.
+  /* If a rule is being used it will overwrite any off diagonal parameters.
+  /**/
+  enum CombiningRule
+  {
+    NONE,
+    LORENTZ,
+    BERTHELOT,
+    LORENTZ_BERTHELOT
+  };
+
 	typedef SimplePairPotentialData<FloatType>					DataTyp;
 	typedef typename arma::Mat<FloatType>						Mat;
 	typedef typename arma::Col<FloatType>::template fixed<3>	Vec3;
@@ -52,7 +66,8 @@ public:
 		const FloatType &			  cutoffFactor,
 		const arma::Mat<int> &	beta,
 		const FloatType &			  m,
-		const FloatType &			  n);
+		const FloatType &			  n,
+    const CombiningRule     combiningRule = NONE);
 
 	virtual const ::std::string & getName() const;
 
@@ -78,6 +93,8 @@ private:
 
 	void initCutoff(const FloatType cutoff);
 
+  void applyCombiningRule();
+
 	//void initEpsilonSigmaFromDiagonals();
 
 	void resetAccumulators(SimplePairPotentialData<FloatType> & data) const;
@@ -96,6 +113,8 @@ private:
 	/** The powers of the sigma/r terms in the potential */
 	FloatType				myN, myM;
 
+  CombiningRule         myCombiningRule;
+
 	arma::Mat<FloatType> 	rCutoff;
 	arma::Mat<FloatType> 	rCutoffSq;
 	arma::Mat<FloatType> 	eShift;
@@ -112,7 +131,8 @@ SimplePairPotential<FloatType>::SimplePairPotential(
 	const FloatType &			cutoffFactor,
 	const arma::Mat<int> &		beta,
 	const FloatType &			m,
-	const FloatType &			n):
+	const FloatType &			n,
+  const CombiningRule   combiningRule):
 	myName("Simple pair potential"),
 	myNumSpecies(numSpecies),
 	myEpsilon(epsilon),
@@ -120,8 +140,10 @@ SimplePairPotential<FloatType>::SimplePairPotential(
 	myBeta(beta),
 	myM(m),
 	myN(n),
-  myCutoffFactor(cutoffFactor)
+  myCutoffFactor(cutoffFactor),
+  myCombiningRule(combiningRule)
 {
+  applyCombiningRule();
 	initCutoff(myCutoffFactor);
 }
 
@@ -156,18 +178,32 @@ void SimplePairPotential<FloatType>::initCutoff(FloatType cutoff)
 	}
 }
 
-//template <typename FloatType>
-//void SimplePairPotential<FloatType>::initEpsilonSigmaFromDiagonals()
-//{
-//	for(size_t i = 0; i < myNumSpecies - 1; ++i)
-//	{
-//		for(size_t j = i + 1; j < myNumSpecies; ++j)
-//		{
-//			myEpsilon(i, j) = myEpsilon(j, i) = ::std::sqrt(myEpsilon(i, i) * myEpsilon(j, j));
-//			mySigma(i, j) = mySigma(j, i) = 0.5 * (mySigma(i, i) + mySigma(j, j));
-//		}
-//	}
-//}
+template <typename FloatType>
+void SimplePairPotential<FloatType>::applyCombiningRule()
+{
+  if(myCombiningRule == LORENTZ || myCombiningRule == LORENTZ_BERTHELOT)
+  {
+    // Apply the Lorenz combining rule
+	  for(size_t i = 0; i < myNumSpecies - 1; ++i)
+	  {
+		  for(size_t j = i + 1; j < myNumSpecies; ++j)
+		  {
+			  mySigma(i, j) = mySigma(j, i) = 0.5 * (mySigma(i, i) + mySigma(j, j));
+		  }
+	  }
+  }
+  if(myCombiningRule == BERTHELOT || myCombiningRule == LORENTZ_BERTHELOT)
+  {
+    // Apply the Berthelot combining rule
+	  for(size_t i = 0; i < myNumSpecies - 1; ++i)
+	  {
+		  for(size_t j = i + 1; j < myNumSpecies; ++j)
+		  {
+			  myEpsilon(i, j) = myEpsilon(j, i) = std::sqrt(myEpsilon(i, i) * myEpsilon(j, j));
+		  }
+	  }
+  }
+}
 
 template <typename FloatType>
 const ::std::string & SimplePairPotential<FloatType>::getName() const
@@ -229,6 +265,7 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
 		}
 	}
   myEpsilon = arma::symmatu(myEpsilon);
+
 	// Sigma
 	for(size_t i = 0; i < myNumSpecies; ++i)
 	{
@@ -239,10 +276,11 @@ void SimplePairPotential<FloatType>::setParams(const ::arma::Col<FloatType> & pa
   }
   mySigma = arma::symmatu(mySigma);
 
+  applyCombiningRule();
+
   // Initialise the cutoff matrices
   initCutoff(myCutoffFactor);
 
-//	initEpsilonSigmaFromDiagonals();
 	// Reset the parameter string
 	myParamString.clear();
 }

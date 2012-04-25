@@ -37,6 +37,7 @@ public:
 
 	virtual ~IGeomOptimiser() {}
 
+  // TODO: Allow return value to give some indication of the reason for the failure!
 	virtual bool optimise(::sstbx::common::Structure & structure) const = 0;
 
 	virtual bool optimise(

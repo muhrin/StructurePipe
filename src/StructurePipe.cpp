@@ -163,10 +163,10 @@ int main()
 	// Set up the cell generator
 	RandomCellDescription<> cellDesc;
 	//cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
-  cellDesc.setMaxLengthRatio(4.0);
-  cellDesc.setMinAngle(30);
+  cellDesc.setMaxLengthRatio(3.0);
+  cellDesc.setMinAngle(50);
   cellDesc.setMaxAngle(140);
-	cellDesc.setVolume(47);
+	cellDesc.setVolume(25);
 	cellDesc.setVolDelta(0.2);
 	RandomCellGenerator<> cellGenerator(cellDesc);
 
@@ -176,7 +176,7 @@ int main()
 	AtomsDescription * const a2 = new AtomsDescription(sstbx::common::CL, 1);
 	strDesc.addChild(a1);
 	strDesc.addChild(a2);
-	Minsep * const minSep = new Minsep(1.5);
+	Minsep * const minSep = new Minsep(0.5);
 	strDesc.addAtomConstraint(minSep);
 	DefaultCrystalGenerator crystalGenerator(strDesc, cellGenerator);
 
@@ -203,7 +203,7 @@ int main()
 	beta << -1 << 1 << endr
 			<< 1 << -1 << endr;
 
-	SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6);
+  SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6, SimplePairPotential<>::LORENTZ_BERTHELOT);
 	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser(potential);
 	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser2(potential);
 
@@ -245,26 +245,26 @@ int main()
 	vec from(6), step(6);
 	Col<unsigned int> steps(6);
 	from
-    << 1 << endr // Epsilon
-    << 2 << endr
-    << 2 << endr
+    << 2 << endr // Epsilon
+    << 1 << endr
+    << 0.5 << endr
     << 2 << endr // Sigma
-    << 1.8 << endr
-    << 0.15 << endr;
+    << 1 << endr
+    << 2.4 << endr;
 	step
     << 0 << endr // Epsilon
     << 0 << endr
-    << 0 << endr
+    << 0.1 << endr
     << 0 << endr // Sigma
-    << 0.05 << endr
-    << 0.05 << endr;
+    << 0 << endr
+    << 0.1 << endr;
 	steps
     << 0 << endr // Epsilon
     << 0 << endr
-    << 0 << endr
+    << 20 << endr
     << 0 << endr // Sigma
-    << 10 << endr
-    << 10 << endr;
+    << 0 << endr
+    << 20 << endr;
 	PotentialParamSweep sweep(from, step, steps, pipe);
 
 	// Edge detection

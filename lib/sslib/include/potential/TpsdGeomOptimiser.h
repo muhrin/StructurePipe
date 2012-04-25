@@ -34,7 +34,8 @@ public:
 	TpsdGeomOptimiser(
 		const IPotential<DataType> & potential,
 		const size_t maxSteps = DEFAULT_MAX_STEPS,
-		const FloatType tolerance = DEFAULT_TOLERANCE);
+		const FloatType tolerance = DEFAULT_TOLERANCE,
+    const FloatType minNormVolume = DEFAULT_MIN_NORM_VOLUME);
 
 	// IGeomOptimiser interface //////////////////////////////
 
@@ -57,6 +58,7 @@ public:
 	static const size_t		DEFAULT_MAX_STEPS;
 	static const FloatType	DEFAULT_TOLERANCE;
 	static const FloatType	DEFAULT_CELL_ANGLE_THRESHOLD;
+  static const FloatType  DEFAULT_MIN_NORM_VOLUME;
 	static const FloatType	MAX_DH_TO_H_RATIO;
 
 private:
@@ -65,6 +67,7 @@ private:
 
 	const size_t		myMaxSteps;
 	const FloatType		myTolerance;
+  const FloatType   myMinNormVolume;
 };
 
 // CONSTANTS ////////////////////////////////////////////////
@@ -76,10 +79,13 @@ template TPSD_GEOM_OPTIMISER_TPARAMS
 const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_TOLERANCE = 1e-13;
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
+const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_MIN_NORM_VOLUME = 0.05;
+
+template TPSD_GEOM_OPTIMISER_TPARAMS
 const FloatType TPSD_GEOM_OPTIMISER_TTYPE::MAX_DH_TO_H_RATIO = 10000;
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
-const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_CELL_ANGLE_THRESHOLD = 5;
+const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_CELL_ANGLE_THRESHOLD = 15;
 
 // IMPLEMENTATION //////////////////////////////////////////////////////////
 
@@ -87,10 +93,12 @@ template TPSD_GEOM_OPTIMISER_TPARAMS
 TPSD_GEOM_OPTIMISER_TTYPE::TpsdGeomOptimiser(
 	const IPotential<DataType> & potential,
 	const size_t maxSteps,
-	const FloatType tolerance):
+	const FloatType tolerance,
+  const FloatType minNormVolume):
 myPotential(potential),
 myMaxSteps(maxSteps),
-myTolerance(tolerance)
+myTolerance(tolerance),
+myMinNormVolume(minNormVolume)
 {}
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
@@ -255,13 +263,12 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 			break;
     }
 
-		const double (&latticeParams)[6] = data.unitCell.getLatticeParams();
-		if(latticeParams[3] < DEFAULT_CELL_ANGLE_THRESHOLD || latticeParams[3] > (180 - DEFAULT_CELL_ANGLE_THRESHOLD))
-			break;
-		if(latticeParams[4] < DEFAULT_CELL_ANGLE_THRESHOLD || latticeParams[4] > (180 - DEFAULT_CELL_ANGLE_THRESHOLD))
-			break;
-		if(latticeParams[5] < DEFAULT_CELL_ANGLE_THRESHOLD || latticeParams[5] > (180 - DEFAULT_CELL_ANGLE_THRESHOLD))
-			break;
+		if((i % 40 == 0) && data.unitCell.getNormVolume() < myMinNormVolume)
+    {
+      // Cell has collapsed
+      converged = false;
+      break;
+    }
 	}
 
 	// Wrap the particle positions so they stay in the central unit cell

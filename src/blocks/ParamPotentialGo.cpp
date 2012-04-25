@@ -106,7 +106,9 @@ void ParamPotentialGo::pipelineStarting()
 {
 	if(myPipeline->getSharedData().potentialParams)
 	{
-		setPotentialParams(*myPipeline->getSharedData().potentialParams);
+    const arma::vec actualParams = setPotentialParams(*myPipeline->getSharedData().potentialParams);
+    // The potential may have changed the params so reset them in the shared data
+    myPipeline->getSharedData().potentialParams.reset(actualParams);
 	}
 }
 
@@ -140,15 +142,19 @@ void ParamPotentialGo::in(spipe::common::StructureData & data)
   }
 }
 
-void ParamPotentialGo::setPotentialParams(const ::arma::vec & params)
+arma::vec ParamPotentialGo::setPotentialParams(const ::arma::vec & params)
 {
 	using ::std::string;
 
 	myParamPotential.setParams(params);
 
+  arma::vec actualParams = myParamPotential.getParams();
+
 	// Update the structure group name
 	myStructureGroup = ::spipe::common::generateUniqueName();
 	myDbStream << myStructureGroup << " " << myParamPotential.getParamString() << std::endl;
+
+  return actualParams;
 }
 
 

@@ -135,8 +135,11 @@ public:
 	FloatType getLongestVectorSq() const;
 
 	virtual FloatType getVolume() const;
+  
+  FloatType getNormVolume() const;
 
 	FloatType setVolume(const FloatType volume);
+
 
 	//typename AbstractFmidCell<FloatType>::Mat33 niggliReduce();
   bool niggliReduce();
@@ -586,6 +589,25 @@ template <typename FloatType>
 FloatType AbstractFmidCell<FloatType>::getVolume() const
 {
 	return myVolume;
+}
+
+template <typename FloatType>
+FloatType AbstractFmidCell<FloatType>::getNormVolume() const
+{
+  using arma::dot;
+  using std::sqrt;
+
+  // First normalise the lattice vectors
+  typename AbstractFmidCell<FloatType>::Vec3 a = myOrthoMtx.col(0);
+  typename AbstractFmidCell<FloatType>::Vec3 b = myOrthoMtx.col(1);
+  typename AbstractFmidCell<FloatType>::Vec3 c = myOrthoMtx.col(2);
+
+  a /= sqrt(dot(a, a));
+  b /= sqrt(dot(b, b));
+  c /= sqrt(dot(c, c));
+
+  // Now calculate abs value of the the triple product
+  return std::abs(dot(arma::cross(a, b), c));
 }
 
 template <typename FloatType>

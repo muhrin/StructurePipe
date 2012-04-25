@@ -206,19 +206,20 @@ void EdgeDetect<CompDatTyp>::writeOutput(
 
 	const ::arma::vec & from = *myPipeline->getSharedData().potSweepFrom;
 	const ::arma::vec & step = *myPipeline->getSharedData().potSweepStep;
-	::arma::vec params(myCurrentEdgeMapper->nParams);
+	//::arma::vec params(myCurrentEdgeMapper->nParams);
 
 	// Go through them all and write to output file
 	BOOST_FOREACH(const FinishedEdgePair & edge, finishedEdges)
 	{
 		::spipe::common::StructureData * const data = (*myCurrentEdgeMapper->outputData)[edge.first];
+    const arma::vec & params = *data->potentialParams;
 
 		::std::ofstream & out = myCurrentEdgeMapper->outStream;
 
-		for(size_t i = 0; i < myCurrentEdgeMapper->nParams; ++i)
-		{
-			params(i) = from(i) + edge.first[i] * step(i);
-		}
+		//for(size_t i = 0; i < myCurrentEdgeMapper->nParams; ++i)
+		//{
+		//	params(i) = from(i) + edge.first[i] * step(i);
+		//}
 
 		if(out.is_open())
 		{

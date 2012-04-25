@@ -50,7 +50,7 @@ private:
 
 	typedef ::std::map<std::string, ::std::string> PotDbTyp;
 
-	void setPotentialParams(const ::arma::vec & params);
+  arma::vec setPotentialParams(const ::arma::vec & params);
 
 	::std::fstream & getDbStream();
 
