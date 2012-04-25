@@ -762,9 +762,9 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
     << 0 << 0 << 1 << arma::endr;
   arma::mat33 cob(tmpMat);
 
-#define NIGGLI_DEBUG(step) std::cout << iter << " " << step << " " << A << " "\
-  << B << " " << C << " " << xi << " " << eta << " " << zeta << std::endl;
-//#define NIGGLI_DEBUG(step)
+//#define NIGGLI_DEBUG(step) std::cout << iter << " " << step << " " << A << " "\
+//  << B << " " << C << " " << xi << " " << eta << " " << zeta << std::endl;
+#define NIGGLI_DEBUG(step)
   unsigned int iter;
   for (iter = 0; iter < iterations; ++iter) {
     // Step 1:
@@ -987,7 +987,7 @@ bool AbstractFmidCell<FloatType>::niggliReduce()
     return false;
   }
 
-  SP_ASSERT(arma::det(cob) == 1);
+  SSE_ASSERT(arma::det(cob) == 1);
 
   //Q_ASSERT_X(cob.determinant() == 1, Q_FUNC_INFO,
   //           "Determinant of change of basis matrix must be 1.");

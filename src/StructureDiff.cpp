@@ -58,13 +58,25 @@ int main(const int argc, const char * const argv[])
 
   if(!boost::filesystem::exists(path1))
   {
-    cout << "File " << path1 << " does not exist." << endl;
-    return 0;
+    std::cerr << "File " << path1 << " does not exist." << endl;
+    path1 = path1.string() + ".res";
+    std::cerr << "Trying " << path1;
+    if(!boost::filesystem::exists(path1))
+    {
+      std::cerr << "File " << path1 << " does not exist." << endl;
+      return 0;
+    }
   }
   if(!boost::filesystem::exists(path2))
   {
-    cout << "File " << path2 << " does not exist." << endl;
-    return 0;
+    std::cerr << "File " << path2 << " does not exist." << endl;
+    path2 = path2.string() + ".res";
+    std::cerr << "Trying " << path2;
+    if(!boost::filesystem::exists(path2))
+    {
+      std::cerr << "File " << path2 << " does not exist." << endl;
+      return 0;
+    }
   }
 
   Structure str1, str2;
@@ -98,4 +110,3 @@ int main(const int argc, const char * const argv[])
 
 	return 0;
 }
-
