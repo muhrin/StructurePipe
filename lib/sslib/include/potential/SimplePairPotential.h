@@ -52,7 +52,8 @@ public:
     NONE,
     LORENTZ,
     BERTHELOT,
-    LORENTZ_BERTHELOT
+    LORENTZ_BERTHELOT,
+    CUSTOM
   };
 
 	typedef SimplePairPotentialData<FloatType>					DataTyp;
@@ -200,6 +201,19 @@ void SimplePairPotential<FloatType>::applyCombiningRule()
 		  for(size_t j = i + 1; j < myNumSpecies; ++j)
 		  {
 			  myEpsilon(i, j) = myEpsilon(j, i) = std::sqrt(myEpsilon(i, i) * myEpsilon(j, j));
+		  }
+	  }
+  }
+  if(myCombiningRule == CUSTOM)
+  {
+    double sum = 0.0;
+    // Apply the Berthelot combining rule
+	  for(size_t i = 0; i < myNumSpecies - 1; ++i)
+	  {
+		  for(size_t j = i + 1; j < myNumSpecies; ++j)
+		  {
+        sum = myEpsilon(i, i) + myEpsilon(j, j);
+			  myEpsilon(i, j) = myEpsilon(j, i) = std::sqrt(16 - sum * sum);
 		  }
 	  }
   }
