@@ -17,6 +17,7 @@ namespace sstbx { namespace common {
 
 enum AtomSpeciesId
 {
+  DUMMY,
 	H,
 	NA,
 	CL,

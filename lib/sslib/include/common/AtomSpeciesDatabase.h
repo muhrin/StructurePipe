@@ -38,6 +38,8 @@ public:
 	virtual const ::std::string * getSymbol(const AtomSpeciesId id) const;
 	virtual void setSymbol(const AtomSpeciesId id, const ::std::string & symbol);
 
+  virtual const AtomSpeciesId getIdFromSymbol(const std::string & symbol) const;
+
 	static AtomSpeciesDatabase & inst();
 
 protected:

@@ -53,7 +53,7 @@ namespace spipe
 
 	// TYPEDEFS ///////////////////////
 
-	typedef spipe::common::StructureData				StructureDataTyp;
+	typedef spipe::common::StructureData			StructureDataTyp;
 	typedef spipe::common::SharedData					SharedDataTyp;
 	typedef pipelib::IPipeline<StructureDataTyp, SharedDataTyp>	IPipelineTyp;
 

@@ -106,7 +106,9 @@ void ParamPotentialGo::pipelineStarting()
 {
 	if(myPipeline->getSharedData().potentialParams)
 	{
-		setPotentialParams(*myPipeline->getSharedData().potentialParams);
+    const arma::vec actualParams = setPotentialParams(*myPipeline->getSharedData().potentialParams);
+    // The potential may have changed the params so reset them in the shared data
+    myPipeline->getSharedData().potentialParams.reset(actualParams);
 	}
 }
 
@@ -119,27 +121,40 @@ void ParamPotentialGo::in(spipe::common::StructureData & data)
 	}
 
 	sstbx::potential::StandardData<> * optData = NULL;
-	myOptimiser.optimise(*data.getStructure(), optData);
+	if(myOptimiser.optimise(*data.getStructure(), optData))
+  {
+	  // Copy over information from the optimisation results
+	  data.enthalpy.reset(optData->totalEnthalpy);
+	  data.stressMtx.reset(optData->stressMtx);
 
-	// Copy over information from the optimisation results
-	data.enthalpy.reset(optData->totalEnthalpy);
-	data.stressMtx.reset(optData->stressMtx);
+	  delete optData;
+	  optData = NULL;
 
-	delete optData;
-	optData = NULL;
+	  myOutput->in(data);
+  }
+  else
+  {
+    delete optData;
+    optData = NULL;
 
-	myOutput->in(data);
+    // The structure failed to geometry optimise properly so drop it
+    myPipeline->dropData(data);
+  }
 }
 
-void ParamPotentialGo::setPotentialParams(const ::arma::vec & params)
+arma::vec ParamPotentialGo::setPotentialParams(const ::arma::vec & params)
 {
 	using ::std::string;
 
 	myParamPotential.setParams(params);
 
+  arma::vec actualParams = myParamPotential.getParams();
+
 	// Update the structure group name
 	myStructureGroup = ::spipe::common::generateUniqueName();
 	myDbStream << myStructureGroup << " " << myParamPotential.getParamString() << std::endl;
+
+  return actualParams;
 }
 
 

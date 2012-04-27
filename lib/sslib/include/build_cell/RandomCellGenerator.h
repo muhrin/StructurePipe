@@ -159,7 +159,7 @@ myMaxAngle(UNSET)
 template <typename FloatType>
 ::sstbx::common::AbstractFmidCell<FloatType> * RandomCellGenerator<FloatType>::generateCell() const
 {
-	::sstbx::common::AbstractFmidCell<FloatType> * cell = 0;
+	::sstbx::common::AbstractFmidCell<FloatType> * cell = NULL;
 
 	// New set of lattice parameters
 	double latticeParams[6];

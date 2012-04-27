@@ -25,7 +25,7 @@ namespace sstbx { namespace common {
 
 namespace sstbx { namespace common {
 
-	class Structure : public AtomGroup {
+class Structure : public AtomGroup {
 public:
 
 	Structure(AbstractFmidCell<double> * const cell = NULL);

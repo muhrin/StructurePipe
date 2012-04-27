@@ -1,5 +1,7 @@
+
 set(spipe_Header_Files__blocks
   blocks/EdgeDetect.h
+  blocks/LoadPotStructures.h
   blocks/LowestFreeEnergy.h
   blocks/MakeMap.h
   blocks/NiggliReduction.h
@@ -13,6 +15,7 @@ set(spipe_Header_Files__blocks
 source_group("Header Files\\blocks" FILES ${spipe_Header_Files__blocks})
 
 set(spipe_Source_Files__blocks
+  blocks/LoadPotStructures.cpp
   blocks/LowestFreeEnergy.cpp
   blocks/MakeMap.cpp
   blocks/NiggliReduction.cpp
@@ -45,7 +48,6 @@ set(spipe_Header_Files__
 source_group("Header Files" FILES ${spipe_Header_Files__})
 
 set(spipe_Source_Files__
-  StructurePipe.cpp
 )
 source_group("Source Files" FILES ${spipe_Source_Files__})
 
@@ -75,14 +77,62 @@ include_directories(
 
 
 include_directories(.)
-add_executable(spipe ${spipe_Files})
+
+
+###################
+## StructurePipe ##
+###################
+add_executable(spipe
+  ${spipe_Files}
+  StructurePipe.cpp
+)
 
 add_dependencies(spipe sslib)
-
 
 # Libraries we need to link to
   target_link_libraries(spipe
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
     sslib
   )
+
+##################
+## StructureMap ##
+##################
+add_executable(smap
+  ${spipe_Files}
+  MakeMap.cpp
+)
+
+add_dependencies(smap sslib)
+
+# Libraries we need to link to
+  target_link_libraries(smap
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
+    sslib
+  )
+  
+
+###################
+## StructureDiff ##
+###################
+add_executable(sdiff
+  ${spipe_Files}
+  StructureDiff.cpp
+)
+
+add_dependencies(sdiff sslib)
+
+# Libraries we need to link to
+  target_link_libraries(sdiff
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
+    sslib
+  )
+  
+
+

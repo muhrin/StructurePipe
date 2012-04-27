@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <utility>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -42,14 +43,19 @@ public:
 	/**/
 	typedef ::std::pair<size_t, ::sstbx::utility::MultiIdx<int> > DimDirectionPair;
 
-	struct EdgeData
+	class EdgeData
 	{
+  public:
 		typedef ::std::vector<DimDirectionPair > RemainingContainer;
 
 		EdgeData();
 		~EdgeData();
 
 		void init(const size_t numDirections);
+
+    void addNeighbour(
+      const DimDirectionPair &  neigh,
+      const double              maskVal);
 
 		/** The comparison data for this element */
 		const CompDatTyp *					compData;
@@ -58,9 +64,11 @@ public:
 		/** The edge detection values along each parameter direction */
 		::arma::Col<double>					directionValues;
 		/** The final edge value (geometric average of direction values)*/
-		double								value;
+		double								      value;
+    /** The total of all the mask values that will be used for each dimension */
+    arma::Col<double>           maskTotals;
 		/** The number of neighbours that still want to do edge detection against us. */
-		size_t								references;
+		size_t								      references;
 	};
 
 	EdgeMap(
@@ -132,9 +140,22 @@ template <typename CompDatTyp>
 void EdgeMap<CompDatTyp>::EdgeData::init(const size_t numDirections)
 {
 	directionValues.set_size(numDirections);
+  directionValues.fill(0);
+  maskTotals.set_size(numDirections);
+  maskTotals.fill(0);
 }
 
-// EdgeMap implementation //
+template <typename CompDatTyp>
+void EdgeMap<CompDatTyp>::EdgeData::addNeighbour(
+  const DimDirectionPair &  neigh,
+  const double              maskVal)
+{
+  dimsToDo.push_back(neigh);
+  maskTotals(neigh.first) += maskVal;
+  ++references;
+}
+
+// EdgeMap implementation /////////////////
 
 template <typename CompDatTyp>
 EdgeMap<CompDatTyp>::EdgeMap(
@@ -163,8 +184,11 @@ myEdgeData(NULL)
 	using ::arma::endr;
 	mySmoothing.set_size(myFilterLength);
 	myDerivative.set_size(myFilterLength);
-	mySmoothing << 1 << endr << 2 << endr << 1;
-	myDerivative << -1 << endr << 0 << endr << 1;
+  // Smoothing mask, set central value to 1 and rest to zero for no smoothing
+	mySmoothing << 0 << endr << 1 << endr << 0;
+  // The 'central difference' method values, although we don't use nagative values
+  // as structure differences can only positive
+	myDerivative << 1 << endr << 0 << endr << 1;
 	generateMask();
 
 	// Copy over the number of steps for each dimension
@@ -201,10 +225,10 @@ myEdgeData(NULL)
 				// Now find all the non-zero mask values for this point in all directions
 				for(size_t i = 0; i < myNDims; ++i)
 				{
-					if(getMaskValue(i, relativePos) != 0)
+          const double maskVal = getMaskValue(i, relativePos);
+					if(maskVal != 0)
 					{
-						edge.dimsToDo.push_back(DimDirectionPair(i, relativePos));
-						++edge.references;
+            edge.addNeighbour(DimDirectionPair(i, relativePos), maskVal);
 					}
 				}
 			}
@@ -229,6 +253,9 @@ bool EdgeMap<CompDatTyp>::update(
 	const MultiIdx<size_t> &					pos,
 	::std::vector<FinishedEdgePair > * const	finishedEdges)
 {
+  using arma::dot;
+  using std::sqrt;
+
 	const MultiIdx<size_t> idx = externalToInternal(pos);
 
 	// Get the edge
@@ -240,26 +267,32 @@ bool EdgeMap<CompDatTyp>::update(
 	// Now do comparison with neighbours
 	MultiIdx<size_t> neighPos(myNDims);
 
-	// Keep track of whether we've finished any edges completely
+	// Keep track of whether we've finished any edge points completely
 	bool finishedEdge = false;
 
+  // To hold the result of the final directions value vector divided by the mask totals
+  arma::Col<double> normValVector;
 	for(typename EdgeData::RemainingContainer::iterator it = edge.dimsToDo.begin();
-		it != edge.dimsToDo.end(); /* increment done in body */)
+		it != edge.dimsToDo.end(); /* increment in body */)
 	{
 		const DimDirectionPair & p = *it;
-		neighPos = idx;
-		neighPos += p.second;
-
+		neighPos = idx + p.second;
 		EdgeData & neighbour = (*myEdgeData)[neighPos];
 
+    // Does the neighbour have comparison data yet?
 		if(neighbour.compData)
 		{
 			DimDirectionPair reverse(p.first, -p.second);
-			const double difference = getMaskValue(p.first, p.second) * myComparator.compareStructures(*edge.compData, *neighbour.compData);
-			edge.directionValues(p.first) += difference;
-			neighbour.directionValues(p.first) -= difference;
+      // Calculate the difference between the structures
+			const double difference =
+        getMaskValue(p.first, p.second) *
+        myComparator.compareStructures(*edge.compData, *neighbour.compData);
+			edge.directionValues(p.first)       += difference;
+			neighbour.directionValues(p.first)  += difference;
 
-			typename EdgeData::RemainingContainer::iterator itNeigh = ::std::find(neighbour.dimsToDo.begin(), neighbour.dimsToDo.end(), reverse);
+      // Find ourselves amongst the neighbours neighbour list and remove
+			typename EdgeData::RemainingContainer::iterator itNeigh = 
+        std::find(neighbour.dimsToDo.begin(), neighbour.dimsToDo.end(), reverse);
 			if(itNeigh != neighbour.dimsToDo.end())
 			{
 				neighbour.dimsToDo.erase(itNeigh);
@@ -268,18 +301,19 @@ bool EdgeMap<CompDatTyp>::update(
 			{
 				throw "Neighbour reference not found, the mask should be symmetric!";
 			}
+      // Finished processing this neighbour so remove it from our neighbour list
+			it = edge.dimsToDo.erase(it);
 
 			// Drop the reference counts;
 			--edge.references;
 			--neighbour.references;
 
-			it = edge.dimsToDo.erase(it);
-
 			if(edge.references == 0 && edge.dimsToDo.empty())
 			{
 				delete edge.compData;
 				edge.compData = NULL;
-				edge.value	= ::std::sqrt(arma::dot(edge.directionValues, edge.directionValues));
+        normValVector = edge.directionValues / edge.maskTotals;
+				edge.value	= sqrt(dot(normValVector, normValVector) / myNDims);
 				if(finishedEdges)
 				{
 					finishedEdges->push_back(FinishedEdgePair(pos, edge.value));
@@ -290,7 +324,8 @@ bool EdgeMap<CompDatTyp>::update(
 			{
 				delete neighbour.compData;
 				neighbour.compData = NULL;
-				neighbour.value	= ::std::sqrt(arma::dot(neighbour.directionValues, neighbour.directionValues));
+        normValVector = neighbour.directionValues / neighbour.maskTotals;
+				neighbour.value	= sqrt(dot(normValVector, normValVector) / myNDims);
 				if(finishedEdges)
 				{
 					finishedEdges->push_back(FinishedEdgePair(internalToExternal(neighPos), neighbour.value));
@@ -302,7 +337,7 @@ bool EdgeMap<CompDatTyp>::update(
 		{
 			++it;
 		}
-	}
+	} // end for
 
 
 	return finishedEdge;
@@ -313,8 +348,10 @@ void EdgeMap<CompDatTyp>::generateMask()
 {
 	using ::sstbx::utility::Loops;
 
-	myMaskOrigin = new MultiIdx<int>(myNDims);
-	myMaskOrigin->fill(1);
+	myMaskOrigin = new MultiIdx<int>(
+    myNDims,
+    1 /*This needs to be the center of filter*/
+  );
 
 	// Create an extent for the convolution mask (size = 3^myNDims)
 	const MultiIdx<size_t> maskExtents(myNDims, 3);
@@ -323,7 +360,6 @@ void EdgeMap<CompDatTyp>::generateMask()
 	myMask = new MultiArray<double>(maskExtents);
 	myMask->fill(1);	// Fill with 1 so multiplication works
 
-  double sumSq = 0.0;
   double maskVal = 0.0;
 	for(Loops<size_t> loops(maskExtents); !loops.isAtEnd(); ++loops)
 	{
@@ -337,14 +373,6 @@ void EdgeMap<CompDatTyp>::generateMask()
       maskVal *= mySmoothing(pos[i]);
 		}
     (*myMask)[pos] = maskVal;
-    sumSq += maskVal * maskVal;
-	}
-
-  // Now normalise the entries
-  double norm = std::sqrt(sumSq);
-	for(Loops<size_t> loops(maskExtents); !loops.isAtEnd(); ++loops)
-	{
-    (*myMask)[*loops] /= norm;
 	}
 }
 

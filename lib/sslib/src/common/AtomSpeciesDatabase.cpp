@@ -56,6 +56,21 @@ void AtomSpeciesDatabase::setSymbol(const AtomSpeciesId id, const ::std::string 
 	mySymbols[id] = symbol;
 }
 
+const AtomSpeciesId AtomSpeciesDatabase::getIdFromSymbol(const std::string & symbol) const
+{
+  AtomSpeciesId id = DUMMY;
+  for(SpeciesString::const_iterator it = mySymbols.begin(), end = mySymbols.end();
+    it != end; ++it)
+  {
+    if(it->second == symbol)
+    {
+      id = it->first;
+      break;
+    }
+  }
+  return id;
+}
+
 void AtomSpeciesDatabase::setAll(
 	const AtomSpeciesId id,
 	const ::std::string & symbol,
