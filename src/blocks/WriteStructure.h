@@ -40,12 +40,6 @@ public:
 	virtual void in(spipe::common::StructureData & data);
 
 
-protected:
-
-	void generateIoData(
-		const ::spipe::common::StructureData & strData,
-		sstbx::io::AdditionalData & ioData);
-
 private:
 	const ::sstbx::io::StructureWriterManager & myWriterManager;
 };

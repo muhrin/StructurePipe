@@ -82,6 +82,7 @@ void PotentialParamSweep::start()
 		// Start the sweep pipeline
 		mySweepPipeline.start();
 
+
 		// Send any finished structure data down my pipe
 		BOOST_FOREACH(StructureDataTyp * const sweepPipeData, myBuffer)
 		{

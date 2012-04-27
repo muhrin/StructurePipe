@@ -48,7 +48,7 @@ double AbstractComparator<ComparisonData>::compareStructures(
 	const sstbx::common::Structure & str2) const
 {
 	const ComparisonData * data1 = generateComparisonData(str1);
-	const ComparisonData * data2 = generateComparisonData(str1);
+	const ComparisonData * data2 = generateComparisonData(str2);
 
 	const double outcome = compareStructures(*data1, *data2);
 
@@ -65,7 +65,7 @@ bool AbstractComparator<ComparisonData>::areSimilar(
 	const sstbx::common::Structure & str2) const
 {
 	const ComparisonData * data1 = generateComparisonData(str1);
-	const ComparisonData * data2 = generateComparisonData(str1);
+	const ComparisonData * data2 = generateComparisonData(str2);
 
 	const bool outcome = areSimilar(*data1, *data2);
 

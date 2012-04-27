@@ -12,7 +12,10 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-#include "common/SharedData.h"
+#include <map>
+#include <vector>
+
+#include <armadillo>
 
 // From SSTbx
 #include <utility/EdgeMap.h>
@@ -25,10 +28,10 @@
 #include <AbstractSimpleBlock.h>
 #include <IPipeline.h>
 
-#include <armadillo>
+// Local includes
+#include "common/StructureData.h"
+#include "common/SharedData.h"
 
-#include <map>
-#include <vector>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -89,7 +92,7 @@ EdgeDetect<CompDatTyp>::EdgeMapper::EdgeMapper(
 	const ::std::string &										filePath):
 nParams(extents.dims),
 edgeMap(new ::sstbx::utility::EdgeMap<CompDatTyp>(comparator, extents)),
-outputData(new OutputData(extents))
+outputData(new OutputData(extents, NULL))
 {
 	// Open the output file in append mode
 	outStream.open(filePath.c_str(), ::std::ios::app);
@@ -203,19 +206,20 @@ void EdgeDetect<CompDatTyp>::writeOutput(
 
 	const ::arma::vec & from = *myPipeline->getSharedData().potSweepFrom;
 	const ::arma::vec & step = *myPipeline->getSharedData().potSweepStep;
-	::arma::vec params(myCurrentEdgeMapper->nParams);
+	//::arma::vec params(myCurrentEdgeMapper->nParams);
 
 	// Go through them all and write to output file
 	BOOST_FOREACH(const FinishedEdgePair & edge, finishedEdges)
 	{
 		::spipe::common::StructureData * const data = (*myCurrentEdgeMapper->outputData)[edge.first];
+    const arma::vec & params = *data->potentialParams;
 
 		::std::ofstream & out = myCurrentEdgeMapper->outStream;
 
-		for(size_t i = 0; i < myCurrentEdgeMapper->nParams; ++i)
-		{
-			params(i) = from(i) + edge.first[i] * step(i);
-		}
+		//for(size_t i = 0; i < myCurrentEdgeMapper->nParams; ++i)
+		//{
+		//	params(i) = from(i) + edge.first[i] * step(i);
+		//}
 
 		if(out.is_open())
 		{

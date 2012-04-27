@@ -8,9 +8,6 @@
 // INCLUDES //////////////////////////////////
 #include "StructurePipe.h"
 
-#include "blocks/NiggliReduction.h"
-#include "common/SharedData.h"
-#include "common/StructureData.h"
 
 // From PipelineLib
 #include "SingleThreadedPipeline.h"
@@ -18,6 +15,8 @@
 // Temporary includes ////////
 #include <boost/any.hpp>
 
+
+// Local includes
 #include "blocks/EdgeDetect.h"
 #include "blocks/LowestFreeEnergy.h"
 #include "blocks/ParamPotentialGo.h"
@@ -26,6 +25,10 @@
 #include "blocks/RandomStructure.h"
 #include "blocks/RemoveDuplicates.h"
 #include "blocks/WriteStructure.h"
+#include "blocks/NiggliReduction.h"
+#include "common/SharedData.h"
+#include "common/StructureData.h"
+#include "common/UtilityFunctions.h"
 
 #include <build_cell/AtomsDescription.h>
 #include <build_cell/AtomGroupDescription.h>
@@ -128,7 +131,7 @@ static Key<size_t> timesFound2;
 static Key<void *> somePointer;
 
 
-int main()
+int main(const int argc, const char * const argv[])
 {
 	using namespace ::spipe;
 	using namespace arma;
@@ -156,29 +159,68 @@ int main()
 
 	//double val3 = getValue(somePointer);
 
+  // Get command line parameters
+  if(argc != 7)
+  {
+    cout << "Usage: " << argv[0] << " [6 x params, format from+delta*nsteps]" << endl;
+    return 0;
+  }
+
+	// Param sweep
+	vec from(6), step(6);
+	Col<unsigned int> steps(6);
+
+
+  double lFrom, lStep;
+  unsigned int lNSteps;
+  bool parsedParams = true;
+  for(size_t i = 0; i < 6; ++i)
+  {
+    if(spipe::common::parseParamString(argv[i + 1], lFrom, lStep, lNSteps))
+    {
+      from(i) = lFrom;
+      step(i) = lStep;
+      steps(i) = lNSteps;
+    }
+    else
+    {
+      parsedParams = false;
+      cout << "Unable to parse parameter " << i << ": " << argv[i + 1] << endl;
+      break;
+    }
+  }
+
+  if(!parsedParams)
+  {
+    return 0;
+  }
+
 	// Create the pipeline
 	SingleThreadedPipeline<StructureDataTyp, SharedDataTyp> parentPipe = SingleThreadedPipeline<StructureDataTyp, SharedDataTyp>();
 	SingleThreadedPipeline<StructureDataTyp, SharedDataTyp> & pipe = parentPipe.spawnChild();
 
 	// Set up the cell generator
 	RandomCellDescription<> cellDesc;
-	cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
-	cellDesc.setVolume(70);
+	//cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
+  cellDesc.setMaxLengthRatio(3.0);
+  cellDesc.setMinAngle(50);
+  cellDesc.setMaxAngle(140);
+	cellDesc.setVolume(25);
 	cellDesc.setVolDelta(0.2);
 	RandomCellGenerator<> cellGenerator(cellDesc);
 
 	// Set up the structure generator
 	StructureDescription strDesc;
-	AtomsDescription * const a1 = new AtomsDescription(sstbx::common::NA, 2);
-	AtomsDescription * const a2 = new AtomsDescription(sstbx::common::CL, 2);
+	AtomsDescription * const a1 = new AtomsDescription(sstbx::common::NA, 1);
+	AtomsDescription * const a2 = new AtomsDescription(sstbx::common::CL, 1);
 	strDesc.addChild(a1);
 	strDesc.addChild(a2);
-	Minsep * const minSep = new Minsep(1.5);
+	Minsep * const minSep = new Minsep(0.5);
 	strDesc.addAtomConstraint(minSep);
 	DefaultCrystalGenerator crystalGenerator(strDesc, cellGenerator);
 
 	// Set up random structure block
-	RandomStructure strBlock(10, crystalGenerator);
+	RandomStructure strBlock(100, crystalGenerator);
 
 	// Set up niggli reduction block
 	NiggliReduction niggli;
@@ -200,7 +242,7 @@ int main()
 	beta << -1 << 1 << endr
 			<< 1 << -1 << endr;
 
-	SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6);
+  SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6, SimplePairPotential<>::CUSTOM);
 	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser(potential);
 	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser2(potential);
 
@@ -237,14 +279,10 @@ int main()
 
 	using ::spipe::blocks::PotentialParamSweep;
 
-	// Set up the parent pipeline
-	// Param sweep
-	vec from(4), step(4);
-	Col<unsigned int> steps(4);
-	from << 1 << endr << 2 << endr << 2 << endr << 2;
-	step << 0 << endr << 0.05 << endr << 0.05 << endr << 0.05;
-	steps << 0 << endr << 5 << endr << 0 << endr << 2;
 	PotentialParamSweep sweep(from, step, steps, pipe);
+
+	// Set up the parent pipeline
+
 
 	// Edge detection
 	SortedDistanceComparator edgeComparator;

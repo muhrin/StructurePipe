@@ -8,16 +8,17 @@
 // INCLUDES //////////////////////////////////
 #include "StructurePipe.h"
 
-#include "blocks/WriteStructure.h"
-
-#include "common/StructureData.h"
-#include "common/UtilityFunctions.h"
+#include <boost/filesystem.hpp>
 
 // From SSTbx
 #include <io/AdditionalData.h>
 #include <io/StructureWriterManager.h>
 
-#include <boost/filesystem.hpp>
+// From local
+#include "blocks/WriteStructure.h"
+#include "common/StructureData.h"
+#include "common/UtilityFunctions.h"
+
 
 // NAMESPACES ////////////////////////////////
 
@@ -41,7 +42,7 @@ void WriteStructure::in(::spipe::common::StructureData & data)
 
 	// Create additional data to go with the structure
 	sstbx::io::AdditionalData ioData;
-	generateIoData(data, ioData);
+	generateIoDataFromStructure(data, ioData);
 	
 	// Create the path to store the structure
 	path p(*data.name + ".res");
@@ -54,32 +55,6 @@ void WriteStructure::in(::spipe::common::StructureData & data)
 	myWriterManager.writeStructure(*data.getStructure(), p, &ioData);
 
 	myOutput->in(data);
-}
-
-void WriteStructure::generateIoData(
-	const ::spipe::common::StructureData & strData,
-	sstbx::io::AdditionalData & ioData)
-{
-	if(strData.enthalpy)
-	{
-		ioData.enthalpy.reset(*strData.enthalpy);
-	}
-	if(strData.name)
-	{
-		ioData.name.reset(*strData.name);
-	}
-	if(strData.pressure)
-	{
-		ioData.pressure.reset(*strData.pressure);
-	}
-	if(strData.spaceGroup)
-	{
-		ioData.spaceGroup.reset(*strData.spaceGroup);
-	}
-	if(strData.timesFound)
-	{
-		ioData.timesFound.reset(*strData.timesFound);
-	}
 }
 
 }}

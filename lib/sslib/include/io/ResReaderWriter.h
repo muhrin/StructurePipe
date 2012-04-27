@@ -10,7 +10,7 @@
 #define RES_READER_WRITER_H
 
 // INCLUDES /////////////////////////////////////////////
-
+#include "io/IStructureReader.h"
 #include "io/IStructureWriter.h"
 
 #include <vector>
@@ -27,7 +27,9 @@ namespace sstbx
 
 namespace sstbx { namespace io {
 
-class ResReaderWriter : public IStructureWriter
+class ResReaderWriter :
+  public IStructureWriter,
+  public IStructureReader
 {
 public:
 
@@ -54,7 +56,22 @@ public:
 		const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
 		const AdditionalData * const data = NULL) const;
 
+  // From IStructureReader //
+
+  virtual void readStructure(
+		sstbx::common::Structure &      str,
+		const boost::filesystem::path & path,
+		AdditionalData * const          data = NULL) const;
+
+	virtual void readStructure(
+		sstbx::common::Structure &            str,
+		const ::boost::filesystem::path &     filepath,
+		const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
+		AdditionalData * const                data = NULL) const;
+
 	virtual ::std::vector<std::string> getSupportedFileExtensions() const;
+
+  // End from IStructureReader //
 
 };
 
