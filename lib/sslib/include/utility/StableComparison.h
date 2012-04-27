@@ -19,7 +19,7 @@ namespace sstbx {
     {
       static const double STABLE_COMP_TOL = 1e-5;
 
-      inline bool lt(const double v1, const double v2, const double prec = STABLE_COMP_TOL);
+      bool lt(const double v1, const double v2, const double prec = STABLE_COMP_TOL);
 
       bool gt(const double v1, const double v2, const double prec = STABLE_COMP_TOL);
 

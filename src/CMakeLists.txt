@@ -93,6 +93,7 @@ add_dependencies(spipe sslib)
   target_link_libraries(spipe
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
     sslib
   )
 
@@ -110,6 +111,7 @@ add_dependencies(smap sslib)
   target_link_libraries(smap
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
     sslib
   )
   
@@ -128,6 +130,7 @@ add_dependencies(sdiff sslib)
   target_link_libraries(sdiff
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
     sslib
   )
   

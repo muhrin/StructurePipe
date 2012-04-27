@@ -8,6 +8,8 @@
 // INCLUDES //////////////////////////////////
 #include "UtilityFunctions.h"
 
+#include <boost/lexical_cast.hpp>
+
 // From SSTbx
 #include <io/AdditionalData.h>
 
@@ -87,6 +89,82 @@ void generateStructureDataFromIo(
 	{
 		strData.timesFound.reset(*ioData.timesFound);
 	}
+}
+
+bool parseParamString(
+  const std::string & str,
+  double &            from,
+  double &            step,
+  unsigned int &      nSteps
+)
+{
+  using std::string;
+  using boost::lexical_cast;
+
+  if(str.empty())
+    return false;
+
+  const size_t plusPos = str.find("+");
+  const size_t timesPos = str.find("*");
+
+  string substr = str.substr(0, plusPos);
+
+  // Create our own temporaries so we don't change values if parsing is unsuccessful
+  double lFrom = 0.0;
+  double lStep = 0.0;
+  unsigned int lNSteps = 0;
+
+  // Try to get the from value
+  bool castOk = true;
+  try
+  {
+    lFrom = lexical_cast<double>(substr);
+  }
+  catch(const boost::bad_lexical_cast &)
+  {
+    castOk = false;
+  }
+
+  // Try to get step if it exists
+  if(castOk && plusPos != string::npos)
+  {
+    castOk = true;
+    const size_t plusEnd = timesPos == string::npos ? string::npos : timesPos - 1;
+    try
+    {
+      substr = str.substr(plusPos + 1, plusEnd - plusPos);
+      lStep = lexical_cast<double>(substr);
+    }
+    catch(const boost::bad_lexical_cast &)
+    {
+      castOk = false;
+    }
+
+    // Try to get nsteps if it exists
+    if(castOk && timesPos != string::npos)
+    {
+      castOk = true;
+      try
+      {
+        substr = str.substr(timesPos + 1, string::npos);
+        lNSteps = lexical_cast<unsigned int>(substr);
+      }
+      catch(const boost::bad_lexical_cast &)
+      {
+        castOk = false;
+      }
+    }
+  }
+
+  // Copy over temporaries if successful
+  if(castOk)
+  {
+    from = lFrom;
+    step = lStep;
+    nSteps = lNSteps;
+  }
+
+  return castOk;
 }
 
 }}

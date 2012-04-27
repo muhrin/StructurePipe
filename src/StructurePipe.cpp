@@ -8,9 +8,6 @@
 // INCLUDES //////////////////////////////////
 #include "StructurePipe.h"
 
-#include "blocks/NiggliReduction.h"
-#include "common/SharedData.h"
-#include "common/StructureData.h"
 
 // From PipelineLib
 #include "SingleThreadedPipeline.h"
@@ -18,6 +15,8 @@
 // Temporary includes ////////
 #include <boost/any.hpp>
 
+
+// Local includes
 #include "blocks/EdgeDetect.h"
 #include "blocks/LowestFreeEnergy.h"
 #include "blocks/ParamPotentialGo.h"
@@ -26,6 +25,10 @@
 #include "blocks/RandomStructure.h"
 #include "blocks/RemoveDuplicates.h"
 #include "blocks/WriteStructure.h"
+#include "blocks/NiggliReduction.h"
+#include "common/SharedData.h"
+#include "common/StructureData.h"
+#include "common/UtilityFunctions.h"
 
 #include <build_cell/AtomsDescription.h>
 #include <build_cell/AtomGroupDescription.h>
@@ -128,7 +131,7 @@ static Key<size_t> timesFound2;
 static Key<void *> somePointer;
 
 
-int main()
+int main(const int argc, const char * const argv[])
 {
 	using namespace ::spipe;
 	using namespace arma;
@@ -155,6 +158,42 @@ int main()
 	//myMap.insert(timesFound, (size_t)1);
 
 	//double val3 = getValue(somePointer);
+
+  // Get command line parameters
+  if(argc != 7)
+  {
+    cout << "Usage: " << argv[0] << " [6 x params, format from+delta*nsteps]" << endl;
+    return 0;
+  }
+
+	// Param sweep
+	vec from(6), step(6);
+	Col<unsigned int> steps(6);
+
+
+  double lFrom, lStep;
+  unsigned int lNSteps;
+  bool parsedParams = true;
+  for(size_t i = 0; i < 6; ++i)
+  {
+    if(spipe::common::parseParamString(argv[i + 1], lFrom, lStep, lNSteps))
+    {
+      from(i) = lFrom;
+      step(i) = lStep;
+      steps(i) = lNSteps;
+    }
+    else
+    {
+      parsedParams = false;
+      cout << "Unable to parse parameter " << i << ": " << argv[i + 1] << endl;
+      break;
+    }
+  }
+
+  if(!parsedParams)
+  {
+    return 0;
+  }
 
 	// Create the pipeline
 	SingleThreadedPipeline<StructureDataTyp, SharedDataTyp> parentPipe = SingleThreadedPipeline<StructureDataTyp, SharedDataTyp>();
@@ -240,32 +279,10 @@ int main()
 
 	using ::spipe::blocks::PotentialParamSweep;
 
-	// Set up the parent pipeline
-	// Param sweep
-	vec from(6), step(6);
-	Col<unsigned int> steps(6);
-	from
-    << 1 << endr // Epsilon
-    << 1 << endr
-    << 0 << endr
-    << 2 << endr // Sigma
-    << 2 << endr
-    << 2 << endr;
-	step
-    << 0 << endr // Epsilon
-    << 0 << endr
-    << 0.05 << endr
-    << 0 << endr // Sigma
-    << 0 << endr
-    << 0 << endr;
-	steps
-    << 0 << endr // Epsilon
-    << 0 << endr
-    << 61 << endr
-    << 0 << endr // Sigma
-    << 0 << endr
-    << 0 << endr;
 	PotentialParamSweep sweep(from, step, steps, pipe);
+
+	// Set up the parent pipeline
+
 
 	// Edge detection
 	SortedDistanceComparator edgeComparator;
