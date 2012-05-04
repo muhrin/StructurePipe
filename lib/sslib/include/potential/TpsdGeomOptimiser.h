@@ -116,6 +116,8 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 
 	// Copy the new positions back to the structure
 	structure.setAtomPositionsDescendent(data->pos);
+  // Copy over the unit cell
+  *structure.getUnitCell() = data->unitCell;
 
 	// Clean up
 	delete data;
@@ -134,6 +136,8 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 
 	// Copy the new positions back to the structure
 	structure.setAtomPositionsDescendent(geomData->pos);
+  // Copy over the unit cell
+  *structure.getUnitCell() = geomData->unitCell;
 
 	// Passing data out to caller - ownership is transferred and they
 	// should clean up!
@@ -272,7 +276,7 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 	}
 
 	// Wrap the particle positions so they stay in the central unit cell
-	data.unitCell.wrapVecsInplace(data.pos);
+	uc.wrapVecsInplace(data.pos);
 
 	return converged;
 

@@ -19,6 +19,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/foreach.hpp>
 
 #include <armadillo>
 
@@ -56,8 +57,8 @@ public:
     CUSTOM
   };
 
-	typedef SimplePairPotentialData<FloatType>					DataTyp;
-	typedef typename arma::Mat<FloatType>						Mat;
+	typedef SimplePairPotentialData<FloatType>					      DataTyp;
+	typedef typename arma::Mat<FloatType>						          Mat;
 	typedef typename arma::Col<FloatType>::template fixed<3>	Vec3;
 
 	SimplePairPotential(
@@ -88,7 +89,7 @@ public:
 		SimplePairPotentialData<FloatType> & data) const;
 
 	virtual SimplePairPotentialData<FloatType> *
-		generatePotentialData(sstbx::common::Structure & structure) const;
+		generatePotentialData(const sstbx::common::Structure & structure) const;
 
 private:
 
@@ -441,7 +442,9 @@ void SimplePairPotential<FloatType>::evalPotential(
 	FloatType rSq;
 	FloatType sigmaOModR, invRM, invRN;
 	FloatType dE, modR, modF;
-	SPP_TYPE::Vec3 r, f;
+  size_t speciesI, speciesJ;  // Species indices
+	SPP_TYPE::Vec3 r, f;        // Displacement and force vectors
+  SPP_TYPE::Vec3 posI, posJ;  // Position vectors
 
 	resetAccumulators(data);
 
@@ -452,24 +455,21 @@ void SimplePairPotential<FloatType>::evalPotential(
 	// Loop over all particle pairs (including self-interaction)
 	for(size_t i = 0; i < data.numParticles; ++i)
 	{
-		SPP_TYPE::Vec3 posI = data.pos.col(i);
-		const size_t speciesI = data.species[i];
+		posI = data.pos.col(i);
+		speciesI = data.species[i];
 
 		for(size_t j = i; j < data.numParticles; ++j)
 		{
-			const size_t speciesJ = data.species[j];
-			SPP_TYPE::Vec3 posJ = data.pos.col(j);
+			speciesJ = data.species[j];
+			posJ = data.pos.col(j);
 
 			// TODO: Configure atom species and corresponding cutoffs
+      // TODO: Buffer rSqs as getAllVectorsWithinCutoff needs to calculate it anyway!
 			imageVectors.clear();
 			uc.getAllVectorsWithinCutoff(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors);
 
-			for(typename vector< SPP_TYPE::Vec3 >::const_iterator it = imageVectors.begin(),
-				end = imageVectors.end(); it != end; ++it)
-			{
-				// Get the minimum image vector
-				r = *it;
-				
+      BOOST_FOREACH(r, imageVectors)
+			{			
 				// Get the distance squared
 				rSq = dot(r, r);
 
@@ -532,7 +532,7 @@ void SimplePairPotential<FloatType>::evalPotential(
 
 template <typename FloatType>
 SimplePairPotentialData<FloatType> * SimplePairPotential<FloatType>::generatePotentialData(
-	sstbx::common::Structure & structure) const
+	const sstbx::common::Structure & structure) const
 {
 	return new SimplePairPotentialData<FloatType>(structure);
 }

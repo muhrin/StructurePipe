@@ -39,7 +39,7 @@ public:
 		DataType & potentialData) const = 0;
 
 
-	virtual DataType * generatePotentialData(sstbx::common::Structure & structure) const = 0;
+	virtual DataType * generatePotentialData(const sstbx::common::Structure & structure) const = 0;
 };
 
 }}

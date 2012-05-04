@@ -11,6 +11,7 @@
 
 // INCLUDES /////////////////////////////////////////////
 #include "common/Structure.h"
+#include "common/AbstractFmidCell.h"
 
 #include <armadillo>
 
@@ -21,11 +22,11 @@ namespace sstbx { namespace potential {
 template <typename FloatType = double>
 struct StandardData
 {
-	StandardData(sstbx::common::Structure & structure);
+	explicit StandardData(const sstbx::common::Structure & structure);
 
-	sstbx::common::AbstractFmidCell<FloatType> & unitCell;
-	std::size_t							numParticles;
-	FloatType							totalEnthalpy;
+	sstbx::common::AbstractFmidCell<FloatType> unitCell;
+	std::size_t							        numParticles;
+	FloatType							          totalEnthalpy;
 	typename arma::Mat<FloatType>		pos;
 	typename arma::Mat<FloatType>		forces;
 	typename arma::Mat<FloatType>::template fixed<3, 3>	stressMtx;
@@ -34,7 +35,7 @@ struct StandardData
 // IMPLEMENTATION //////////////////////////////////////////
 
 template <typename FloatType>
-StandardData<FloatType>::StandardData(sstbx::common::Structure & structure):
+StandardData<FloatType>::StandardData(const sstbx::common::Structure & structure):
 unitCell(*structure.getUnitCell())
 {
 	numParticles = structure.getNumAtomsDescendent();

@@ -53,6 +53,8 @@ set(sslib_Header_Files__potential
   include/potential/SimplePairPotential.h
   include/potential/SimplePairPotentialData.h
   include/potential/StandardData.h
+  include/potential/TersoffPotential.h
+  include/potential/TersoffPotentialData.h
   include/potential/TpsdGeomOptimiser.h
 )
 source_group("Header Files\\potential" FILES ${sslib_Header_Files__potential})

@@ -10,14 +10,14 @@
 #define SIMPLE_PAIR_POTENTIAL_DATA_H
 
 // INCLUDES /////////////////////////////////////////////
-#include "StandardData.h"
-#include "common/AtomSpeciesId.h"
-#include "common/Structure.h"
+#include <map>
+#include <set>
 
 #include <armadillo>
 
-#include <map>
-#include <set>
+#include "common/AtomSpeciesId.h"
+#include "common/Structure.h"
+#include "potential/StandardData.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -29,7 +29,7 @@ namespace sstbx { namespace potential {
 template <typename FloatType = double>
 struct SimplePairPotentialData : public StandardData<FloatType>
 {
-	SimplePairPotentialData(sstbx::common::Structure & structure);
+	SimplePairPotentialData(const sstbx::common::Structure & structure);
 
 	std::vector<size_t>				species;
 
@@ -38,7 +38,7 @@ struct SimplePairPotentialData : public StandardData<FloatType>
 // IMPLEMENTATION //////////////////////////////////////////
 
 template <typename FloatType>
-SimplePairPotentialData<FloatType>::SimplePairPotentialData(sstbx::common::Structure & structure):
+SimplePairPotentialData<FloatType>::SimplePairPotentialData(const sstbx::common::Structure & structure):
 StandardData<FloatType>(structure)
 {
 	using sstbx::common::AtomSpeciesId;

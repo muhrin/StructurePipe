@@ -49,7 +49,7 @@ public:
 		const FloatType a, const FloatType b, const FloatType c,
 		const FloatType alpha, const FloatType beta, const FloatType gamma);
 
-	AbstractFmidCell(const FloatType (&latticeParams)[6]);
+	explicit AbstractFmidCell(const FloatType (&latticeParams)[6]);
 
 	/**
 	/* Get the minimum distance between two cartesian points respecting the boundary
