@@ -450,7 +450,7 @@ void SimplePairPotential<FloatType>::evalPotential(
 
 	vector<SPP_TYPE::Vec3> imageVectors;
 
-	const sstbx::common::AbstractFmidCell<FloatType> & uc = *structure.getUnitCell();
+	const sstbx::common::AbstractFmidCell<FloatType> & uc = data.unitCell;
 	
 	// Loop over all particle pairs (including self-interaction)
 	for(size_t i = 0; i < data.numParticles; ++i)

@@ -14,6 +14,7 @@
 #include "build_cell/AtomsDescription.h"
 #include "build_cell/ICellGenerator.h"
 #include "build_cell/Minsep.h"
+#include "build_cell/RandomCellDescription.h"
 #include "build_cell/StructureBuilder.h"
 #include "build_cell/StructureDescription.h"
 
@@ -25,9 +26,7 @@
 namespace sstbx { namespace build_cell {
 
 DefaultCrystalGenerator::DefaultCrystalGenerator(
-		const StructureDescription &	structureDescription,
 		const ICellGenerator<double> &	cellGenerator):
-myStructureDescription(structureDescription),
 myCellGenerator(cellGenerator),
 maxAttempts(10000)
 {
@@ -37,10 +36,9 @@ DefaultCrystalGenerator::~DefaultCrystalGenerator()
 {
 }
 
-
-
-
-::sstbx::common::Structure * const DefaultCrystalGenerator::generateStructure() const
+::sstbx::common::Structure * const DefaultCrystalGenerator::generateStructure(
+    const StructureDescription & strDesc,
+    const RandomCellDescription<double> & cellDesc) const
 {
 	using ::sstbx::common::AbstractFmidCell;
 	using ::sstbx::common::Structure;
@@ -50,13 +48,13 @@ DefaultCrystalGenerator::~DefaultCrystalGenerator()
 
 	// Create a structure builder to generate the structure tree from the
 	// description
-	StructureBuilder builder(&myStructureDescription, newStructure);
+	StructureBuilder builder(&strDesc, newStructure);
 
 	GenerationStatus outcome = NOT_STARTED;
 	for(int i = 0; i < maxAttempts; ++i)
 	{
 		// Create a new unit cell
-		AbstractFmidCell<double> * const cell = myCellGenerator.generateCell();
+		AbstractFmidCell<double> * const cell = myCellGenerator.generateCell(cellDesc);
 
 		newStructure->setUnitCell(cell);
 
@@ -76,11 +74,6 @@ DefaultCrystalGenerator::~DefaultCrystalGenerator()
 	}
 
 	return newStructure;
-}
-
-const StructureDescription & DefaultCrystalGenerator::getStructureDescription() const
-{
-	return myStructureDescription;
 }
 
 DefaultCrystalGenerator::GenerationStatus DefaultCrystalGenerator::generateAtomGroupPositions(
@@ -187,28 +180,31 @@ bool DefaultCrystalGenerator::checkConstraints(
 
 		const Minsep * const constraint = desc->getAtomConstraint<Minsep>(MINSEP);
 
-		minsep = constraint->getMinsep();
-		minsepSq = minsep * minsep;
+    if(constraint)
+    {
+		  minsep = constraint->getMinsep();
+		  minsepSq = minsep * minsep;
 
-		// Check that atom against all the others
-		for(size_t j = 0; j < i; ++j)
-		{
-			sepSq = cell->getDistanceSqMinimumImg(myAndDescendentAtoms.col(i), myAndDescendentAtoms.col(j));
-			if(sepSq < minsepSq)
-			{
-				constraintsSatisfied = false;
-				break;
-			}
-		}
-		for(size_t j = i + 1; constraintsSatisfied && j < myAndDescendentAtoms.n_cols; ++j)
-		{
-			sepSq = cell->getDistanceSqMinimumImg(myAndDescendentAtoms.col(i), myAndDescendentAtoms.col(j));
-			if(sepSq < minsepSq)
-			{
-				constraintsSatisfied = false;
-				break;
-			}
-		}
+		  // Check that atom against all the others
+		  for(size_t j = 0; j < i; ++j)
+		  {
+			  sepSq = cell->getDistanceSqMinimumImg(myAndDescendentAtoms.col(i), myAndDescendentAtoms.col(j));
+			  if(sepSq < minsepSq)
+			  {
+				  constraintsSatisfied = false;
+				  break;
+			  }
+		  }
+		  for(size_t j = i + 1; constraintsSatisfied && j < myAndDescendentAtoms.n_cols; ++j)
+		  {
+			  sepSq = cell->getDistanceSqMinimumImg(myAndDescendentAtoms.col(i), myAndDescendentAtoms.col(j));
+			  if(sepSq < minsepSq)
+			  {
+				  constraintsSatisfied = false;
+				  break;
+			  }
+		  }
+    }
 	}
 
 

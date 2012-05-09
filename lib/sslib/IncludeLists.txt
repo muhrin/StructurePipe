@@ -10,7 +10,7 @@ set(sslib_Header_Files__build_cell
   include/build_cell/IAtomConstrainable.h
   include/build_cell/ICellGenerator.h
   include/build_cell/IConstraintDescription.h
-  include/build_cell/IStructureGenerator.h
+  include/build_cell/ICrystalStructureGenerator.h
   include/build_cell/Minsep.h
   include/build_cell/RandomCellDescription.h
   include/build_cell/RandomCellGenerator.h

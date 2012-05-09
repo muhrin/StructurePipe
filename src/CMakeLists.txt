@@ -1,4 +1,6 @@
 
+## spipe/blocks/
+
 set(spipe_Header_Files__blocks
   blocks/EdgeDetect.h
   blocks/LoadPotStructures.h
@@ -28,6 +30,8 @@ set(spipe_Source_Files__blocks
 )
 source_group("Source Files\\blocks" FILES ${spipe_Source_Files__blocks})
 
+## spipe/common/
+
 set(spipe_Header_Files__common
   common/SharedData.h
   common/StructureData.h
@@ -40,6 +44,8 @@ set(spipe_Source_Files__common
   common/UtilityFunctions.cpp
 )
 source_group("Source Files\\common" FILES ${spipe_Source_Files__common})
+
+## spipe/
 
 set(spipe_Header_Files__
   StructurePipe.h
@@ -68,6 +74,66 @@ set(spipe_Files
   ${spipe_Source_Files}
 )
 
+#############################
+## MetaStructurePipe files ##
+#############################
+
+
+## mspipe/blocks
+
+set(mspipe_Header_Files__blocks
+  mspipe/blocks/ConvexHull.h
+  mspipe/blocks/RunSPipe.h
+)
+source_group("Header Files\\mspipe\blocks" FILES ${mspipe_Header_Files__blocks})
+
+set(mspipe_Source_Files__blocks
+  mspipe/blocks/ConvexHull.cpp
+  mspipe/blocks/RunSPipe.cpp
+)
+source_group("Source Files\\mspipe\blocks" FILES ${mspipe_Source_Files__blocks})
+
+## mspipe/
+
+set(mspipe_Header_Files__
+  mspipe/MetaStructurePipe.h
+  mspipe/MetaStructurePipeData.h
+  mspipe/MetaStructurePipeSharedData.h
+)
+source_group("Header Files\\mspipe" FILES ${mspipe_Header_Files__})
+
+set(mspipe_Source_Files__
+  mspipe/MetaStructurePipe.cpp
+  mspipe/MetaStructurePipeData.cpp
+)
+source_group("Source Files\\mspipe" FILES ${spipe_Source_Files__})
+
+set(mspipe_Header_Files
+  ${mspipe_Header_Files__blocks}
+  ${mspipe_Header_Files__common}
+  ${mspipe_Header_Files__}
+  ${spipe_Header_Files__blocks}
+  ${spipe_Header_Files__common}
+  ${spipe_Header_Files__}
+)
+
+set(mspipe_Source_Files
+  ${mspipe_Source_Files__blocks}
+  ${mspipe_Source_Files__common}
+  ${mspipe_Source_Files__}
+  ${spipe_Source_Files__blocks}
+  ${spipe_Source_Files__common}
+  ${spipe_Source_Files__}
+)
+
+set(mspipe_Files
+  ${mspipe_Header_Files}
+  ${mspipe_Source_Files}
+)
+
+#########################
+## Include directories ##
+#########################
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/lib/pipelib/pipelib
@@ -135,4 +201,21 @@ add_dependencies(sdiff sslib)
   )
   
 
+
+#######################
+## MetaStructurePipe ##
+#######################
+add_executable(mspipe
+  ${mspipe_Files}
+)
+
+add_dependencies(mspipe spipe)
+
+# Libraries we need to link to
+  target_link_libraries(mspipe
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+    ${ARMADILLO_LIBRARIES}
+    sslib
+  )
 

@@ -199,28 +199,28 @@ int main(const int argc, const char * const argv[])
 	SingleThreadedPipeline<StructureDataTyp, SharedDataTyp> parentPipe = SingleThreadedPipeline<StructureDataTyp, SharedDataTyp>();
 	SingleThreadedPipeline<StructureDataTyp, SharedDataTyp> & pipe = parentPipe.spawnChild();
 
-	// Set up the cell generator
-	RandomCellDescription<> cellDesc;
+	// Describe the cell
+  RandomCellDescription<> cellDesc;
 	//cellDesc.setLatticeParams(1, 1, 1, 90, 90, 90);
-  cellDesc.setMaxLengthRatio(3.0);
-  cellDesc.setMinAngle(50);
-  cellDesc.setMaxAngle(140);
-	cellDesc.setVolume(25);
-	cellDesc.setVolDelta(0.2);
-	RandomCellGenerator<> cellGenerator(cellDesc);
+  cellDesc.myMaxLengthRatio.reset(3.0);
+  cellDesc.myMinAngle.reset(50);
+  cellDesc.myMaxAngle.reset(140);
+  cellDesc.myVolume.reset(25);
+  cellDesc.myVolDelta.reset(0.2);
 
-	// Set up the structure generator
+	// Describe the structure
 	StructureDescription strDesc;
 	AtomsDescription * const a1 = new AtomsDescription(sstbx::common::NA, 1);
 	AtomsDescription * const a2 = new AtomsDescription(sstbx::common::CL, 1);
 	strDesc.addChild(a1);
 	strDesc.addChild(a2);
-	Minsep * const minSep = new Minsep(0.5);
+	Minsep * const minSep = new Minsep(1.5);
 	strDesc.addAtomConstraint(minSep);
-	DefaultCrystalGenerator crystalGenerator(strDesc, cellGenerator);
 
 	// Set up random structure block
-	RandomStructure strBlock(100, crystalGenerator);
+	RandomCellGenerator<> cellGenerator;
+	DefaultCrystalGenerator crystalGenerator(cellGenerator);
+	RandomStructure strBlock(100, crystalGenerator, &strDesc, &cellDesc);
 
 	// Set up niggli reduction block
 	NiggliReduction niggli;
@@ -242,7 +242,7 @@ int main(const int argc, const char * const argv[])
 	beta << -1 << 1 << endr
 			<< 1 << -1 << endr;
 
-  SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6, SimplePairPotential<>::CUSTOM);
+  SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6, SimplePairPotential<>::NONE);
 	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser(potential);
 	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser2(potential);
 

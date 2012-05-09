@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "StructureData.h"
+#include "common/StructureData.h"
 
 #include "common/Structure.h"
 

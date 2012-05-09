@@ -9,10 +9,16 @@
 
 #include <algorithm>
 
+#include <boost/foreach.hpp>
+
+// Local includes
 #include "build_cell/AtomConstraintDescription.h"
 #include "build_cell/AtomsDescription.h"
 
-namespace sstbx { namespace build_cell {
+namespace sstbx
+{
+namespace build_cell
+{
 
 AtomGroupDescription::AtomGroupDescription(AtomGroupDescription * const parent):
 myParent(parent)
@@ -107,6 +113,15 @@ void AtomGroupDescription::addChild(AtomGroupDescription * const group)
 	group->setParent(this);
 }
 
+void AtomGroupDescription::clearChildGroups()
+{
+  BOOST_FOREACH(AtomGroupDescription * const group, childGroups)
+  {
+    delete group;
+  }
+  childGroups.clear();
+}
+
 const std::vector<AtomsDescription *> & AtomGroupDescription::getChildAtoms() const
 {
 	return childAtoms;
@@ -119,6 +134,16 @@ void AtomGroupDescription::addChild(AtomsDescription * const atoms)
 	// Tell it that we are the new parent
 	atoms->setParent(this);
 }
+
+void AtomGroupDescription::clearChildAtoms()
+{
+  BOOST_FOREACH(AtomsDescription * const atom, childAtoms)
+  {
+    delete atom;
+  }
+  childAtoms.clear();
+}
+
 
 AtomConstraintDescription * AtomGroupDescription::getAtomConstraintInherits(const ConstraintDescriptionId id) const
 {
@@ -139,4 +164,5 @@ AtomConstraintDescription * AtomGroupDescription::getAtomConstraintInherits(cons
 	return constraint;
 }
 
-}}
+}
+}

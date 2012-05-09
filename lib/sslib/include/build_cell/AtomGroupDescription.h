@@ -19,11 +19,15 @@
 
 
 // FORWARD DECLARES ///////////
-namespace sstbx { namespace build_cell {
-	class AtomConstraintDescription;
-	class AtomsDescription;
-	class IConstraintDescription;
-}}
+namespace sstbx
+{
+  namespace build_cell
+  {
+	  class AtomConstraintDescription;
+	  class AtomsDescription;
+	  class IConstraintDescription;
+  }
+}
 
 
 namespace sstbx { namespace build_cell {
@@ -43,11 +47,15 @@ public:
 
 	void addChild(AtomGroupDescription * const childGroup);
 
+  void clearChildGroups();
+
 	/** Child atoms */
 
 	const ::std::vector<AtomsDescription *> & getChildAtoms() const;
 
 	void addChild(AtomsDescription * const childAtom);
+
+  void clearChildAtoms();
 
 	/** IAtomConstrainable */
 

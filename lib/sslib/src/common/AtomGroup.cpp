@@ -8,11 +8,14 @@
 // INCLUDES /////////////////
 #include "SSLib.h"
 
+#include <set>
+
+#include <boost/foreach.hpp>
+
+// Local includes
 #include "common/Atom.h"
 #include "common/AtomGroup.h"
 #include "common/StructureTreeEvent.h"
-
-#include <set>
 
 
 namespace sstbx { namespace common {
@@ -177,6 +180,29 @@ size_t AtomGroup::getNumAtomSpeciesDescendent() const
 	speciesSet.insert(species.begin(), species.end());
 
 	return speciesSet.size();
+}
+
+size_t AtomGroup::getNumAtomsOfSpecies(const AtomSpeciesId species) const
+{
+  size_t numAtoms = 0;
+  BOOST_FOREACH(const Atom * const a, atoms)
+  {
+    if(a->getSpecies() == species)
+      ++numAtoms;
+  }
+  return numAtoms;
+}
+
+size_t AtomGroup::getNumAtomsOfSpeciesDescendent(const AtomSpeciesId species) const
+{
+  size_t numAtoms = 0;
+  BOOST_FOREACH(const AtomGroup * const g, groups)
+  {
+    numAtoms += g->getNumAtomsOfSpeciesDescendent(species);
+  }
+  numAtoms += getNumAtomsOfSpecies(species);
+
+  return numAtoms;
 }
 
 

@@ -9,7 +9,7 @@
 #define DEFAULTCRYSTALGENERATOR_H
 
 // INCLUDES /////////////////////////////////////////////////////
-#include "IStructureGenerator.h"
+#include "ICrystalStructureGenerator.h"
 
 // FORWARD DECLARES /////////////////////////////////////////////
 namespace sstbx
@@ -28,6 +28,8 @@ namespace sstbx
 		class AtomGroupDescription;
 		template <typename FloatType>
 		class ICellGenerator;
+    template <typename FloatType>
+    class RandomCellDescription;
 		class StructureBuilder;
 		class StructureDescription;
 	}
@@ -35,25 +37,23 @@ namespace sstbx
 
 namespace sstbx { namespace build_cell {
 
-class DefaultCrystalGenerator : public IStructureGenerator
+class DefaultCrystalGenerator : public ICrystalStructureGenerator
 {
 public:
 
-	DefaultCrystalGenerator(
-		const StructureDescription &	structureDescription,
-		const ICellGenerator<double> &	cellGenerator);
+  enum GenerationStatus { SUCCESS, FAILED_MAX_ATTEMPTS, NOT_STARTED };
+
+	DefaultCrystalGenerator(const ICellGenerator<double> &	cellGenerator);
 
 	virtual ~DefaultCrystalGenerator();
-
-	enum GenerationStatus { SUCCESS, FAILED_MAX_ATTEMPTS, NOT_STARTED };
 
 	/**
 	 * Generate a cell based on the current set of constraints.
 	 *
 	 */
-	virtual ::sstbx::common::Structure * const generateStructure() const;
-
-	virtual const StructureDescription & getStructureDescription() const;
+	virtual ::sstbx::common::Structure * const generateStructure(
+    const StructureDescription & strDesc,
+    const RandomCellDescription<double> & cellDesc) const;
 
 private:
 
@@ -66,8 +66,6 @@ private:
 	 * The generator used the create the cell for the crystal.
 	 */
 	const ICellGenerator<double> & myCellGenerator;
-
-	const StructureDescription & myStructureDescription;
 
 	::sstbx::common::Structure * const generateStructure(const ::sstbx::common::AbstractFmidCell<double> * const cell) const;
 

@@ -16,13 +16,30 @@
 #include <armadillo>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
+namespace sstbx
+{
+  namespace build_cell
+  {
+    template <typename FloatType>
+    class RandomCellDescription;
+    class StructureDescription;
+  }
+}
 
-
-namespace spipe { namespace common {
+namespace spipe
+{
+namespace common
+{
 
 class SharedData
 {
 public:
+
+  SharedData():
+      structureDescription(NULL),
+      cellDescription(NULL){}
+  //~SharedData();
+
 	/** The current parameterised potential parameters */
 	::boost::optional< ::arma::vec>			potentialParams;
 
@@ -33,9 +50,14 @@ public:
 	/** Potential sweep number of steps to make */
 	::boost::optional< ::arma::Col<unsigned int> >	potSweepNSteps;
 
+  const sstbx::build_cell::StructureDescription * structureDescription;
+
+  const sstbx::build_cell::RandomCellDescription<double> * cellDescription;
+
 };
 
 
-}}
+}
+}
 
 #endif /* SHARED_DATA_H */

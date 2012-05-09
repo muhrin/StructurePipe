@@ -35,34 +35,24 @@ public:
 	static const FloatType DEFAULT_MAX_ANGLE;
 	static const FloatType MIN_RAND_LATTICE_LENGTH;
 
-	RandomCellGenerator(const RandomCellDescription<FloatType> & cellDescription);
-
-	virtual ::sstbx::common::AbstractFmidCell<FloatType> * generateCell() const;
+	virtual ::sstbx::common::AbstractFmidCell<FloatType> *
+    generateCell(const RandomCellDescription<FloatType> & cellDesc) const;
 
 private:
 
 	enum LatticeParams {A, B, C, ALPHA, BETA, GAMMA, TOTAL_PARAMS};
 
-	FloatType generateAngle() const;
+	FloatType generateAngle(const RandomCellDescription<FloatType> & cellDesc) const;
 
-	FloatType generateLength(const FloatType a, const FloatType b = 0.0) const;
+	FloatType generateLength(
+    const RandomCellDescription<FloatType> & cellDesc,
+    const FloatType a,
+    const FloatType b = 0.0) const;
 
-	FloatType generateVolume(const FloatType currentVolume) const;
+	FloatType generateVolume(
+    const RandomCellDescription<FloatType> & cellDesc,
+    const FloatType currentVolume) const;
 
-	// Volume
-	FloatType myVolume;
-	FloatType myVolDelta;
-
-	// Shape
-	FloatType myMaxLengthRatio;
-	/** Lattice lengths */
-	FloatType myA, myB, myC;
-	/** Lattice angles */
-	FloatType myAlpha, myBeta, myGamma;
-
-	// Angles
-	FloatType myMinAngle;
-	FloatType myMaxAngle;
 };
 
 }}
@@ -95,69 +85,10 @@ const FloatType RandomCellGenerator<FloatType>::DEFAULT_MAX_ANGLE = 135;
 template <typename FloatType>
 const FloatType RandomCellGenerator<FloatType>::MIN_RAND_LATTICE_LENGTH = 1e-4;
 
-template <typename FloatType>
-RandomCellGenerator<FloatType>::RandomCellGenerator(const RandomCellDescription<FloatType> & cellDescription):
-myVolume(UNSET),
-myVolDelta(UNSET),
-myMaxLengthRatio(UNSET),
-myA(UNSET),
-myB(UNSET),
-myC(UNSET),
-myAlpha(UNSET),
-myBeta(UNSET),
-myGamma(UNSET),
-myMinAngle(UNSET),
-myMaxAngle(UNSET)
-{
-	if(cellDescription.myVolume)
-	{
-		myVolume = *cellDescription.myVolume;
-	}
-	if(cellDescription.myVolDelta)
-	{
-		myVolDelta = *cellDescription.myVolDelta;
-	}
-	if(cellDescription.myMaxLengthRatio)
-	{
-		myMaxLengthRatio = *cellDescription.myMaxLengthRatio;
-	}
-	if(cellDescription.myA)
-	{
-		myA = *cellDescription.myA;
-	}
-	if(cellDescription.myB)
-	{
-		myB = *cellDescription.myB;
-	}
-	if(cellDescription.myC)
-	{
-		myC = *cellDescription.myC;
-	}
-	if(cellDescription.myAlpha)
-	{
-		myAlpha = *cellDescription.myAlpha;
-	}
-	if(cellDescription.myBeta)
-	{
-		myBeta = *cellDescription.myBeta;
-	}
-	if(cellDescription.myGamma)
-	{
-		myGamma = *cellDescription.myGamma;
-	}
-	if(cellDescription.myMinAngle)
-	{
-		myMinAngle = *cellDescription.myMinAngle;
-	}
-	if(cellDescription.myMaxAngle)
-	{
-		myMaxAngle = *cellDescription.myMaxAngle;
-	}
-}
-
 
 template <typename FloatType>
-::sstbx::common::AbstractFmidCell<FloatType> * RandomCellGenerator<FloatType>::generateCell() const
+::sstbx::common::AbstractFmidCell<FloatType> *
+RandomCellGenerator<FloatType>::generateCell(const RandomCellDescription<FloatType> & cellDesc) const
 {
 	::sstbx::common::AbstractFmidCell<FloatType> * cell = NULL;
 
@@ -165,45 +96,49 @@ template <typename FloatType>
 	double latticeParams[6];
 
 	// Set the lattice lengths
-	latticeParams[A] = myA != UNSET ? myA : 0.5;
-	latticeParams[B] = myB != UNSET ? myB : generateLength(latticeParams[A]);
-	latticeParams[C] = myC != UNSET ? myC : generateLength(latticeParams[A], latticeParams[B]);
+	latticeParams[A] = cellDesc.myA ? *cellDesc.myA : 0.5;
+	latticeParams[B] = cellDesc.myB ? *cellDesc.myB : generateLength(cellDesc, latticeParams[A]);
+	latticeParams[C] = cellDesc.myC ? *cellDesc.myC : generateLength(cellDesc, latticeParams[A], latticeParams[B]);
 
 	// Set the lattice angles
-	latticeParams[ALPHA]	= myAlpha != UNSET ? myAlpha : generateAngle();
-	latticeParams[BETA]		= myBeta != UNSET ? myBeta : generateAngle();
-	latticeParams[GAMMA]	= myGamma != UNSET ? myGamma : generateAngle();
+	latticeParams[ALPHA]	= cellDesc.myAlpha ? *cellDesc.myAlpha : generateAngle(cellDesc);
+	latticeParams[BETA]		= cellDesc.myBeta ? *cellDesc.myBeta : generateAngle(cellDesc);
+	latticeParams[GAMMA]	= cellDesc.myGamma ? *cellDesc.myGamma : generateAngle(cellDesc);
 
 	// Make sure the length ratio constraint is adhered to
-	if(myMaxLengthRatio != UNSET)
+	if(cellDesc.myMaxLengthRatio)
 	{
+    const FloatType maxLengthRatio = *cellDesc.myMaxLengthRatio;
+
 		// Find the shortest lattice vector
 		LatticeParams min = latticeParams[A] < latticeParams[B] ? A : B;
 		min = latticeParams[min] < latticeParams[C] ? min : C;
 
 		for(size_t i = A; i <= C; ++i)
 		{
-			if(i != min && (latticeParams[i]/latticeParams[min]) > myMaxLengthRatio)
+			if(i != min && (latticeParams[i]/latticeParams[min]) > maxLengthRatio)
 			{
 				// Cap the length at the maximum
-				latticeParams[i] = latticeParams[min] * myMaxLengthRatio;
+				latticeParams[i] = latticeParams[min] * maxLengthRatio;
 			}
 		}
 	}
 
 	// Make sure the min/max angle constraint is adhered to
-	if(myMinAngle != UNSET)
+	if(cellDesc.myMinAngle)
 	{
+    const FloatType minAngle = *cellDesc.myMinAngle;
 		for(size_t i = ALPHA; i <= GAMMA; ++i)
 		{
-			latticeParams[i] = latticeParams[i] < myMinAngle ? myMinAngle : latticeParams[i];
+			latticeParams[i] = latticeParams[i] < minAngle ? minAngle : latticeParams[i];
 		}
 	}
-	if(myMaxAngle != UNSET)
+	if(cellDesc.myMaxAngle)
 	{
+    const FloatType maxAngle = *cellDesc.myMaxAngle;
 		for(size_t i = ALPHA; i <= GAMMA; ++i)
 		{
-			latticeParams[i] = latticeParams[i] > myMaxAngle ? myMaxAngle : latticeParams[i];
+			latticeParams[i] = latticeParams[i] > maxAngle ? maxAngle : latticeParams[i];
 		}
 	}
 
@@ -211,34 +146,44 @@ template <typename FloatType>
 	cell = new sstbx::common::AbstractFmidCell<FloatType>(latticeParams);
 
 	// Finally set the volume
-	cell->setVolume(generateVolume(cell->getVolume()));
+	cell->setVolume(generateVolume(cellDesc, cell->getVolume()));
 
 	return cell;
 }
 
 
 template <typename FloatType>
-FloatType RandomCellGenerator<FloatType>::generateAngle() const
+FloatType
+RandomCellGenerator<FloatType>::generateAngle(
+  const RandomCellDescription<FloatType> & cellDesc) const
 {
-	return sstbx::common::randDouble(myMinAngle, myMaxAngle);
+  const FloatType min = cellDesc.myMinAngle ? *cellDesc.myMinAngle : DEFAULT_MIN_ANGLE;
+  const FloatType max = cellDesc.myMaxAngle ? *cellDesc.myMaxAngle : DEFAULT_MAX_ANGLE;
+	return sstbx::common::randDouble(min, max);
 }
 
 template <typename FloatType>
-FloatType RandomCellGenerator<FloatType>::generateLength(const FloatType a, const FloatType b) const
+FloatType RandomCellGenerator<FloatType>::generateLength(
+  const RandomCellDescription<FloatType> & cellDesc,
+  const FloatType a,
+  const FloatType b) const
 {
-	const FloatType shortest = ::std::max(a, b) / myMaxLengthRatio;
-	const FloatType longest = b == 0 ? myMaxLengthRatio * a : ::std::min(a, b) * myMaxLengthRatio;
+  const FloatType maxLengthRatio = cellDesc.myMaxLengthRatio ? *cellDesc.myMaxLengthRatio : DEFAULT_MAX_LENGTH_RATIO;
+	const FloatType shortest = ::std::max(a, b) / maxLengthRatio;
+	const FloatType longest = b == 0 ? maxLengthRatio * a : ::std::min(a, b) * maxLengthRatio;
 
 	return sstbx::common::randDouble(shortest, longest);
 }
 
 template <typename FloatType>
-FloatType RandomCellGenerator<FloatType>::generateVolume(const FloatType currentVolume) const
+FloatType RandomCellGenerator<FloatType>::generateVolume(
+  const RandomCellDescription<FloatType> & cellDesc,
+  const FloatType currentVolume) const
 {
 	// Find the target volume, the volume constraint superceeds a volume
 	// inferred by the cell definition
-	const FloatType targetVol = myVolume != UNSET ? myVolume : currentVolume;
-	const FloatType volDelta = myVolDelta != UNSET ? myVolDelta : 0.0;
+	const FloatType targetVol = cellDesc.myVolume ? *cellDesc.myVolume : currentVolume;
+	const FloatType volDelta = cellDesc.myVolDelta ? *cellDesc.myVolDelta : 0.0;
 
 	return sstbx::common::randDouble(targetVol * (1.0 - volDelta), targetVol * (1.0 + volDelta));
 }

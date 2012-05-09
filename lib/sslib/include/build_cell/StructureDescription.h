@@ -12,9 +12,13 @@
 #include "build_cell/AtomGroupDescription.h"
 
 // FORWARD DECLARES ///////////
-namespace sstbx { namespace build_cell {
-	class StructureConstraintDescription;
-}}
+namespace sstbx
+{
+  namespace build_cell
+  {
+	  class StructureConstraintDescription;
+  }
+}
 
 namespace sstbx { namespace build_cell {
 

@@ -12,13 +12,17 @@
 #include "common/UtilityFunctions.h"
 
 // From SSTbx
-#include <build_cell/DefaultCrystalGenerator.h>
+#include <build_cell/ICrystalStructureGenerator.h>
+#include <build_cell/RandomCellDescription.h>
 #include <build_cell/RandomCellGenerator.h>
 #include <common/AbstractFmidCell.h>
 #include <common/Structure.h>
 
 // From PipelineLib
 #include <IPipeline.h>
+
+// Local includes
+#include "common/SharedData.h"
 
 // NAMESPACES ////////////////////////////////
 
@@ -27,10 +31,16 @@ namespace spipe { namespace blocks {
 
 RandomStructure::RandomStructure(
 	const size_t numToGenerate,
-	const ::sstbx::build_cell::IStructureGenerator & structureGenerator):
+  const ::sstbx::build_cell::ICrystalStructureGenerator &   structureGenerator,
+  const ::sstbx::build_cell::StructureDescription * const   structureDescription,
+  const ::sstbx::build_cell::RandomCellDescription<double> * const  cellDescription):
 pipelib::Block<StructureDataTyp, SharedDataTyp>("Random structures"),
 myNumToGenerate(numToGenerate),
-myStructureGenerator(structureGenerator)
+myStructureGenerator(structureGenerator),
+myStructureDescription(structureDescription),
+myCellDescription(cellDescription),
+myUseSharedDataStructureDesc(!structureDescription),
+myUseSharedDataCellDesc(!cellDescription)
 {
 }
 
@@ -50,11 +60,14 @@ void RandomStructure::start()
 	}
 }
 
+
 void RandomStructure::in(::spipe::common::StructureData & data)
 {
-	// TODO: Check if the structure was created successfully, otherwise delete!
+  initDescriptions();
+
 	// Create the random structure
-	::sstbx::common::Structure * str = myStructureGenerator.generateStructure();
+	sstbx::common::Structure * const str =
+    myStructureGenerator.generateStructure(*myStructureDescription, *myCellDescription);
 
 	if(str)
 	{
@@ -77,4 +90,33 @@ void RandomStructure::in(::spipe::common::StructureData & data)
 	}
 }
 
-}}
+void RandomStructure::initDescriptions()
+{
+  const common::SharedData & sharedDat = myPipeline->getSharedData();
+  if(myUseSharedDataStructureDesc)
+  {
+    if(sharedDat.structureDescription)
+    {
+      myStructureDescription = sharedDat.structureDescription;
+    }
+    else
+    {
+      // TODO: Throw some kind of exception, or emit error
+    }
+  }
+
+  if(myUseSharedDataCellDesc)
+  {
+    if(sharedDat.cellDescription)
+    {
+      myCellDescription = sharedDat.cellDescription;
+    }
+    else
+    {
+      // TODO: Throw some kind of exception, or emit error
+    }
+  }
+}
+
+}
+}
