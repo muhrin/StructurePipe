@@ -1,1 +1,1 @@
-[muhrin] Checked out 9/5/2012 14:17 from http://code.google.com/p/yaml-cpp/source/checkout
+[muhrin] Downloaded on 23/05/2012 at 17:24 from https://code.google.com/p/yaml-cpp.new-api/
