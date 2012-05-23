@@ -49,11 +49,7 @@ private:
 
 	typedef ::std::map<const ::sstbx::common::Atom *, const AtomsDescription *> AtomMap;
 
-	typedef ::std::pair<const ::sstbx::common::Atom *, const AtomsDescription *> AtomMapPair;
-
 	typedef ::std::map<const ::sstbx::common::AtomGroup *, const AtomGroupDescription *> AtomGroupMap;
-
-	typedef ::std::pair<const ::sstbx::common::AtomGroup *, const AtomGroupDescription *> AtomGroupMapPair;
 
 	void buildAtomGroup(const AtomGroupDescription * groupDescription, ::sstbx::common::AtomGroup & group);
 

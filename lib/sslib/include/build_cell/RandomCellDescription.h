@@ -75,7 +75,7 @@ template <typename FloatType>
 void RandomCellDescription<FloatType>::setLatticeParams(const FloatType (&latticeParams)[6])
 {
   myA.reset(latticeParams[0]);
-	myB.reest(latticeParams[1]);
+	myB.reset(latticeParams[1]);
 	myC.reset(latticeParams[2]);
 	myAlpha.reset(latticeParams[3]);
 	myBeta.reset(latticeParams[4]);

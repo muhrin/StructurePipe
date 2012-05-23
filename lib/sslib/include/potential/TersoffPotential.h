@@ -27,7 +27,7 @@ namespace sstbx { namespace potential {
 
 template<typename FloatType = double>
 class TersoffPotential :
-	public IPotential<TersoffPotentialData<FloatType> >,
+	public IPotential,
 	public IParameterisable
 {
 public:

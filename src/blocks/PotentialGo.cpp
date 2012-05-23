@@ -18,6 +18,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <locale>
@@ -36,15 +37,12 @@ myOptimiser(optimiser)
 
 void PotentialGo::in(spipe::common::StructureData & data)
 {
-	sstbx::potential::StandardData<> * optData = NULL;
+  ::boost::shared_ptr<sstbx::potential::StandardData<> > optData;
 	myOptimiser.optimise(*data.getStructure(), optData);
 
 	// Copy over information from the optimisation results
 	data.enthalpy.reset(optData->totalEnthalpy);
 	data.stressMtx.reset(optData->stressMtx);
-
-	delete optData;
-	optData = NULL;
 
 	myOutput->in(data);
 }

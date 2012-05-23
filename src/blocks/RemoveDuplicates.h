@@ -45,10 +45,6 @@ private:
 		::sstbx::common::Structure *,
 		::spipe::common::StructureData *> StructureDataMap;
 
-	typedef ::std::pair<
-		::sstbx::common::Structure *,
-		::spipe::common::StructureData *> StructureDataMapPair;
-
 	sstbx::utility::IStructureSet & myStructureSet;
 
 	StructureDataMap	myStructureDataMap;

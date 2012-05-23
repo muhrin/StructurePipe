@@ -9,23 +9,49 @@
 
 #include "utility/SortedDistanceComparator.h"
 
-#include "common/AbstractFmidCell.h"
-#include "common/Structure.h"
+#include <boost/shared_ptr.hpp>
 
 #include <armadillo>
 
-namespace sstbx { namespace utility {
+#include "common/AbstractFmidCell.h"
+#include "common/Structure.h"
+#include "utility/GenericBufferedComparator.h"
 
-const size_t SortedDistanceComparator::MAX_CELL_MULTIPLES = 10;
-const double SortedDistanceComparator::DEFAULT_TOLERANCE = 1e-3;
+namespace sstbx
+{
+namespace utility
+{
+
+const size_t SortedDistanceComparator::MAX_CELL_MULTIPLES   = 10;
+const double SortedDistanceComparator::DEFAULT_TOLERANCE    = 1e-3;
 
 SortedDistanceComparator::SortedDistanceComparator(const double tolerance):
 myTolerance(tolerance)
 {}
 
 double SortedDistanceComparator::compareStructures(
-	const SortedDistanceComparisonData & dist1,
-	const SortedDistanceComparisonData & dist2) const
+	const sstbx::common::Structure & str1,
+	const sstbx::common::Structure & str2) const
+{
+  ::boost::shared_ptr<const SortedDistanceComparator::DataTyp> comp1(generateComparisonData(str1));
+  ::boost::shared_ptr<const SortedDistanceComparator::DataTyp> comp2(generateComparisonData(str2));
+
+  return compareStructures(*comp1, *comp2);
+}
+
+bool SortedDistanceComparator::areSimilar(
+	const sstbx::common::Structure & str1,
+	const sstbx::common::Structure & str2) const
+{
+  ::boost::shared_ptr<const SortedDistanceComparator::DataTyp> comp1(generateComparisonData(str1));
+  ::boost::shared_ptr<const SortedDistanceComparator::DataTyp> comp2(generateComparisonData(str2));
+
+  return areSimilar(*comp1, *comp2);
+}
+
+double SortedDistanceComparator::compareStructures(
+	const SortedDistanceComparator::DataTyp & dist1,
+	const SortedDistanceComparator::DataTyp & dist2) const
 {
 	using std::vector;
 
@@ -58,8 +84,8 @@ double SortedDistanceComparator::compareStructures(
 }
 
 bool SortedDistanceComparator::areSimilar(
-	const SortedDistanceComparisonData & dist1,
-	const SortedDistanceComparisonData & dist2) const
+	const SortedDistanceComparator::DataTyp & dist1,
+	const SortedDistanceComparator::DataTyp & dist2) const
 {
 	return compareStructures(dist1, dist2) < myTolerance;
 }
@@ -86,6 +112,14 @@ SortedDistanceComparator::generateComparisonData(const sstbx::common::Structure 
 	std::sort(data->sortedDistances.begin(), data->sortedDistances.end());
 
 	return data;
+}
+
+::boost::shared_ptr<SortedDistanceComparator::BufferedTyp> SortedDistanceComparator::generateBuffered() const
+{
+  //return ::boost::shared_ptr<IBufferedComparator>(new BufferedTyp(*this));
+  return ::boost::shared_ptr<IBufferedComparator>(
+    new GenericBufferedComparator<SortedDistanceComparator, SortedDistanceComparator::DataTyp>(*this)
+  );
 }
 
 void SortedDistanceComparator::populateDistanceVector(

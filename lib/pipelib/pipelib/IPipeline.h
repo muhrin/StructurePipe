@@ -66,8 +66,6 @@ public:
 	///////////////////////////////////////
 	// BARRIERS
 
-	virtual Barrier<DataType, GlobalDataType> * createBarrier() = 0;
-
 	virtual void registerBarrier(Barrier<DataType, GlobalDataType> & barrier) = 0;
 
 	virtual bool deregisterBarrier(Barrier<DataType, GlobalDataType> & barrier) = 0;

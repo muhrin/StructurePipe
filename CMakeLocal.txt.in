@@ -3,3 +3,6 @@
 # Paths to libraries #########
 set(BOOST_ROOT "" CACHE FILEPATH "")
 set(ARMADILLO_ROOT "" CACHE FILEPATH "")
+
+# Build settings
+set(SP_USE_YAML TRUE CACHE BOOL "")

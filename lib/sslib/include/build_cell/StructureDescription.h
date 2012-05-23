@@ -9,35 +9,32 @@
 #define STRUCTURE_DESCRIPTION_H
 
 // INCLUDES ///////////////////
+
+#include <boost/ptr_container/ptr_vector.hpp>
+
 #include "build_cell/AtomGroupDescription.h"
+#include "build_cell/StructureConstraintDescription.h"
 
 // FORWARD DECLARES ///////////
-namespace sstbx
-{
-  namespace build_cell
-  {
-	  class StructureConstraintDescription;
-  }
-}
 
 namespace sstbx { namespace build_cell {
 
 class StructureDescription : public AtomGroupDescription
 {
 public:
+  typedef boost::ptr_vector<StructureConstraintDescription> ConstraintsContainer;
+
 	virtual ~StructureDescription();
 
 	void addStructureConstraint(StructureConstraintDescription * const structureConstraint);	
 
-	std::vector<StructureConstraintDescription *> const & getStructureConstraints();
-
-	//CellDescription & getCellDescription();
+	ConstraintsContainer const & getStructureConstraints();
 
 protected:
 
-	std::vector<StructureConstraintDescription *> structureConstraints;
 
-	//CellDescription cellDescription;
+  ConstraintsContainer    myStructureConstraints;
+
 };
 
 }}

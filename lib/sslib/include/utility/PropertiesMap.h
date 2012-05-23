@@ -55,8 +55,6 @@ private:
 
 	typedef ::std::map<const KeySupertype *, ::boost::any> AnyMap;
 
-	typedef ::std::pair<const KeySupertype *, ::boost::any> AnyMapPair;
-
 	AnyMap myAnyMap;
 };
 
@@ -67,7 +65,7 @@ template <typename T>
 {
 	using ::std::pair;
 
-	pair<AnyMap::iterator, bool> result = myAnyMap.insert(AnyMapPair(&key, value));
+  pair<AnyMap::iterator, bool> result = myAnyMap.insert(AnyMap::value_type(&key, value));
 
 	T * const out =	result.second ?
 		&value :

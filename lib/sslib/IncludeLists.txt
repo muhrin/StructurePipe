@@ -60,8 +60,9 @@ set(sslib_Header_Files__potential
 source_group("Header Files\\potential" FILES ${sslib_Header_Files__potential})
 
 set(sslib_Header_Files__utility
-  include/utility/AbstractComparator.h
   include/utility/EdgeMap.h
+  include/utility/GenericBufferedComparator.h
+  include/utility/IBufferedComparator.h
   include/utility/IStructureComparator.h
   include/utility/IStructureSet.h
   include/utility/Loops.h

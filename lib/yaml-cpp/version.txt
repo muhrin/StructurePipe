@@ -1,0 +1,1 @@
+[muhrin] Checked out 9/5/2012 14:17 from http://code.google.com/p/yaml-cpp/source/checkout

@@ -83,20 +83,20 @@ int main(const int argc, const char * const argv[])
 	sigma << 2 << 2 << endr
 			<< 2 << 2 << endr;
 
-	Mat<int> beta;
+	Mat<double> beta;
 	beta.set_size(2, 2);
 	beta << -1 << 1 << endr
 			<< 1 << -1 << endr;
 
   SimplePairPotential<> potential(2, epsilon, sigma, 2.5, beta, 12, 6, SimplePairPotential<>::NONE);
-	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser(potential);
-	TpsdGeomOptimiser<double, SimplePairPotential<double>::DataTyp > optimiser2(potential);
+	TpsdGeomOptimiser<double> optimiser(potential);
+	TpsdGeomOptimiser<double> optimiser2(potential);
 
 	ParamPotentialGo go(potential, optimiser);
 
 	// Set up the structure comparator
 	SortedDistanceComparator comp;
-	UniqueStructureSet<SortedDistanceComparator::DataTyp> sset(comp);
+	UniqueStructureSet sset(comp);
 	RemoveDuplicates delDuplicates(sset);
 
 	// Set up a writer block
@@ -118,9 +118,9 @@ int main(const int argc, const char * const argv[])
 	pipe.connect(go, delDuplicates);
 	pipe.connect(delDuplicates, writer);
 	// Put in a barrier
-	::pipelib::Barrier<StructureDataTyp, SharedDataTyp> * barrier = pipe.createBarrier();
-	pipe.connect(writer, *barrier);
-	pipe.connect(*barrier, writer2);
+  ::pipelib::DefaultBarrier<StructureDataTyp, SharedDataTyp> barrier;
+	pipe.connect(writer, barrier);
+	pipe.connect(barrier, writer2);
 	pipe.connect(writer2, lowest);
 
   using namespace ::spipe::mspipe;

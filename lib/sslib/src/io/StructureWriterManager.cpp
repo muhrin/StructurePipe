@@ -23,7 +23,7 @@ void StructureWriterManager::registerWriter(sstbx::io::IStructureWriter &writer)
 
 	BOOST_FOREACH(string ext, writer.getSupportedFileExtensions())
 	{
-		myExtensionsMap.insert(ExtensionsMapPair(ext, &writer));
+    myExtensionsMap.insert(ExtensionsMap::value_type(ext, &writer));
 	}
 }
 
