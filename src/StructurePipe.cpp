@@ -15,6 +15,7 @@
 
 // Local includes
 #include "common/PipeBuilder.h"
+#include "common/PipeFactoryYaml.h"
 
 // MACROS ////////////////////////////////////
 

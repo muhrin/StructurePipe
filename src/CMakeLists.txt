@@ -33,13 +33,19 @@ source_group("Source Files\\blocks" FILES ${spipe_Source_Files__blocks})
 ## spipe/common/
 
 set(spipe_Header_Files__common
+  common/PipeBuilder.h
+  common/PipeFactoryYaml.h
   common/SharedData.h
+  common/SsLibFactoryYaml.h
   common/StructureData.h
   common/UtilityFunctions.h
 )
 source_group("Header Files\\common" FILES ${spipe_Header_Files__common})
 
 set(spipe_Source_Files__common
+  common/PipeBuilder.cpp
+  common/PipeFactoryYaml.cpp
+  common/SsLibFactoryYaml.cpp
   common/StructureData.cpp
   common/UtilityFunctions.cpp
 )
@@ -155,7 +161,7 @@ add_executable(spipe
   StructurePipe.cpp
 )
 
-add_dependencies(spipe sslib)
+add_dependencies(spipe sslib yaml_cpp)
 
 # Libraries we need to link to
   target_link_libraries(spipe
@@ -163,44 +169,45 @@ add_dependencies(spipe sslib)
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     ${ARMADILLO_LIBRARIES}
     sslib
+    yaml-cpp
   )
 
 ##################
 ## StructureMap ##
 ##################
-add_executable(smap
-  ${spipe_Files}
-  MakeMap.cpp
-)
+#add_executable(smap
+#  ${spipe_Files}
+#  MakeMap.cpp
+#)
 
-add_dependencies(smap sslib)
+#add_dependencies(smap sslib)
 
 # Libraries we need to link to
-  target_link_libraries(smap
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
-    ${ARMADILLO_LIBRARIES}
-    sslib
-  )
+#  target_link_libraries(smap
+#    ${Boost_FILESYSTEM_LIBRARY}
+#    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+#    ${ARMADILLO_LIBRARIES}
+#    sslib
+#  )
   
 
 ###################
 ## StructureDiff ##
 ###################
-add_executable(sdiff
-  ${spipe_Files}
-  StructureDiff.cpp
-)
+#add_executable(sdiff
+#  ${spipe_Files}
+#  StructureDiff.cpp
+#)
 
-add_dependencies(sdiff sslib)
+#add_dependencies(sdiff sslib)
 
 # Libraries we need to link to
-  target_link_libraries(sdiff
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
-    ${ARMADILLO_LIBRARIES}
-    sslib
-  )
+#  target_link_libraries(sdiff
+#    ${Boost_FILESYSTEM_LIBRARY}
+#    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+#    ${ARMADILLO_LIBRARIES}
+#    sslib
+#  )
   
 
 
@@ -219,5 +226,6 @@ add_dependencies(mspipe spipe)
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     ${ARMADILLO_LIBRARIES}
     sslib
+    yaml-cpp
   )
 

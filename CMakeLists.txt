@@ -53,6 +53,7 @@ endif()
   include_directories(
     ${Boost_INCLUDE_DIRS}
     ${ARMADILLO_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/lib/yaml-cpp/include
   )
 
 add_subdirectory(lib/pipelib)   # Pipeline library
