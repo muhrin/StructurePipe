@@ -29,7 +29,7 @@ namespace mspipe {
 namespace blocks {
 
 ConvexHullGenerator::ConvexHullGenerator():
-Block<spipe::mspipe::MspDataTyp, spipe::mspipe::MspSharedDataTyp>("Convex hull generator")
+::pipelib::Block<spipe::mspipe::MspDataTyp, spipe::mspipe::MspSharedDataTyp>("Convex hull generator")
 {}
 
 

@@ -71,7 +71,7 @@ private:
   
 
 //  ::spipe::blocks::RandomStructure *  createBlockRandomCrystal(const YAML::Node & blockNode);
-  ::pipelib::DefaultBarrier<::spipe::StructureDataTyp, ::spipe::SharedDataTyp> *
+  ::pipelib::DefaultBarrier< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp> *
     createBarrier(const YAML::Node & node);
   ::spipe::blocks::RandomStructure *  createBlockRandomCrystal(const YAML::Node & blockNode);
   ::spipe::blocks::RemoveDuplicates * createDropDuplicates(const YAML::Node & node);
@@ -89,10 +89,10 @@ private:
   /**/
   ::boost::ptr_vector<IPipelineTyp>   myPipelines;
   ::boost::ptr_vector<SpBlockTyp>     myBlocks;
-  ::boost::ptr_vector<::pipelib::DefaultBarrier<::spipe::StructureDataTyp, ::spipe::SharedDataTyp> >
+  ::boost::ptr_vector< ::pipelib::DefaultBarrier< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp> >
     myBarriers;
 
-  ::std::auto_ptr<::sstbx::io::StructureWriterManager> myStructureWriterManager;
+  ::std::auto_ptr< ::sstbx::io::StructureWriterManager> myStructureWriterManager;
 
   SsLibFactoryYaml                    mySsLibFactory;
 

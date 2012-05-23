@@ -52,11 +52,11 @@ IPipelineTyp * PipeFactoryYaml::createPipeline(const YAML::Node & pipeNode)
     if(pipeNode[kw::TYPE])
     {
       ::std::string value;    // String values buffer
-      value = pipeNode[kw::TYPE].as<::std::string>();
+      value = pipeNode[kw::TYPE].as< ::std::string>();
 
       if(value == kw::PIPELINE__SINGLE_THREADED)
       {
-        pipe = new ::pipelib::SingleThreadedPipeline<::spipe::StructureDataTyp, ::spipe::SharedDataTyp>();
+        pipe = new ::pipelib::SingleThreadedPipeline< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>();
         myPipelines.push_back(pipe);
       }
       // NOTE: Add new pipe types here with "else if" statements
@@ -74,7 +74,7 @@ SpPipeBlockTyp * PipeFactoryYaml::createBlock(const YAML::Node & blockNode)
   if(blockNode[kw::TYPE])
   {
     ::std::string sValue;    // String values buffer
-    sValue = blockNode[kw::TYPE].as<::std::string>();
+    sValue = blockNode[kw::TYPE].as< ::std::string>();
 
     if(sValue == kw::BLOCKS__NIGGLI)
     {
@@ -110,7 +110,7 @@ SpStartBlockTyp * PipeFactoryYaml::createStartBlock(const YAML::Node & blockNode
   if(blockNode[kw::TYPE])
   {
     ::std::string sValue;    // String values buffer
-    sValue = blockNode[kw::TYPE].as<::std::string>();
+    sValue = blockNode[kw::TYPE].as< ::std::string>();
 
     if(sValue == kw::BLOCKS__RANDOM_CRYSTAL)
     {
@@ -121,11 +121,11 @@ SpStartBlockTyp * PipeFactoryYaml::createStartBlock(const YAML::Node & blockNode
   return block;
 }
 
-::pipelib::DefaultBarrier<::spipe::StructureDataTyp, ::spipe::SharedDataTyp> *
+::pipelib::DefaultBarrier< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp> *
 PipeFactoryYaml::createBarrier(const YAML::Node & node)
 {
-  ::pipelib::DefaultBarrier<::spipe::StructureDataTyp, ::spipe::SharedDataTyp> * barrier
-    = new ::pipelib::DefaultBarrier<::spipe::StructureDataTyp, ::spipe::SharedDataTyp>();
+  ::pipelib::DefaultBarrier< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp> * barrier
+    = new ::pipelib::DefaultBarrier< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>();
 
   myBarriers.push_back(barrier);
 

@@ -42,7 +42,7 @@ namespace YAML {
 
   // Simple pair potential combining rules
   template<>
-  struct convert<::sstbx::potential::SimplePairPotential<double>::CombiningRule>
+  struct convert< ::sstbx::potential::SimplePairPotential<double>::CombiningRule>
   {
     typedef ::sstbx::potential::SimplePairPotential<double> Pp;
     static Node encode(const Pp::CombiningRule & rhs)
@@ -122,7 +122,7 @@ namespace YAML {
 
   // Armadillo triangular matrices
   template<>
-  struct convert<::spipe::common::ArmaTriangularMat>
+  struct convert< ::spipe::common::ArmaTriangularMat>
   {
     static Node encode(const ::spipe::common::ArmaTriangularMat & rhs)
     {

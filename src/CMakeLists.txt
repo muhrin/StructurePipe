@@ -147,6 +147,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/lib/pipelib/pipelib
   ${CMAKE_SOURCE_DIR}/lib/sslib/include
   ${CMAKE_SOURCE_DIR}/lib/sslib/src # TODO: Remove this and move sslib/src/SSLib* to include
+  ${CMAKE_SOURCE_DIR}/lib/yaml-cpp/include
 )
 
 

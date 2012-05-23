@@ -92,15 +92,15 @@ private:
   /* The factory retains ownership and will cleanly release these under the
   /* RAII idiom when the factory is destroyed.
   /**/
-  ::boost::ptr_vector<::sstbx::build_cell::RandomCellDescription<double> >    myCellDescriptions;
-  ::boost::ptr_vector<::sstbx::build_cell::ICellGenerator<double> >           myCellGenerators;
-  ::boost::ptr_vector<::sstbx::build_cell::ICrystalStructureGenerator>        myCrystalStructureGenerators;
-  ::boost::ptr_vector<::sstbx::io::IStructureWriter>                          myStructureWriters;
-  ::boost::ptr_vector<::sstbx::potential::IGeomOptimiser>                     myOptimisers;
-  ::boost::ptr_vector<::sstbx::potential::IPotential>                         myPotentials;
-  ::boost::ptr_vector<::sstbx::utility::IStructureComparator >                myStructureComparators;
-  ::boost::ptr_vector<::sstbx::utility::IStructureSet>                        myStructureSets;
-  ::boost::ptr_vector<::sstbx::build_cell::StructureDescription>              myStructureDescriptions;
+  ::boost::ptr_vector< ::sstbx::build_cell::RandomCellDescription<double> >    myCellDescriptions;
+  ::boost::ptr_vector< ::sstbx::build_cell::ICellGenerator<double> >           myCellGenerators;
+  ::boost::ptr_vector< ::sstbx::build_cell::ICrystalStructureGenerator>        myCrystalStructureGenerators;
+  ::boost::ptr_vector< ::sstbx::io::IStructureWriter>                          myStructureWriters;
+  ::boost::ptr_vector< ::sstbx::potential::IGeomOptimiser>                     myOptimisers;
+  ::boost::ptr_vector< ::sstbx::potential::IPotential>                         myPotentials;
+  ::boost::ptr_vector< ::sstbx::utility::IStructureComparator >                myStructureComparators;
+  ::boost::ptr_vector< ::sstbx::utility::IStructureSet>                        myStructureSets;
+  ::boost::ptr_vector< ::sstbx::build_cell::StructureDescription>              myStructureDescriptions;
 
 
 };

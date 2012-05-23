@@ -60,8 +60,8 @@ int main(const int argc, const char * const argv[])
   using ::sstbx::utility::UniqueStructureSet;
 
 	// Create the structure pipeline
-  SingleThreadedPipeline<::spipe::StructureDataTyp, ::spipe::SharedDataTyp> pipe =
-    SingleThreadedPipeline<::spipe::StructureDataTyp, ::spipe::SharedDataTyp>();
+  SingleThreadedPipeline< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp> pipe =
+    SingleThreadedPipeline< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>();
 
 	// Set up random structure block
 	RandomCellGenerator<> cellGenerator;

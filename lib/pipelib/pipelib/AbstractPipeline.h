@@ -411,7 +411,7 @@ template ABSTRACT_PIPELINE_TPARAMS
 void  ABSTRACT_PIPELINE_TTYPE::registerNewData(DataType * const data)
 {
 	// Create metadata
-  myData.insert(DataMap::value_type(data, MetadataType()));
+  myData.insert(typename DataMap::value_type(data, MetadataType()));
 }
 
 template ABSTRACT_PIPELINE_TPARAMS
@@ -453,7 +453,7 @@ ABSTRACT_PIPELINE_TTYPE::insertBlock(
 		const BlockMetadataType & blockMetadata)
 {
 	::std::pair<typename BlocksMap::iterator, bool> result =
-    myBlocks.insert(BlocksMap::value_type(&block, blockMetadata));
+    myBlocks.insert(typename BlocksMap::value_type(&block, blockMetadata));
 	// Was the block newly inserted?
 	if(result.second)
 		block.inserted(*this);

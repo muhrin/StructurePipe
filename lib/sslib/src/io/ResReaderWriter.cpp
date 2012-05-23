@@ -21,12 +21,20 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/version.hpp>
 
 #include <armadillo>
 
 #include <iomanip>
 #include <set>
 #include <vector>
+
+// DEFINES /////////////////////////////////
+
+/** Should we use version 2 of the boost filesystem library? */
+#if (BOOST_VERSION / 100000) <= 1 && ((BOOST_VERSION / 100) % 1000) <= 45
+#define SSLIB_USE_BOOSTFS_V2
+#endif
 
 
 // NAMESPACES ////////////////////////////////
@@ -229,7 +237,11 @@ void ResReaderWriter::readStructure(
         if(++tokIt != toker.end())
           str.setName(*tokIt);
         else
+#ifdef SSLIB_USE_BOOSTFS_V2
+          str.setName(filepath.stem());
+#else
           str.setName(filepath.stem().string());
+#endif
 
         // Does the user want additional data?
         if(data)

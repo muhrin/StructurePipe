@@ -57,11 +57,11 @@ IPipelineTyp * PipeBuilder::buildPipeFromYaml(const YAML::Node & node)
         ::std::string id;
         if(blockNode[kw::ID])
         {
-          id = blockNode[kw::ID].as<::std::string>();
+          id = blockNode[kw::ID].as< ::std::string>();
         }
         else if(blockNode[kw::TYPE])
         {
-          id = blockNode[kw::TYPE].as<::std::string>();
+          id = blockNode[kw::TYPE].as< ::std::string>();
         }
         else
         {
@@ -101,7 +101,7 @@ IPipelineTyp * PipeBuilder::buildPipeFromYaml(const YAML::Node & node)
           const YAML::Node & startNode = seqNode[0];
           if(startNode[kw::ID])
           {
-            const BlocksMapYaml::const_iterator it = blocksMap.find(startNode[kw::ID].as<::std::string>());
+            const BlocksMapYaml::const_iterator it = blocksMap.find(startNode[kw::ID].as< ::std::string>());
             if(it != blocksMap.end())
             {
               pipe->setStartBlock(*it->second);
@@ -118,7 +118,7 @@ IPipelineTyp * PipeBuilder::buildPipeFromYaml(const YAML::Node & node)
           const YAML::Node & bNode = seqNode[i];
           if(bNode[kw::ID])
           {
-            const BlocksMapYaml::const_iterator it = blocksMap.find(bNode[kw::ID].as<::std::string>());
+            const BlocksMapYaml::const_iterator it = blocksMap.find(bNode[kw::ID].as< ::std::string>());
             if(it != blocksMap.end())
             {
               currentBlock = it->second;

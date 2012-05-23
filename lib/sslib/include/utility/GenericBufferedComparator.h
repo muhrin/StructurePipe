@@ -87,10 +87,10 @@ double GenericBufferedComparator<ComparatorTyp, DataTyp>::compareStructures(
   const IBufferedComparator::DataHandle & h1,
   const IBufferedComparator::DataHandle & h2) const
 {
-  const DataMap::const_iterator end = myDataMap.end();
+  const typename DataMap::const_iterator end = myDataMap.end();
 
   // Find comparison data 1
-  DataMap::const_iterator it = myDataMap.find(h1);
+  typename DataMap::const_iterator it = myDataMap.find(h1);
   if(it == end)
   {
     // TODO: Throw
@@ -113,10 +113,10 @@ bool GenericBufferedComparator<ComparatorTyp, DataTyp>::areSimilar(
   const IBufferedComparator::DataHandle & h1,
   const IBufferedComparator::DataHandle & h2) const
 {
-  const DataMap::const_iterator end = myDataMap.end();
+  const typename DataMap::const_iterator end = myDataMap.end();
 
   // Find comparison data 1
-  DataMap::const_iterator it = myDataMap.find(h1);
+  typename DataMap::const_iterator it = myDataMap.find(h1);
   if(it == end)
   {
     // TODO: Throw
@@ -139,7 +139,7 @@ const IBufferedComparator::DataHandle
 GenericBufferedComparator<ComparatorTyp, DataTyp>::generateComparisonData(const ::sstbx::common::Structure & str)
 {
   ::boost::shared_ptr<const DataTyp> data(myComparator.generateComparisonData(str));
-  myDataMap.insert(DataMap::value_type(++myTotalData, data));
+  myDataMap.insert(typename DataMap::value_type(++myTotalData, data));
   return myTotalData;
 }
 
@@ -148,7 +148,7 @@ void
 GenericBufferedComparator<ComparatorTyp, DataTyp>::releaseComparisonData(IBufferedComparator::DataHandle & handle)
 {
   // Find comparison data
-  const DataMap::iterator it = myDataMap.find(handle);
+  const typename DataMap::iterator it = myDataMap.find(handle);
   if(it == myDataMap.end())
   {
     // TODO: Throw

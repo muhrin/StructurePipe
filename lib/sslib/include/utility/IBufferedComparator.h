@@ -34,7 +34,7 @@ namespace utility
 class IBufferedComparator
 {
 public:
-  typedef size_t DataHandle;
+  typedef unsigned int DataHandle;
   static const DataHandle UNINITIALISED;
 
   virtual ~IBufferedComparator() {}

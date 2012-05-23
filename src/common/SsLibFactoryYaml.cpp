@@ -218,7 +218,7 @@ SsLibFactoryYaml::createCellGenerator(const YAML::Node & node)
 
   if(node[kw::TYPE])
   {
-    const ::std::string generatorType = node[kw::TYPE].as<::std::string>();
+    const ::std::string generatorType = node[kw::TYPE].as< ::std::string>();
 
     if(generatorType == kw::CELL_GENERATOR__TYPE___DEFAULT)
     {
@@ -260,7 +260,7 @@ SsLibFactoryYaml::createCrystalStructureGenerator(const YAML::Node & node)
 
   if(node[kw::TYPE])
   {
-    const ::std::string generatorType = node[kw::TYPE].as<::std::string>();
+    const ::std::string generatorType = node[kw::TYPE].as< ::std::string>();
 
     if(generatorType == kw::STR_GENERATOR__TYPE___DEFAULT)
     {
@@ -290,7 +290,7 @@ ssp::IPotential * SsLibFactoryYaml::createPotential(const YAML::Node & node)
   // First check that we have the keywords that we require in this node
   checkKeyword(kw::TYPE, node);
 
-  const ::std::string potType = node[kw::TYPE].as<::std::string>();
+  const ::std::string potType = node[kw::TYPE].as< ::std::string>();
 
   if(potType == kw::POTENTIAL__TYPE___PAIR_POT)
   {
@@ -307,7 +307,7 @@ ssp::IPotential * SsLibFactoryYaml::createPotential(const YAML::Node & node)
     const ArmaTriangularMat sigma    = node[kw::POTENTIAL__PAIR_POT__S].as<ArmaTriangularMat>();
     double                  cutoff   = node[kw::POTENTIAL__PAIR_POT__CUT].as<double>();
     const ArmaTriangularMat beta     = node[kw::POTENTIAL__PAIR_POT__B].as<ArmaTriangularMat>();
-    const ::arma::vec       pow      = node[kw::POTENTIAL__PAIR_POT__POW].as<::arma::vec>();
+    const ::arma::vec       pow      = node[kw::POTENTIAL__PAIR_POT__POW].as< ::arma::vec>();
     const ssp::SimplePairPotential<double>::CombiningRule comb =
       node[kw::POTENTIAL__PAIR_POT__COMB].as<ssp::SimplePairPotential<double>::CombiningRule>();
 
@@ -350,7 +350,7 @@ ssp::IGeomOptimiser * SsLibFactoryYaml::createGeometryOptimiser(const YAML::Node
 
   ssp::IGeomOptimiser * opt = NULL;
 
-  const ::std::string type = node[kw::TYPE].as<::std::string>();
+  const ::std::string type = node[kw::TYPE].as< ::std::string>();
 
   if(type == kw::OPTIMISER__TYPE___TPSD)
   {
@@ -380,7 +380,7 @@ SsLibFactoryYaml::createStructureComparator(const YAML::Node & node)
 
   checkKeyword(kw::TYPE, node);
 
-  const ::std::string type = node[kw::TYPE].as<::std::string>();
+  const ::std::string type = node[kw::TYPE].as< ::std::string>();
 
   ssu::IStructureComparator * comparator = NULL;
 
@@ -432,7 +432,7 @@ SsLibFactoryYaml::createStructureWriter(const YAML::Node & node)
   // Check we have the required keywords
   checkKeyword(kw::TYPE, node);
 
-  const ::std::string type = node[kw::TYPE].as<::std::string>();
+  const ::std::string type = node[kw::TYPE].as< ::std::string>();
 
   ssio::IStructureWriter * writer = NULL;
   if(type == kw::STR_WRITER__TYPE___RES)
@@ -513,7 +513,7 @@ SsLibFactoryYaml::createAtomConstraintDescription(
   {
     ::std::string sValue;
     double dValue;
-    const ::std::string type = descNode[kw::TYPE].as<::std::string>();
+    const ::std::string type = descNode[kw::TYPE].as< ::std::string>();
 
     if(type == kw::STR_DESC__CONSTRAINTS__TYPE___MINSEP)
     {

@@ -9,7 +9,9 @@
 #ifndef STRUCTURE_PIPE_H
 #define STRUCTURE_PIPE_H
 
+#ifndef NULL
 #define NULL 0
+#endif
 
 #define DEBUG 1
 

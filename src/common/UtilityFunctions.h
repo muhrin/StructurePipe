@@ -11,6 +11,8 @@
 
 // INCLUDES /////////////////////////////////////////////
 
+#include <string>
+
 // Tell boost not to try to link to the date_time library as interprocess
 // only uses a portion that doesn't need compilation.
 // See: http://www.boost.org/doc/libs/1_49_0/doc/html/interprocess.html#interprocess.intro.introduction_building_interprocess
@@ -23,18 +25,18 @@
 // FORWARD DECLARES ////////////////////////////////
 namespace spipe
 {
-  namespace common
-  {
-    class StructureData;
-  }
+namespace common
+{
+class StructureData;
+}
 }
 
 namespace sstbx
 {
-  namespace io
-  {
-    struct AdditionalData;
-  }
+namespace io
+{
+struct AdditionalData;
+}
 }
 
 // DEFINES ////////////////////////////////////////

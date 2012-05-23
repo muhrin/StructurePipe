@@ -17,22 +17,26 @@
 
 #include <armadillo>
 
+// From SSLib
+#include <build_cell/StructureDescription.h>
+#include <build_cell/RandomCellDescription.h>
+
 // Local includes 
 #include "StructurePipe.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx
 {
-  namespace build_cell
-  {
-    template <typename FloatType>
-    class RandomCellDescription;
-    class StructureDescription;
-  }
-	namespace common
-	{
-		class Structure;
-	}
+namespace build_cell
+{
+template <typename FloatType>
+class RandomCellDescription;
+class StructureDescription;
+}
+namespace common
+{
+class Structure;
+}
 }
 
 namespace spipe
