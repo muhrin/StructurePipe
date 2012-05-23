@@ -1,4 +1,11 @@
+
+
 cmake_minimum_required(VERSION 2.6)
+
+set(SP_VERSION_MAJOR 0)
+set(SP_VERSION_MINOR 2)
+
+message(STATUS "Configuring StructurePipe ${SP_VERSION_MAJOR}.${SP_VERSION_MINOR}")
 
 project(StructurePipe)
 
@@ -15,9 +22,6 @@ include("${CMAKE_BINARY_DIR}/CMakeLocal.txt")
 
 # Tell CMake where to find modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/;${CMAKE_MODULE_PATH}")
-
-set(SP_VERSION_MAJOR 0)
-set(SP_VERSION_MAJOR 1)
 
 configure_file (
   "${PROJECT_SOURCE_DIR}/src/StructurePipeConfig.h.in"
@@ -51,8 +55,9 @@ endif()
     ${ARMADILLO_INCLUDE_DIRS}
   )
 
-add_subdirectory(lib/pipelib)
-add_subdirectory(lib/sslib)
+add_subdirectory(lib/pipelib)   # Pipeline library
+add_subdirectory(lib/sslib)     # Structure searching library
+add_subdirectory(lib/yaml-cpp)  # YAML library
 add_subdirectory(src ${CMAKE_BINARY_DIR}/bin)
 
 set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")

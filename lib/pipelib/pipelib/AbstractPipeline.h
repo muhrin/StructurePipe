@@ -79,7 +79,6 @@ public:
 	virtual void start();
 
 	// Barriers /////////////
-	virtual Barrier<DataType, GlobalDataType> * createBarrier();
 	virtual void registerBarrier(Barrier<DataType, GlobalDataType> & barrier);
 	virtual bool deregisterBarrier(Barrier<DataType, GlobalDataType> & barrier);
 
@@ -101,10 +100,8 @@ protected:
 
 	/** Data container types */
 	typedef typename ::std::map<DataType *, MetadataType> DataMap;
-	typedef typename ::std::pair<DataType *, MetadataType> DataMapPair;
 	/** Block metadata container types */
 	typedef typename ::std::map<Block<DataType, GlobalDataType> *, BlockMetadataType> BlocksMap;
-	typedef typename ::std::pair<Block<DataType, GlobalDataType> *, BlockMetadataType> BlocksMapPair;
 	/** Barrier container types */
 	typedef typename ::std::vector<Barrier<DataType, GlobalDataType> *> BarriersContainer;
 	/** End blocks container type */
@@ -346,13 +343,6 @@ bool ABSTRACT_PIPELINE_TTYPE::hasPathBetween(
 }
 
 template ABSTRACT_PIPELINE_TPARAMS
-pipelib::Barrier<DataType, GlobalDataType> * ABSTRACT_PIPELINE_TTYPE::createBarrier()
-{
-	DefaultBarrier<DataType, GlobalDataType> * const barrier = new DefaultBarrier<DataType, GlobalDataType>();
-	return barrier;
-}
-
-template ABSTRACT_PIPELINE_TPARAMS
 void ABSTRACT_PIPELINE_TTYPE::registerBarrier(
 	Barrier<DataType, GlobalDataType> & barrier)
 {
@@ -421,7 +411,7 @@ template ABSTRACT_PIPELINE_TPARAMS
 void  ABSTRACT_PIPELINE_TTYPE::registerNewData(DataType * const data)
 {
 	// Create metadata
-	myData.insert(DataMapPair(data, MetadataType()));
+  myData.insert(DataMap::value_type(data, MetadataType()));
 }
 
 template ABSTRACT_PIPELINE_TPARAMS
@@ -463,7 +453,7 @@ ABSTRACT_PIPELINE_TTYPE::insertBlock(
 		const BlockMetadataType & blockMetadata)
 {
 	::std::pair<typename BlocksMap::iterator, bool> result =
-		myBlocks.insert(BlocksMapPair(&block, blockMetadata));
+    myBlocks.insert(BlocksMap::value_type(&block, blockMetadata));
 	// Was the block newly inserted?
 	if(result.second)
 		block.inserted(*this);

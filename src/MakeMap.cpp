@@ -52,7 +52,7 @@ int main()
 	sigma << 2 << 2.5 << endr
 			<< 2.5 << 2 << endr;
 
-	Mat<int> beta;
+	Mat<double> beta;
 	beta.set_size(2, 2);
 	beta << -1 << 1 << endr
 			<< 1 << -1 << endr;
@@ -93,7 +93,7 @@ int main()
 
   // Edge detect
   sstbx::utility::SortedDistanceComparator comparator;
-  EdgeDetect<sstbx::utility::SortedDistanceComparator::DataTyp> edgeDetect(comparator);
+  EdgeDetect edgeDetect(comparator);
 
 
   // Build the pipeline

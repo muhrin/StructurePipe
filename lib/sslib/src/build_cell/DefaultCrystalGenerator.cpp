@@ -7,6 +7,8 @@
 
 
 // INCLUDES //////////////////////////////////////
+#include <memory>
+
 #include "build_cell/DefaultCrystalGenerator.h"
 
 #include "build_cell/AtomConstraintDescription.h"
@@ -54,9 +56,15 @@ DefaultCrystalGenerator::~DefaultCrystalGenerator()
 	for(int i = 0; i < maxAttempts; ++i)
 	{
 		// Create a new unit cell
-		AbstractFmidCell<double> * const cell = myCellGenerator.generateCell(cellDesc);
+    ::std::auto_ptr<AbstractFmidCell<double> > cell(myCellGenerator.generateCell(cellDesc));
 
-		newStructure->setUnitCell(cell);
+    // Check that the cell isn't collapsed
+    if(cell->getNormVolume() < 0.1)
+    {
+      continue;
+    }
+
+    newStructure->setUnitCell(cell.release());
 
 		// Genetate atom positions
 		outcome = generateAtomGroupPositions(builder, *newStructure);

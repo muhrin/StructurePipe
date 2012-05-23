@@ -18,18 +18,18 @@
 
 namespace sstbx
 {
-	namespace io
-	{
-		struct AdditionalData;
-		class StructureWriterManager;
-	}
+namespace io
+{
+struct AdditionalData;
+class StructureWriterManager;
+}
 }
 
 
-// TODO: Make TpsdGeomOptimiser have interface superclass that is non generic
-// so that this block does not need to be generic itself.
-
-namespace spipe { namespace blocks {
+namespace spipe
+{
+namespace blocks
+{
 
 
 class WriteStructure : public pipelib::AbstractSimpleBlock<StructureDataTyp, SharedDataTyp>
@@ -44,7 +44,8 @@ private:
 	const ::sstbx::io::StructureWriterManager & myWriterManager;
 };
 
-}}
+}
+}
 
 
 #endif /* WRITE_STRUCTURE_H */

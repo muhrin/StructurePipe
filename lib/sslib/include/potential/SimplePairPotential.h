@@ -18,17 +18,20 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 
 #include <armadillo>
 
+// Local includes
 #include "common/AbstractFmidCell.h"
 #include "common/Structure.h"
 #include "common/Utils.h"
-#include "IParameterisable.h"
-#include "IPotential.h"
-#include "SimplePairPotentialData.h"
+#include "potential/GenericPotentialEvaluator.h"
+#include "potential/IParameterisable.h"
+#include "potential/IPotential.h"
+#include "potential/SimplePairPotentialData.h"
 
 
 // FORWARD DECLARATIONS ////////////////////////////////////
@@ -37,7 +40,7 @@ namespace sstbx { namespace potential {
 
 template<typename FloatType = double>
 class SimplePairPotential :
-	public IPotential<SimplePairPotentialData<FloatType> >,
+	public IPotential,
 	public IParameterisable
 {
 public:
@@ -66,7 +69,7 @@ public:
 		const SPP_TYPE::Mat &		epsilon,
 		const SPP_TYPE::Mat &		sigma,
 		const FloatType &			  cutoffFactor,
-		const arma::Mat<int> &	beta,
+		const SPP_TYPE::Mat &	  beta,
 		const FloatType &			  m,
 		const FloatType &			  n,
     const CombiningRule     combiningRule = NONE);
@@ -84,20 +87,21 @@ public:
 
 	// End IParameterisable //////////////////////////////////////////
 
-	virtual void evalPotential(
-		const sstbx::common::Structure & structure,
-		SimplePairPotentialData<FloatType> & data) const;
 
-	virtual SimplePairPotentialData<FloatType> *
-		generatePotentialData(const sstbx::common::Structure & structure) const;
+  // From IPotential /////////////
+  virtual ::boost::shared_ptr<IPotentialEvaluator> createEvaluator(const sstbx::common::Structure & structure) const;
+  // End from IPotential
+
+  void evaluate(SimplePairPotentialData<FloatType> & data) const;
 
 private:
+
+  typedef GenericPotentialEvaluator<SimplePairPotential<FloatType>, SimplePairPotentialData<FloatType> >
+    EvaluatorTyp;
 
 	void initCutoff(const FloatType cutoff);
 
   void applyCombiningRule();
-
-	//void initEpsilonSigmaFromDiagonals();
 
 	void resetAccumulators(SimplePairPotentialData<FloatType> & data) const;
 
@@ -106,11 +110,11 @@ private:
 	mutable ::std::string	myParamString;
 
 	/** Potential parameters */
-	size_t					myNumSpecies;
+	size_t					  myNumSpecies;
 	SPP_TYPE::Mat			myEpsilon;
 	SPP_TYPE::Mat			mySigma;
-	arma::Mat<int>			myBeta;
-  const double        myCutoffFactor;
+	SPP_TYPE::Mat			myBeta;
+  const double      myCutoffFactor;
 
 	/** The powers of the sigma/r terms in the potential */
 	FloatType				myN, myM;
@@ -127,14 +131,14 @@ private:
 
 template <typename FloatType>
 SimplePairPotential<FloatType>::SimplePairPotential(
-	const size_t &				numSpecies,
+	const size_t &				  numSpecies,
 	const SPP_TYPE::Mat &		epsilon,
 	const SPP_TYPE::Mat &		sigma,
-	const FloatType &			cutoffFactor,
-	const arma::Mat<int> &		beta,
-	const FloatType &			m,
-	const FloatType &			n,
-  const CombiningRule   combiningRule):
+	const FloatType &			  cutoffFactor,
+	const SPP_TYPE::Mat &		beta,
+	const FloatType &			  m,
+	const FloatType &			  n,
+  const CombiningRule     combiningRule):
 	myName("Simple pair potential"),
 	myNumSpecies(numSpecies),
 	myEpsilon(epsilon),
@@ -432,8 +436,7 @@ const ::std::string & SimplePairPotential<FloatType>::getParamString() const
 }
 
 template<typename FloatType>
-void SimplePairPotential<FloatType>::evalPotential(
-	const sstbx::common::Structure & structure,
+void SimplePairPotential<FloatType>::evaluate(
 	SimplePairPotentialData<FloatType> & data) const
 {
 	using namespace arma;
@@ -531,11 +534,16 @@ void SimplePairPotential<FloatType>::evalPotential(
 }
 
 template <typename FloatType>
-SimplePairPotentialData<FloatType> * SimplePairPotential<FloatType>::generatePotentialData(
-	const sstbx::common::Structure & structure) const
+::boost::shared_ptr<IPotentialEvaluator>
+  SimplePairPotential<FloatType>::createEvaluator(const sstbx::common::Structure & structure) const
 {
-	return new SimplePairPotentialData<FloatType>(structure);
+  // Build the data from the structure
+  ::boost::shared_ptr<SimplePairPotentialData<FloatType> > data(new SimplePairPotentialData<FloatType>(structure));
+
+  // Create the evaluator
+  return ::boost::shared_ptr<IPotentialEvaluator>(new EvaluatorTyp(*this, data));
 }
+
 
 template <typename FloatType>
 void SimplePairPotential<FloatType>::resetAccumulators(SimplePairPotentialData<FloatType> & data) const

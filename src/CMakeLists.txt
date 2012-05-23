@@ -33,13 +33,23 @@ source_group("Source Files\\blocks" FILES ${spipe_Source_Files__blocks})
 ## spipe/common/
 
 set(spipe_Header_Files__common
+  common/FactoryError.h
+  common/PipeBuilder.h
+  common/PipeFactoryYaml.h
   common/SharedData.h
+  common/SsLibFactoryYaml.h
+  common/SsLibYamlKeywords.h
   common/StructureData.h
   common/UtilityFunctions.h
+  common/YamlCommon.h
+  common/YamlKeywords.h
 )
 source_group("Header Files\\common" FILES ${spipe_Header_Files__common})
 
 set(spipe_Source_Files__common
+  common/PipeBuilder.cpp
+  common/PipeFactoryYaml.cpp
+  common/SsLibFactoryYaml.cpp
   common/StructureData.cpp
   common/UtilityFunctions.cpp
 )
@@ -82,16 +92,18 @@ set(spipe_Files
 ## mspipe/blocks
 
 set(mspipe_Header_Files__blocks
-  mspipe/blocks/ConvexHull.h
+  mspipe/blocks/StoichiometrySearch.h
+  mspipe/blocks/ConvexHullGenerator.h
   mspipe/blocks/RunSPipe.h
 )
-source_group("Header Files\\mspipe\blocks" FILES ${mspipe_Header_Files__blocks})
+source_group("Header Files\\mspipe\\blocks" FILES ${mspipe_Header_Files__blocks})
 
 set(mspipe_Source_Files__blocks
-  mspipe/blocks/ConvexHull.cpp
+  mspipe/blocks/StoichiometrySearch.cpp
+  mspipe/blocks/ConvexHullGenerator.cpp
   mspipe/blocks/RunSPipe.cpp
 )
-source_group("Source Files\\mspipe\blocks" FILES ${mspipe_Source_Files__blocks})
+source_group("Source Files\\mspipe\\blocks" FILES ${mspipe_Source_Files__blocks})
 
 ## mspipe/
 
@@ -138,6 +150,7 @@ set(mspipe_Files
 include_directories(
   ${CMAKE_SOURCE_DIR}/lib/pipelib/pipelib
   ${CMAKE_SOURCE_DIR}/lib/sslib/include
+  ${CMAKE_SOURCE_DIR}/lib/yaml-cpp/include
   ${CMAKE_SOURCE_DIR}/lib/sslib/src # TODO: Remove this and move sslib/src/SSLib* to include
 )
 
@@ -160,6 +173,7 @@ add_dependencies(spipe sslib)
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     ${ARMADILLO_LIBRARIES}
+    yaml-cpp
     sslib
   )
 
@@ -178,6 +192,7 @@ add_dependencies(smap sslib)
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     ${ARMADILLO_LIBRARIES}
+    yaml-cpp
     sslib
   )
   
@@ -197,6 +212,7 @@ add_dependencies(sdiff sslib)
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     ${ARMADILLO_LIBRARIES}
+    yaml-cpp
     sslib
   )
   
@@ -216,6 +232,7 @@ add_dependencies(mspipe spipe)
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
     ${ARMADILLO_LIBRARIES}
+    yaml-cpp
     sslib
   )
 
