@@ -12,34 +12,35 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StandardData.h"
 
+#include <boost/smart_ptr.hpp>
+
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx
 {
-	namespace common
-	{
-		class Structure;
-	}
-	namespace potential
-	{
-		class IPotentialInfo;
-	}
+namespace common
+{
+class Structure;
+}
+namespace potential
+{
+class IPotentialInfo;
+class IPotentialEvaluator;
+}
 }
 
-namespace sstbx { namespace potential {
+namespace sstbx
+{
+namespace potential
+{
 
-template <class DataType = StandardData<> >
 class IPotential
 {
 public:
 
 	virtual ~IPotential() {}
 
-	virtual void evalPotential(
-		const sstbx::common::Structure & structure,
-		DataType & potentialData) const = 0;
-
-
-	virtual DataType * generatePotentialData(const sstbx::common::Structure & structure) const = 0;
+  virtual ::boost::shared_ptr<IPotentialEvaluator>
+    createEvaluator(const sstbx::common::Structure & structure) const = 0;
 };
 
 }}

@@ -18,15 +18,15 @@
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx
 {
-	namespace common
-	{
-		class Structure;
-	}
-	namespace io
-	{
-		struct AdditionalData;
-		class IStructureWriter;
-	}
+namespace common
+{
+class Structure;
+}
+namespace io
+{
+struct AdditionalData;
+class IStructureWriter;
+}
 }
 
 
@@ -49,7 +49,6 @@ public:
 protected:
 
 	typedef ::std::map<std::string, IStructureWriter *> ExtensionsMap;
-	typedef ::std::pair<std::string, IStructureWriter *> ExtensionsMapPair;
 
 	ExtensionsMap	myExtensionsMap;
 };

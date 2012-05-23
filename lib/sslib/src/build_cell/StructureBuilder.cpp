@@ -7,6 +7,8 @@
 
 #include "build_cell/StructureBuilder.h"
 
+#include <boost/foreach.hpp>
+
 #include "build_cell/AtomsDescription.h"
 #include "build_cell/AtomGroupDescription.h"
 #include "build_cell/Minsep.h"
@@ -72,31 +74,31 @@ void StructureBuilder::buildAtomGroup(
 	using ::sstbx::common::AtomGroup;
 
 	// First create the atoms
-	const vector<AtomsDescription *> & atoms = groupDescription->getChildAtoms();
-	for(vector<AtomsDescription *>::const_iterator it = atoms.begin(), end = atoms.end();
-		it != end; ++it)
+  const AtomGroupDescription::AtomsContainer & atoms =
+    groupDescription->getChildAtoms();
+
+  BOOST_FOREACH(const AtomsDescription & desc, atoms)
 	{
-		const AtomsDescription * desc = *it;
-		for(size_t i = 0; i < desc->getCount(); ++i)
+		for(size_t i = 0; i < desc.getCount(); ++i)
 		{
-			Atom * const a = new Atom(desc->getSpecies());
+			Atom * const a = new Atom(desc.getSpecies());
 			group.insertAtom(a);
 			// Add it to the map
-			myAtomsMap[a] = desc;
+			myAtomsMap[a] = &desc;
 		}
 	}
 
 	// And now any child groups
-	const vector<AtomGroupDescription *> & groups = groupDescription->getChildGroups();
-	for(vector<AtomGroupDescription *>::const_iterator it = groups.begin(), end = groups.end();
-		it != end; ++it)
-	{
-		AtomGroupDescription * desc = *it;
+  const AtomGroupDescription::GroupsContainer & groups =
+    groupDescription->getChildGroups();
+
+  BOOST_FOREACH(const AtomGroupDescription & desc, groups)
+  {
 		AtomGroup * childGroup = new AtomGroup();
 		group.insertGroup(childGroup);
 		// Add it to the map
-		myAtomGroupsMap[childGroup] =  desc;
-		buildAtomGroup(desc, *childGroup);
+		myAtomGroupsMap[childGroup] =  &desc;
+		buildAtomGroup(&desc, *childGroup);
 	}
 }
 

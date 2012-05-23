@@ -13,7 +13,10 @@
 
 // FORWARD DECLARATIONS ///////
 
-namespace sstbx { namespace common {
+namespace sstbx
+{
+namespace common
+{
 
 enum AtomSpeciesId
 {
@@ -28,7 +31,8 @@ enum AtomSpeciesId
 	CUSTOM_5
 };
 
-}}
+}
+}
 
 
 #endif /* ATOM_SPECIES_IDS_H */

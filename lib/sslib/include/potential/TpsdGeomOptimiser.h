@@ -10,50 +10,53 @@
 #define TPSD_GEOM_OPTIMISER_H
 
 // INCLUDES /////////////////////////////////////////////
-#include "IGeomOptimiser.h"
-#include "IPotential.h"
-
-#include "common/Structure.h"
+#include <limits>
 
 #include <armadillo>
 
-#include <limits>
+#include "potential/IGeomOptimiser.h"
+#include "potential/IPotential.h"
+#include "potential/IPotentialEvaluator.h"
+
+#include "common/Structure.h"
 
 // DEFINES //////////////////////////////////////////////
-#define TPSD_GEOM_OPTIMISER_TPARAMS	<typename FloatType, class DataType>
-#define TPSD_GEOM_OPTIMISER_TTYPE	TpsdGeomOptimiser<FloatType, DataType>
+#define TPSD_GEOM_OPTIMISER_TPARAMS	<typename FloatType>
+#define TPSD_GEOM_OPTIMISER_TTYPE	TpsdGeomOptimiser<FloatType>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
-namespace sstbx { namespace potential {
+namespace sstbx
+{
+namespace potential
+{
 
-template <typename FloatType = double, class DataType = StandardData<FloatType> >
+template <typename FloatType = double>
 class TpsdGeomOptimiser : public IGeomOptimiser
 {
 public:
 	TpsdGeomOptimiser(
-		const IPotential<DataType> & potential,
+		const IPotential & potential,
 		const size_t maxSteps = DEFAULT_MAX_STEPS,
 		const FloatType tolerance = DEFAULT_TOLERANCE,
     const FloatType minNormVolume = DEFAULT_MIN_NORM_VOLUME);
 
 	// IGeomOptimiser interface //////////////////////////////
 
-	virtual const IPotential<DataType> & getPotential() const;
+	virtual const IPotential & getPotential() const;
 
 	virtual bool optimise(::sstbx::common::Structure & structure) const;
 
 	virtual bool optimise(
 		::sstbx::common::Structure & structure,
-		StandardData<FloatType> * & data) const;
+    ::boost::shared_ptr<StandardData<FloatType> > & data) const;
 
 	// End IGeomOptimiser interface
 
 	bool optimise(
-		::sstbx::common::Structure & structure,
-		DataType & data,
-		const size_t maxSteps,
-		const FloatType eTol) const;
+    IPotentialEvaluator & evaluator,
+		const size_t          maxSteps,
+		const FloatType       eTol) const;
 
 	static const size_t		DEFAULT_MAX_STEPS;
 	static const FloatType	DEFAULT_TOLERANCE;
@@ -63,7 +66,7 @@ public:
 
 private:
 
-	const IPotential<DataType> & myPotential;
+	const IPotential & myPotential;
 
 	const size_t		myMaxSteps;
 	const FloatType		myTolerance;
@@ -91,7 +94,7 @@ const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_CELL_ANGLE_THRESHOLD = 15;
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
 TPSD_GEOM_OPTIMISER_TTYPE::TpsdGeomOptimiser(
-	const IPotential<DataType> & potential,
+	const IPotential & potential,
 	const size_t maxSteps,
 	const FloatType tolerance,
   const FloatType minNormVolume):
@@ -102,7 +105,7 @@ myMinNormVolume(minNormVolume)
 {}
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
-const IPotential<DataType> & TPSD_GEOM_OPTIMISER_TTYPE::getPotential() const
+const IPotential & TPSD_GEOM_OPTIMISER_TTYPE::getPotential() const
 {
 	return myPotential;
 }
@@ -111,52 +114,55 @@ template TPSD_GEOM_OPTIMISER_TPARAMS
 bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 	::sstbx::common::Structure & structure) const
 {
-	DataType * data = myPotential.generatePotentialData(structure);
-	const bool outcome = optimise(structure, *data, DEFAULT_MAX_STEPS, DEFAULT_TOLERANCE);
+  ::boost::shared_ptr<IPotentialEvaluator> evaluator = myPotential.createEvaluator(structure);
+
+	const bool outcome = optimise(*evaluator, DEFAULT_MAX_STEPS, DEFAULT_TOLERANCE);
+
+  ::boost::shared_ptr<StandardData<FloatType> > data = evaluator->getData();
 
 	// Copy the new positions back to the structure
 	structure.setAtomPositionsDescendent(data->pos);
+
   // Copy over the unit cell
   *structure.getUnitCell() = data->unitCell;
 
-	// Clean up
-	delete data;
-	data = NULL;
-
 	return outcome;
 }
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
 bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 	::sstbx::common::Structure & structure,
-	StandardData<FloatType> * & data) const
+	::boost::shared_ptr<StandardData<FloatType> > & data) const
 {
-	DataType * const geomData = myPotential.generatePotentialData(structure);
-	const bool outcome = optimise(structure, *geomData, DEFAULT_MAX_STEPS, DEFAULT_TOLERANCE);
+  ::boost::shared_ptr<IPotentialEvaluator> evaluator = myPotential.createEvaluator(structure);
+
+	const bool outcome = optimise(*evaluator, DEFAULT_MAX_STEPS, DEFAULT_TOLERANCE);
+
+  data = evaluator->getData();
 
 	// Copy the new positions back to the structure
-	structure.setAtomPositionsDescendent(geomData->pos);
-  // Copy over the unit cell
-  *structure.getUnitCell() = geomData->unitCell;
+	structure.setAtomPositionsDescendent(data->pos);
 
-	// Passing data out to caller - ownership is transferred and they
-	// should clean up!
-	data = geomData;
+  // Copy over the unit cell
+  *structure.getUnitCell() = data->unitCell;
+
 	return outcome;
 }
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
 bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
-	::sstbx::common::Structure & structure,
-	DataType & data,
-	const size_t maxSteps,
-	const FloatType eTol) const
+    IPotentialEvaluator & evaluator,
+		const size_t          maxSteps,
+		const FloatType       eTol) const
 {
 	using namespace arma;
 
 	typedef typename arma::Col<FloatType>::template fixed<3>	Vec3;
 	typedef typename arma::Mat<FloatType>						Mat3;
 	typedef typename arma::Mat<FloatType>::template fixed<3, 3>	Mat33;
+
+  // Get data about the structure to be optimised
+  StandardData<FloatType> & data = *evaluator.getData();
 
 	FloatType h, h0, dH;
 
@@ -200,7 +206,7 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 		volumeSq	= volume * volume;
 
 		// Evaluate the potential
-		myPotential.evalPotential(structure, data);
+		evaluator.evalPotential();
 
 		// Now balance forces
 		// (do sum of values for each component and divide by number of particles)

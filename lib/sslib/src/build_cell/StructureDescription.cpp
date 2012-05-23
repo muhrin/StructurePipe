@@ -11,27 +11,25 @@
 #include "build_cell/AtomsDescription.h"
 #include "build_cell/StructureConstraintDescription.h"
 
-namespace sstbx { namespace build_cell {
+namespace sstbx
+{
+namespace build_cell
+{
 
 StructureDescription::~StructureDescription()
-{
-	using std::vector;
+{}
 
-	for(vector<StructureConstraintDescription *>::iterator it = structureConstraints.begin(),
-		end = structureConstraints.end(); it != end; ++it)
-	{
-		delete *it;
-	}
+void StructureDescription::addStructureConstraint(
+  StructureConstraintDescription * const structureConstraint)
+{
+	myStructureConstraints.push_back(structureConstraint);
 }
 
-void StructureDescription::addStructureConstraint(StructureConstraintDescription * const structureConstraint)
+const StructureDescription::ConstraintsContainer &
+StructureDescription::getStructureConstraints()
 {
-	structureConstraints.push_back(structureConstraint);
+	return myStructureConstraints;
 }
 
-::std::vector<StructureConstraintDescription *> const & StructureDescription::getStructureConstraints()
-{
-	return structureConstraints;
 }
-
-}}
+}

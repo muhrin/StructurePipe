@@ -25,29 +25,17 @@ myParent(parent)
 {}
 
 AtomGroupDescription::~AtomGroupDescription()
-{
-	// First delete all our child groups
-	while(!childGroups.empty())
-	{
-		delete childGroups.back();
-		childGroups.pop_back();
-	}
-	// Now delete all our atoms
-	while(!childAtoms.empty())
-	{
-		delete childAtoms.back();
-		childAtoms.pop_back();
-	}
-}
+{}
 
 void AtomGroupDescription::setParent(AtomGroupDescription * const parent)
 {
 	myParent = parent;
 }
 
-AtomConstraintDescription * AtomGroupDescription::getAtomConstraint(const ConstraintDescriptionId id) const
+const AtomConstraintDescription *
+AtomGroupDescription::getAtomConstraint(const ConstraintDescriptionId id) const
 {
-	AtomConstraintDescription * constraint = 0;
+	const AtomConstraintDescription * constraint = 0;
 
 	AtomCMap::const_iterator it = myAtomConstraints.find(id);
 	if(it != myAtomConstraints.end())
@@ -84,15 +72,18 @@ CType * AtomGroupDescription::getAtomConstraint(const ConstraintDescriptionId id
 
 void AtomGroupDescription::addAtomConstraint(AtomConstraintDescription * const atomConstraint)
 {
-	myAtomConstraints.insert(AtomCMapPair(atomConstraint->getType(), atomConstraint));
+  SSE_ASSERT(atomConstraint);
+
+  myAtomConstraints.insert(atomConstraint->getType(), atomConstraint);
 }
 
-const std::vector<AtomGroupDescription *> & AtomGroupDescription::getChildGroups() const
+const AtomGroupDescription::GroupsContainer &
+AtomGroupDescription::getChildGroups() const
 {
-	return childGroups;
+	return myChildGroups;
 }
 
-bool AtomGroupDescription::removeAtomConstraint(AtomConstraintDescription * const atomConstraint)
+bool AtomGroupDescription::removeAtomConstraint(const AtomConstraintDescription * const atomConstraint)
 {
 	AtomCMap::iterator it =	myAtomConstraints.find(atomConstraint->getType());
 
@@ -107,7 +98,7 @@ bool AtomGroupDescription::removeAtomConstraint(AtomConstraintDescription * cons
 void AtomGroupDescription::addChild(AtomGroupDescription * const group)
 {
 	// Add this child group to our vector of children
-	childGroups.push_back(group);
+	myChildGroups.push_back(group);
 
 	// Tell it that we are the new parent
 	group->setParent(this);
@@ -115,21 +106,18 @@ void AtomGroupDescription::addChild(AtomGroupDescription * const group)
 
 void AtomGroupDescription::clearChildGroups()
 {
-  BOOST_FOREACH(AtomGroupDescription * const group, childGroups)
-  {
-    delete group;
-  }
-  childGroups.clear();
+  myChildGroups.clear();
 }
 
-const std::vector<AtomsDescription *> & AtomGroupDescription::getChildAtoms() const
+const AtomGroupDescription::AtomsContainer &
+AtomGroupDescription::getChildAtoms() const
 {
-	return childAtoms;
+	return myChildAtoms;
 }
 
 void AtomGroupDescription::addChild(AtomsDescription * const atoms)
 {
-	childAtoms.push_back(atoms);
+	myChildAtoms.push_back(atoms);
 
 	// Tell it that we are the new parent
 	atoms->setParent(this);
@@ -137,17 +125,14 @@ void AtomGroupDescription::addChild(AtomsDescription * const atoms)
 
 void AtomGroupDescription::clearChildAtoms()
 {
-  BOOST_FOREACH(AtomsDescription * const atom, childAtoms)
-  {
-    delete atom;
-  }
-  childAtoms.clear();
+  myChildAtoms.clear();
 }
 
 
-AtomConstraintDescription * AtomGroupDescription::getAtomConstraintInherits(const ConstraintDescriptionId id) const
+const AtomConstraintDescription *
+AtomGroupDescription::getAtomConstraintInherits(const ConstraintDescriptionId id) const
 {
-	AtomConstraintDescription * constraint = 0;
+	const AtomConstraintDescription * constraint = 0;
 
 	// Try to find the constraint amongst my constraints
 	AtomCMap::const_iterator it = myAtomConstraints.find(id);

@@ -27,9 +27,10 @@ mySpecies(species),
 count(count)
 {}
 
-AtomConstraintDescription * AtomsDescription::getAtomConstraint(const ConstraintDescriptionId id) const
+const AtomConstraintDescription *
+AtomsDescription::getAtomConstraint(const ConstraintDescriptionId id) const
 {
-	AtomConstraintDescription * constraint = 0;
+	const AtomConstraintDescription * constraint = 0;
 
 	AtomCMap::const_iterator it = myAtomConstraints.find(id);
 	if(it != myAtomConstraints.end())
@@ -47,10 +48,10 @@ AtomConstraintDescription * AtomsDescription::getAtomConstraint(const Constraint
 
 void AtomsDescription::addAtomConstraint(AtomConstraintDescription * const atomConstraint)
 {
-	myAtomConstraints.insert(AtomCMapPair(atomConstraint->getType(), atomConstraint));
+	myAtomConstraints.insert(atomConstraint->getType(), atomConstraint);
 }
 
-bool AtomsDescription::removeAtomConstraint(AtomConstraintDescription * const atomConstraint)
+bool AtomsDescription::removeAtomConstraint(const AtomConstraintDescription * const atomConstraint)
 {
 	AtomCMap::iterator it =	myAtomConstraints.find(atomConstraint->getType());
 
