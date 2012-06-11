@@ -84,7 +84,7 @@ public:
 
 protected:
 
-  typedef ::std::vector<const ISchemaElementInstance::SharedPtrTyp>       ChildrenContainer;
+  typedef ::std::vector<ChildPtr>       ChildrenContainer;
 
   int               getSize() const;
   bool              isRequired() const;
