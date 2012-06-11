@@ -33,6 +33,21 @@ set(sslib_Source_Files__common__event
 )
 source_group("Source Files\\common\\event" FILES ${sslib_Source_Files__common__event})
 
+set(sslib_Source_Files__factory
+  src/factory/AbstractInputObject.cpp
+  src/factory/Scalar.cpp
+  src/factory/ScalarValue.cpp
+  src/factory/SchemaDoc.cpp
+  src/factory/SchemaElement.cpp
+  src/factory/SchemaList.cpp
+  src/factory/SchemaMap.cpp
+  src/factory/SchemaObjectUid.cpp
+  src/factory/SchemaScalar.cpp
+  src/factory/SchemaScalarValue.cpp
+  src/factory/SslibElements.cpp
+)
+source_group("Source Files\\factory" FILES ${sslib_Source_Files__factory})
+
 set(sslib_Source_Files__io
   src/io/AdditionalData.cpp
   src/io/ResReaderWriter.cpp
@@ -58,6 +73,7 @@ set(sslib_Source_Files
   ${sslib_Source_Files__build_cell}
   ${sslib_Source_Files__common}
   ${sslib_Source_Files__common__event}
+  ${sslib_Source_Files__factory}
   ${sslib_Source_Files__io}
   ${sslib_Source_Files__utility}
   ${sslib_Source_Files__}

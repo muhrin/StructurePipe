@@ -37,6 +37,23 @@ set(sslib_Header_Files__common
 )
 source_group("Header Files\\common" FILES ${sslib_Header_Files__common})
 
+set(sslib_Header_Files__factory
+  include/factory/AbstractInputObject.h
+  include/factory/IInputObject.h
+  include/factory/ISchemaElementInstance.h
+  include/factory/Scalar.h
+  include/factory/ScalarValue.h
+  include/factory/SchemaDoc.h
+  include/factory/SchemaElement.h
+  include/factory/SchemaList.h
+  include/factory/SchemaMap.h
+  include/factory/SchemaObjectUid.h
+  include/factory/SchemaScalar.h
+  include/factory/SchemaScalarValue.h
+  include/factory/SslibElements.h
+)
+source_group("Header Files\\factory" FILES ${sslib_Header_Files__factory})
+
 set(sslib_Header_Files__io
   include/io/AdditionalData.h
   include/io/IStructureReader.h
@@ -84,6 +101,7 @@ source_group("Header Files" FILES ${sslib_Header_Files__})
 set(sslib_Header_Files
   ${sslib_Header_Files__build_cell}
   ${sslib_Header_Files__common}
+  ${sslib_Header_Files__factory}
   ${sslib_Header_Files__io}
   ${sslib_Header_Files__potential}
   ${sslib_Header_Files__utility}
