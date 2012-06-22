@@ -99,7 +99,7 @@ absolute(const ::boost::filesystem::path & p)
 #ifdef SSLIB_USE_BOOSTFS_V2
   return fs::system_complete(p);
 #else
-  return p.absolute();
+  return fs::absolute(p);
 #endif
 }
 
