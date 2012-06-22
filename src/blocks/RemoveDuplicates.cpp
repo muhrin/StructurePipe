@@ -17,7 +17,7 @@
 #include <utility/IStructureSet.h>
 
 // From PipelineLib
-#include <IPipeline.h>
+#include <pipelib/IPipeline.h>
 
 #include <boost/foreach.hpp>
 

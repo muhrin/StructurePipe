@@ -11,16 +11,18 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-// From SSTbx
-#include <utility/MultiIdx.h>
-
-// From PipeLib
-#include <AbstractSimpleStartBlock.h>
-#include <IDataSink.h>
+#include <cstring>
+#include <vector>
 
 #include <armadillo>
 
-#include <vector>
+#include <pipelib/AbstractSimpleStartBlock.h>
+#include <pipelib/IDataSink.h>
+
+// From SSTbx
+#include <utility/MultiIdx.h>
+
+
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 template <class DataType, class GlobalDataType>
@@ -38,16 +40,21 @@ public:
 		const ::arma::vec	&		from,
 		const ::arma::vec	&		step,
 		const ::arma::Col<unsigned int> & nSteps,
-		IPipelineTyp &				sweepPipeline);
+		SpPipelineTyp &				sweepPipeline);
 
 	// From Block /////////////////////////////////
 	virtual void pipelineInitialising();
 	virtual void pipelineInitialised();
 	virtual void start();
-	virtual void in(StructureDataTyp * const data);
 	// End from Block //////////////////////////////
 
+  // From IDataSink /////////////////////////////
+  virtual void in(StructureDataTyp * const data);
+  // End from IDataSink /////////////////////////
+
 private:
+
+  void saveTableData(const StructureDataTyp & strData);
 
 	size_t								              myNumParams;
 	const ::arma::vec					          myFrom;
@@ -55,7 +62,7 @@ private:
 	const ::arma::Col<unsigned int>			myNSteps;
 	::sstbx::utility::MultiIdx<size_t>	myStepExtents;
 
-	IPipelineTyp &                      mySweepPipeline;
+	SpPipelineTyp &                      mySweepPipeline;
 
 	/** Buffer to store structure that have finished their path through the sub pipeline. */
 	::std::vector<StructureDataTyp *>		myBuffer;

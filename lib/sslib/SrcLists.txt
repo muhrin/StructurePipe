@@ -36,14 +36,15 @@ source_group("Source Files\\common\\event" FILES ${sslib_Source_Files__common__e
 set(sslib_Source_Files__factory
   src/factory/AbstractInputObject.cpp
   src/factory/Scalar.cpp
-  src/factory/ScalarValue.cpp
   src/factory/SchemaDoc.cpp
   src/factory/SchemaElement.cpp
   src/factory/SchemaList.cpp
   src/factory/SchemaMap.cpp
+  src/factory/SchemaMapSingle.cpp
   src/factory/SchemaObjectUid.cpp
-  src/factory/SchemaScalar.cpp
   src/factory/SchemaScalarValue.cpp
+  src/factory/SchemaScalarValueAny.cpp
+  src/factory/SchemaScalarValueLiteral.cpp
   src/factory/SslibElements.cpp
 )
 source_group("Source Files\\factory" FILES ${sslib_Source_Files__factory})
@@ -56,6 +57,8 @@ set(sslib_Source_Files__io
 source_group("Source Files\\io" FILES ${sslib_Source_Files__io})
 
 set(sslib_Source_Files__utility
+  src/utility/BoostFilesystem.cpp
+  src/utility/HeterogeneousMap.cpp
   src/utility/IBufferedComparator.cpp
   src/utility/SortedDistanceComparator.cpp
   src/utility/StableComparison.cpp

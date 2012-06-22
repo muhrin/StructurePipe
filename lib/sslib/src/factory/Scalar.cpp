@@ -17,39 +17,31 @@ namespace sstbx
 namespace factory
 {
 
-Scalar::Scalar(const Scalar & toCopy):
-AbstractInputObject(IInputObject::SCALAR, toCopy.getName())
-{
-  // TODO: Insert scalar value from toCopy
-}
-
-Scalar::Scalar(const ::std::string & name):
-AbstractInputObject(IInputObject::SCALAR, name)
+Scalar::Scalar(const ::std::string & value):
+AbstractInputObject(IInputObject::SCALAR),
+myValue(value)
 {}
 
 size_t Scalar::getSize() const
 {
-  return 1;
+  return 0;
 }
 
-void Scalar::insert(::boost::shared_ptr<IInputObject> & value)
+const ::std::string & Scalar::getValue() const
 {
-  if(value->getType() != IInputObject::SCALAR_VALUE)
-  {
-    // TODO: Throw exception
-    return;
-  }
-  myValue = value;
+  return myValue;
 }
 
-const IInputObject * Scalar::operator [](const size_t idx) const
+// Access mechanism for sequences
+const Scalar::InterfacePtrConst Scalar::operator [](const size_t idx) const
 {
-  return myValue.get();
+  return InterfacePtrConst();
 }
 
-::boost::shared_ptr<IInputObject> Scalar::clone() const
+// Access mechanism for maps
+const Scalar::InterfacePtrConst Scalar::operator [](const ::std::string & key) const
 {
-  return ::boost::shared_ptr<IInputObject>(new Scalar(*this));
+  return InterfacePtrConst();
 }
 
 }

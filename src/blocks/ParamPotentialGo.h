@@ -12,7 +12,7 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-#include "AbstractSimpleBlock.h"
+#include "pipelib/AbstractSimpleBlock.h"
 
 #include <armadillo>
 
@@ -23,11 +23,11 @@
 
 namespace sstbx
 {
-	namespace potential
-	{
-		class IParameterisable;
-		class IGeomOptimiser;
-	}
+namespace potential
+{
+class IParameterisable;
+class IGeomOptimiser;
+}
 }
 
 

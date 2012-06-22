@@ -15,6 +15,7 @@
 
 #define DEBUG 1
 
+
 // Include the configuration header file
 #include "StructurePipeConfig.h"
 
@@ -24,6 +25,8 @@
 #if !DEBUG
 	#define SP_ASSERT(x)
 #else
+  #include <iostream>
+
 	#define SP_ASSERT(x) \
 	if (! (x)) \
 	{ \
@@ -38,39 +41,65 @@
 		//} \
 
 
+// INCLUDES /////////////
+
+
 // FORWARD DECLARES //////////////
 namespace pipelib
 {
-template <class DataType, class PipelineDataType>
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
 class Block;
-template <class DataType, class PipelineDataType>
+
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
 class IPipeline;
-template <class DataType, class PipelineDataType>
+
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
 class PipeBlock;
-template <class DataType, class PipelineDataType>
+
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
 class StartBlock;
+
 }
 
 namespace spipe
 {
 namespace common
 {
+
 class SharedData;
 class StructureData;
+
 }
 }
+
 
 namespace spipe
 {
 
 // TYPEDEFS ///////////////////////
 
-typedef spipe::common::StructureData			                    StructureDataTyp;
-typedef spipe::common::SharedData					                    SharedDataTyp;
-typedef pipelib::IPipeline<StructureDataTyp, SharedDataTyp>  	IPipelineTyp;
-typedef pipelib::Block<StructureDataTyp, SharedDataTyp>       SpBlockTyp;
-typedef pipelib::PipeBlock<StructureDataTyp, SharedDataTyp>   SpPipeBlockTyp;
-typedef pipelib::StartBlock<StructureDataTyp, SharedDataTyp>  SpStartBlockTyp;
+typedef spipe::common::StructureData			                                    StructureDataTyp;
+typedef spipe::common::SharedData					                                    SharedDataTyp;
+typedef pipelib::IPipeline<StructureDataTyp, SharedDataTyp, SharedDataTyp>  	SpPipelineTyp;
+typedef pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>        SpBlockTyp;
+typedef pipelib::PipeBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>    SpPipeBlockTyp;
+typedef pipelib::StartBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>   SpStartBlockTyp;
 
 }
 

@@ -20,7 +20,10 @@ namespace sstbx
 namespace factory
 {
 
-class SchemaElement;
+class SchemaList;
+class SchemaMap;
+class SchemaMapSingle;
+
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -28,15 +31,61 @@ class SslibElements
 {
 public:
 
-  typedef ::boost::shared_ptr<SchemaElement>  ElementPtr;
+  typedef ::boost::shared_ptr<SchemaList>     ListPtr;
+  typedef ::boost::shared_ptr<SchemaMap>      MapPtr;
+  typedef ::boost::shared_ptr<SchemaMapSingle>   ScalarPtr;
+
 
   SslibElements();
 
-  ElementPtr    cellDesc;
-  ElementPtr    cellDescParams;
-  ElementPtr    cellDescVol;
+  // Generic number of things i.e. +ve integer
+  ScalarPtr   n;
 
-  ElementPtr    potential;
+  // Atom description
+  MapPtr      atomDesc;
+  ScalarPtr   atomSpec;
+  ListPtr     atomsDescList;
+
+  // Cell description
+  MapPtr      cellDesc;
+  ListPtr     cellDescParams;
+  ScalarPtr   cellDescVol;
+
+  // Structure description
+  MapPtr      strDesc;
+
+  // Structure constraints
+  ListPtr     strDescConstraintsList;
+  MapPtr      strDescConstraintTyp;
+  struct strDescConstraintTyps
+  {
+    ScalarPtr   minsep;
+  } strDescConstraintTyps;
+
+  // Structure generator
+  MapPtr      strGenerator;
+  MapPtr      strGeneratorTyp;
+  struct strGeneratorTyps
+  {
+    MapPtr  _default;
+  } strGeneratorTyps;
+
+  // Cell generator
+  MapPtr      cellGenerator;
+  MapPtr      cellGeneratorTyp;
+  struct cellGeneratorTyps
+  {
+    MapPtr    _default;
+  } cellGeneratorTyps;
+
+  // Potential
+  MapPtr      potential;
+  MapPtr      potentialTyp;
+  struct potentialTyps
+  {
+    MapPtr pairPot;
+  } potentialTyps;
+
 
 };
 }

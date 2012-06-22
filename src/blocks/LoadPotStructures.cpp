@@ -20,12 +20,13 @@
 #include <io/ResReaderWriter.h>
 #include <potential/IParameterisable.h>
 
-// From PipeLib
-#include <IPipeline.h>
+
+#include <pipelib/IPipeline.h>
 
 // Local includes
 #include "common/StructureData.h"
 #include "common/UtilityFunctions.h"
+#include "common/SharedData.h"
 
 // NAMESPACES ////////////////////////////////
 
@@ -47,6 +48,7 @@ void LoadPotStructures::start()
   using boost::filesystem::ifstream;
   using boost::filesystem::path;
   using boost::tokenizer;
+  using spipe::common::GlobalKeys;
   using std::getline;
   using std::string;
 
@@ -87,8 +89,7 @@ void LoadPotStructures::start()
             {
               StructureDataTyp * const strDat = structures[i];
 
-              strDat->potentialParams.reset(result.first);
-              strDat->group.reset(strFolder.string());
+              strDat->objectsStore.insert(GlobalKeys::POTENTIAL_PARAMS, result.first);
 
               // Send the structure down the pipe
               myPipeline->registerNewData(strDat);

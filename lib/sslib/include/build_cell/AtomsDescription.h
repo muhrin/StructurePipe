@@ -37,12 +37,12 @@ public:
 	friend class AtomGroupDescription;
 
 	AtomsDescription();
-	AtomsDescription(const ::sstbx::common::AtomSpeciesId elementType, const size_t elementCount);
+	AtomsDescription(const ::sstbx::common::AtomSpeciesId::Value  elementType, const size_t elementCount);
 	virtual ~AtomsDescription() {}
 
-	const ::sstbx::common::AtomSpeciesId getSpecies() const;
+	const ::sstbx::common::AtomSpeciesId::Value  getSpecies() const;
 
-	void setElementType(const ::sstbx::common::AtomSpeciesId species);
+	void setElementType(const ::sstbx::common::AtomSpeciesId::Value  species);
 
 	size_t getCount() const;
 
@@ -64,7 +64,7 @@ private:
 
 	void setParent(const AtomGroupDescription * const parent);
 
-	::sstbx::common::AtomSpeciesId	mySpecies;
+  ::sstbx::common::AtomSpeciesId::Value	mySpecies;
 
 	const AtomGroupDescription * myParent;
 

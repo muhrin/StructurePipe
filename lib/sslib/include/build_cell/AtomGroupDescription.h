@@ -9,13 +9,13 @@
 #define ATOM_GROUP_DESCRIPTION_H
 
 // INCLUDES ///////////////////
+#include "SSLib.h"
 
 #include <boost/ptr_container/ptr_map.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include "SSLib.h"
-#include "IAtomConstrainable.h"
-
+#include "build_cell/AtomConstraintDescription.h"
+#include "build_cell/IAtomConstrainable.h"
 #include "build_cell/ConstraintDescriptionId.h"
 
 
@@ -23,12 +23,11 @@
 // FORWARD DECLARES ///////////
 namespace sstbx
 {
-  namespace build_cell
-  {
-	  class AtomConstraintDescription;
-	  class AtomsDescription;
-	  class IConstraintDescription;
-  }
+namespace build_cell
+{
+class AtomsDescription;
+class IConstraintDescription;
+}
 }
 
 

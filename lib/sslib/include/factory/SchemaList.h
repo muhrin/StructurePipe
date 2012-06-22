@@ -67,6 +67,8 @@ public:
     friend class SchemaList;
   };
 
+  typedef Instance                                    InstanceTyp;
+
   SchemaList(
     const ::std::string &     name,
     const bool                required     = true,
@@ -92,6 +94,8 @@ protected:
   const int         mySize;
   const bool        myRequired;
   ChildrenContainer myChildren;
+
+  friend class Instance;
 };
 
 }

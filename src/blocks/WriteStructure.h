@@ -10,8 +10,9 @@
 #define WRITE_STRUCTURE_H
 
 // INCLUDES /////////////////////////////////////////////
+#include "StructurePipe.h"
 
-#include "AbstractSimpleBlock.h"
+#include "pipelib/AbstractSimpleBlock.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -32,12 +33,12 @@ namespace blocks
 {
 
 
-class WriteStructure : public pipelib::AbstractSimpleBlock<StructureDataTyp, SharedDataTyp>
+class WriteStructure : public pipelib::AbstractSimpleBlock<::spipe::StructureDataTyp, ::spipe::SharedDataTyp>
 {
 public:
 	WriteStructure(const ::sstbx::io::StructureWriterManager & writerManager);
 
-	virtual void in(spipe::common::StructureData & data);
+  virtual void in(spipe::StructureDataTyp & data);
 
 
 private:

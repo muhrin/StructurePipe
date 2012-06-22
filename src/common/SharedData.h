@@ -10,20 +10,41 @@
 #define SHARED_DATA_H
 
 // INCLUDES /////////////////////////////////////////////
+#include "StructurePipe.h"
 
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/filesystem.hpp>
 
 #include <armadillo>
 
+#include <pipelib/event/IPipeListener.h>
+
+#include <utility/BoostFilesystem.h>
+#include <utility/HeterogeneousMap.h>
+
+// Local includes
+#include "common/DataTable.h"
+
 // FORWARD DECLARATIONS ////////////////////////////////////
+
+namespace pipelib
+{
+namespace event
+{
+template <class Listener>
+class PipeStateChanged;
+}
+}
+
 namespace sstbx
 {
-  namespace build_cell
-  {
-    template <typename FloatType>
-    class RandomCellDescription;
-    class StructureDescription;
-  }
+namespace build_cell
+{
+template <typename FloatType>
+class RandomCellDescription;
+class StructureDescription;
+}
 }
 
 namespace spipe
@@ -31,17 +52,40 @@ namespace spipe
 namespace common
 {
 
-class SharedData
+struct GlobalKeys
+{
+  // The current parameterised potential parameters
+  static const ::sstbx::utility::Key< ::arma::vec>  POTENTIAL_PARAMS;
+
+
+};
+
+class SharedData : public ::pipelib::event::IPipeListener< ::spipe::SpPipelineTyp>
 {
 public:
 
-  SharedData():
-      structureDescription(NULL),
-      cellDescription(NULL){}
-  //~SharedData();
+  static const ::std::string DIR_SUBSTRING_DELIMITER;
 
-	/** The current parameterised potential parameters */
-	::boost::optional< ::arma::vec>			potentialParams;
+  SharedData();
+  ~SharedData();
+
+  /**
+  /* Set the pipeline that this shared data belong to.  This should be done immediately
+  /* after constructing the pipeline.
+  /* 
+  /* Precondition: the pipeline must not have been set previously.
+  /**/
+  void setPipe(::spipe::SpPipelineTyp & pipe);
+
+  bool appendToOutputDirName(const ::std::string & toAppend);
+
+  ::boost::filesystem::path getOutputPath() const;
+
+  const ::boost::filesystem::path & getRelativeOutputPath() const;
+
+  // From IPipeListener ////////////////////////
+  virtual void notify(const ::pipelib::event::PipeStateChanged< ::spipe::SpPipelineTyp> & evt);
+  // End from IPipeListener ///////////////////
 
 	/** Potential sweep starting values */
 	::boost::optional< ::arma::vec>			potSweepFrom;
@@ -50,9 +94,22 @@ public:
 	/** Potential sweep number of steps to make */
 	::boost::optional< ::arma::Col<unsigned int> >	potSweepNSteps;
 
-  const sstbx::build_cell::StructureDescription * structureDescription;
+  ::boost::shared_ptr<sstbx::build_cell::StructureDescription>            structureDescription;
+  ::boost::shared_ptr<sstbx::build_cell::RandomCellDescription<double> >  cellDescription;
 
-  const sstbx::build_cell::RandomCellDescription<double> * cellDescription;
+  ::sstbx::utility::HeterogeneousMap  objectsStore;
+
+  ::spipe::common::DataTable          dataTable;
+
+private:
+
+  void reset();
+
+  void buildOutputPathRecursive(::boost::filesystem::path & path, const ::spipe::SpPipelineTyp & pipe) const;
+
+  ::spipe::SpPipelineTyp *            myPipe;
+
+  ::boost::filesystem::path           myOutputDir;
 
 };
 

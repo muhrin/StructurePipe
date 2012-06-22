@@ -465,7 +465,7 @@ SsLibFactoryYaml::createAtomsDescription(const YAML::Node & descNode) const
 
   std::string sValue;
   int nAtoms = 0;
-  ssc::AtomSpeciesId specId;
+  ssc::AtomSpeciesId::Value  specId;
 
   if(descNode[kw::STR_DESC__ATOMS__N])
   {
@@ -481,7 +481,7 @@ SsLibFactoryYaml::createAtomsDescription(const YAML::Node & descNode) const
     sValue = descNode[kw::STR_DESC__ATOMS__SPEC].as<std::string>();
 
     specId = ssc::AtomSpeciesDatabase::inst().getIdFromSymbol(sValue);
-    if(specId == ssc::DUMMY)
+    if(specId == ssc::AtomSpeciesId::DUMMY)
     {
       throw FactoryError() << ErrorType(MALFORMED_VALUE);
     }

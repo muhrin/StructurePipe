@@ -15,15 +15,20 @@ namespace sstbx
 namespace factory
 {
 
+const SchemaObjectUid SchemaElement::NULL_SUPERTYPE  = "_NULL_PARENT";
+const SchemaObjectUid SchemaElement::UID_ANONYMOUS   = "_ANONYMOUS";
+
 SchemaElement::SchemaElement(
   const sstbx::factory::IInputObject::Type type,
   const std::string &                      name,
   const sstbx::factory::SchemaObjectUid &  uid,
-  const bool                               isAbstract):
+  const bool                               isAbstract,
+  const SchemaObjectUid                    supertype):
 myType(type),
 myName(name),
 myUid(uid),
-myAbstract(isAbstract)
+myAbstract(isAbstract),
+mySupertype(supertype)
 {}
 
 const SchemaObjectUid & SchemaElement::getUid() const

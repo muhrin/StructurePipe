@@ -15,25 +15,14 @@ namespace sstbx
 namespace factory
 {
 
-AbstractInputObject::AbstractInputObject(
-  const IInputObject::Type        type,
-  const ::std::string &           name
-):
-myType(type),
-myName(name)
+AbstractInputObject::AbstractInputObject(const IInputObject::Type        type):
+myType(type)
 {}
-
-const ::std::string & AbstractInputObject::getName() const
-{
-  return myName;
-}
 
 IInputObject::Type AbstractInputObject::getType() const
 {
   return myType;
 }
-
-
 
 }
 }

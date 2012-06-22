@@ -12,8 +12,8 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-// From Pipelib
-#include <AbstractSimpleStartBlock.h>
+
+#include <pipelib/AbstractSimpleStartBlock.h>
 
 #include <boost/filesystem.hpp>
 

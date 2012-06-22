@@ -24,9 +24,9 @@
 #include <utility/MultiArray.h>
 #include <utility/MultiIdx.h>
 
-// From Pipelib
-#include <AbstractSimpleBlock.h>
-#include <IPipeline.h>
+
+#include <pipelib/AbstractSimpleBlock.h>
+#include <pipelib/IPipeline.h>
 
 // Local includes
 #include "common/StructureData.h"
@@ -88,7 +88,7 @@ EdgeDetect::EdgeMapper::EdgeMapper(
 	const ::sstbx::utility::MultiIdx<size_t>				extents,
 	const ::sstbx::utility::IStructureComparator &	comparator,
 	const ::std::string &										        filePath):
-nParams(extents.dims),
+nParams(extents.dims()),
 edgeMap(new ::sstbx::utility::EdgeMap(comparator, extents)),
 outputData(new OutputData(extents, NULL))
 {

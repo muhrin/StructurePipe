@@ -10,12 +10,18 @@
 
 #include <yaml-cpp/yaml.h>
 
-// From PipeLib
-#include "IPipeline.h"
+
+#include <pipelib/IPipeline.h>
 
 // Local includes
 #include "common/PipeBuilder.h"
 #include "common/PipeFactoryYaml.h"
+
+// TODO: TEMPORARY!!
+#include <factory/SslibElements.h>
+#include <factory/SchemaDoc.h>
+#include <factory/SchemaMap.h>
+#include "common/YamlInputObjectAdapter.h"
 
 // MACROS ////////////////////////////////////
 
@@ -24,6 +30,24 @@
 
 int main(const int argc, const char * const argv[])
 {
+  {// START -- TEMPORARY //////////////////////
+
+  namespace ssf = ::sstbx::factory;
+
+  ssf::SslibElements lib;
+
+  ssf::SchemaMap root("root", false);
+
+  root.insert(lib.cellDesc->newInstance());
+
+  ssf::SchemaDoc doc(root.newInstance());
+  ::spipe::common::YamlInputObjectAdapter testNode(YAML::LoadFile("test.spipe"), "ROOT");
+  doc.getRoot()->validate(testNode, doc);
+
+  return 0;
+
+  }// END -- TEMPORARY /////////////////////
+
   namespace sp = ::spipe;
   namespace spcom = ::spipe::common;
 
@@ -39,7 +63,7 @@ int main(const int argc, const char * const argv[])
 
     spcom::PipeBuilder builder;
 
-    sp::IPipelineTyp * pipe = builder.buildPipeFromYaml(config);
+    sp::SpPipelineTyp * pipe = builder.buildPipeFromYaml(config);
 
     if(pipe)
     {

@@ -10,7 +10,7 @@
 
 // INCLUDES /////////////////////////////////////////////
 
-#include "AbstractSimpleBlock.h"
+#include "pipelib/AbstractSimpleBlock.h"
 
 #include <map>
 
@@ -37,7 +37,9 @@ public:
 
 	virtual void in(::spipe::common::StructureData & data);
 
+  // From Block /////////////////////////
 	virtual void pipelineFinishing();
+  // End from Block ///////////////////
 
 private:
 

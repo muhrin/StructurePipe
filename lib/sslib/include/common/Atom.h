@@ -29,12 +29,12 @@ public:
 
 	friend class AtomGroup;
 
-	Atom(const AtomSpeciesId species);
+  Atom(const AtomSpeciesId::Value species);
 
 	const Vec3 & getPosition() const;
 	void setPosition(const Vec3 & pos);
 
-	const AtomSpeciesId getSpecies() const;
+	const AtomSpeciesId::Value  getSpecies() const;
 
 private:
 
@@ -45,7 +45,7 @@ private:
 
 	AtomGroup * myParent;
 
-	AtomSpeciesId	mySpecies;
+  AtomSpeciesId::Value	mySpecies;
 
 	Vec3 position;
 

@@ -12,6 +12,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "factory/SchemaDoc.h"
+#include "factory/SchemaScalarValueAny.h"
 
 // NAMESPACES ////////////////////////////////
 
@@ -27,6 +28,11 @@ const SchemaList & SchemaList::Instance::getSchemaElement() const
   return myElement;
 }
 
+bool SchemaList::Instance::isRequired() const
+{
+  return myRequired;
+}
+
 int SchemaList::Instance::getSize() const
 {
   return mySize;
@@ -34,9 +40,39 @@ int SchemaList::Instance::getSize() const
 
 bool SchemaList::Instance::validate(const sstbx::factory::IInputObject &obj, const sstbx::factory::SchemaDoc &doc) const
 {
-  // TODO: WRITE!
+  if(obj.getType() != IInputObject::LIST &&
+    obj.getType() != IInputObject::UNDEFINED)
+  {
+    return false;
+  }
 
-  return false;
+  if(getSize() != ISchemaElementInstance::SIZE_UNDEFINED &&
+    obj.getSize() != getSize())
+  {
+    return false;
+  }
+
+  IInputObject::SharedPtrConstTyp childObj;
+
+  bool allValid = true;
+  BOOST_FOREACH(childObj, obj)
+  {
+    // Check against all possible list entries
+    bool validated = false;
+    BOOST_FOREACH(const ChildPtr elementInst, myElement.myChildren)
+    {
+      validated = elementInst->validate(*childObj, doc);
+      if(validated)
+        break;
+    }
+    if(!validated)
+    {
+      allValid = false;
+      break;
+    }
+  }
+
+  return allValid;
 }
 
 ISchemaElementInstance::SharedPtrTyp SchemaList::Instance::clone() const
@@ -87,6 +123,7 @@ SchemaElement(IInputObject::LIST, name, uid),
 myRequired(required),
 mySize(size)
 {
+  insert(SchemaScalarValueAny::create());
 }
 
 size_t SchemaList::numChildren() const
@@ -119,7 +156,7 @@ void SchemaList::insert(const ChildPtr & elementInst)
 //bool SchemaList::validate(const IInputObject & obj, const SchemaDoc & doc) const
 //{
 //  if(obj.getType() != IInputObject::LIST &&
-//    obj.getType() != IInputObject::UNKNOWN)
+//    obj.getType() != IInputObject::UNDEFINED)
 //  {
 //    return false;
 //  }

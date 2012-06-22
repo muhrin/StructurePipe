@@ -41,17 +41,17 @@ template <typename FloatType>
 SimplePairPotentialData<FloatType>::SimplePairPotentialData(const sstbx::common::Structure & structure):
 StandardData<FloatType>(structure)
 {
-	using sstbx::common::AtomSpeciesId;
+  using sstbx::common::AtomSpeciesId;
 
 	// Get the atom species
-	std::vector<AtomSpeciesId> strSpecies;
+  std::vector<AtomSpeciesId::Value> strSpecies;
 	structure.getAtomSpeciesDescendent(strSpecies);
 
 	// Copy the species over to a set and sort so we know which
 	// species we have overall and in ascending order
-	std::set<AtomSpeciesId> speciesSet(strSpecies.begin(), strSpecies.end());
+  std::set<AtomSpeciesId::Value> speciesSet(strSpecies.begin(), strSpecies.end());
 
-	std::vector<AtomSpeciesId> sortedSpecies(speciesSet.begin(), speciesSet.end());
+  std::vector<AtomSpeciesId::Value> sortedSpecies(speciesSet.begin(), speciesSet.end());
 	std::sort(sortedSpecies.begin(), sortedSpecies.end());
 
 	// Now populate our species vector

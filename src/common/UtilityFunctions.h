@@ -53,28 +53,28 @@ struct AdditionalData;
 // FUNCTIONS ////////////////////////////////////////
 
 namespace spipe {
-  namespace common {
+namespace common {
 
-    ProcessId getProcessId();
+ProcessId getProcessId();
 
-    std::string generateUniqueName();
+std::string generateUniqueName();
 
-    void generateIoDataFromStructure(
-      const ::spipe::common::StructureData & strData,
-      sstbx::io::AdditionalData & ioData);
+void generateIoDataFromStructure(
+  const ::spipe::common::StructureData & strData,
+  sstbx::io::AdditionalData & ioData);
 
-    void generateStructureDataFromIo(
-      const sstbx::io::AdditionalData & ioData,
-      spipe::common::StructureData & strData);
+void generateStructureDataFromIo(
+  const sstbx::io::AdditionalData & ioData,
+  spipe::common::StructureData & strData);
 
-    bool parseParamString(
-      const std::string & str,
-      double &            from,
-      double &            step,
-      unsigned int &      nSteps
-    );
+bool parseParamString(
+  const std::string & str,
+  double &            from,
+  double &            step,
+  unsigned int &      nSteps
+);
 
-  }
+}
 }
 
 #endif /* UTILITY_FUNCTIONS_H */

@@ -14,6 +14,7 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "factory/SchemaAnon.h"
 #include "factory/SchemaDoc.h"
 
 // NAMESPACES ////////////////////////////////
@@ -30,6 +31,11 @@ const SchemaMap & SchemaMap::Instance::getSchemaElement() const
   return myElement;
 }
 
+bool SchemaMap::Instance::isRequired() const
+{
+  return myRequired;
+}
+
 int SchemaMap::Instance::getSize() const
 {
   return ISchemaElementInstance::SIZE_UNDEFINED;
@@ -37,25 +43,27 @@ int SchemaMap::Instance::getSize() const
 
 bool SchemaMap::Instance::validate(const sstbx::factory::IInputObject &obj, const sstbx::factory::SchemaDoc &doc) const
 {
-  // TODO: WRITE!
   if(obj.getType() != IInputObject::MAP &&
-    obj.getType() != IInputObject::UNKNOWN)
+    obj.getType() != IInputObject::UNDEFINED)
   {
     return false;
   }
 
-  const IInputObject * childObj = NULL;
+  IInputObject::SharedPtrConstTyp childObj;
+
   bool allValid = true;
-  for(size_t i = 0; i < obj.getSize() && allValid; ++i)
+  BOOST_FOREACH(childObj, obj)
   {
-    // First check for a name match
-    childObj = obj[i];
-    const ISchemaElementInstance::SharedPtrTyp childElInst = myElement[obj.getName()];
+    const ISchemaElementInstance::SharedPtrTyp childElInst = myElement[childObj->getKey()];
     
     if(childElInst.get())
     {
       // Now validate against that element
-      allValid &= childElInst->validate(*childObj, doc); 
+      if(!childElInst->validate(*childObj, doc))
+      {
+        allValid = false;
+        break;
+      }
     }
     else
     {
@@ -107,9 +115,11 @@ myRequired(toCopy.isRequired())
 SchemaMap::SchemaMap(
     const ::std::string &     name,
     const bool                required,
-    const SchemaObjectUid &   uid
+    const SchemaObjectUid &   uid,
+    const bool                isAbstract,
+    const SchemaObjectUid &   supertype
 ):
-SchemaElement(IInputObject::LIST, name, uid),
+SchemaElement(IInputObject::LIST, name, uid, isAbstract, supertype),
 myRequired(required)
 {
 }

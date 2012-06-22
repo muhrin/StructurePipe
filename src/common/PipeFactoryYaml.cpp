@@ -10,10 +10,12 @@
 
 #ifdef SP_USE_YAML
 
+#include <boost/shared_ptr.hpp>
+
 #include <yaml-cpp/yaml.h>
 
-// From Pipelib
-#include <SingleThreadedPipeline.h>
+
+#include <pipelib/SingleThreadedPipeline.h>
 
 // Local includes
 #include "blocks/NiggliReduction.h"
@@ -44,10 +46,10 @@ PipeFactoryYaml::PipeFactoryYaml()
 {
 }
 
-IPipelineTyp * PipeFactoryYaml::createPipeline(const YAML::Node & pipeNode)
+SpPipelineTyp * PipeFactoryYaml::createPipeline(const YAML::Node & pipeNode)
 {
 
-  IPipelineTyp * pipe = NULL;
+  SpPipelineTyp * pipe = NULL;
 
     if(pipeNode[kw::TYPE])
     {
@@ -170,8 +172,8 @@ PipeFactoryYaml::createBlockRandomCrystal(const YAML::Node & blockNode)
   return new ::spipe::blocks::RandomStructure(
     nStrs,
     *mySsLibFactory.createCrystalStructureGenerator(blockNode[sslibkw::STR_GENERATOR]),
-    mySsLibFactory.createStructureDescription(blockNode[sslibkw::STR_DESC]),
-    mySsLibFactory.createCellDescription(blockNode[sslibkw::CELL_DESC])
+    ::boost::shared_ptr<const ::sstbx::build_cell::StructureDescription>(mySsLibFactory.createStructureDescription(blockNode[sslibkw::STR_DESC])),
+    ::boost::shared_ptr<const ::sstbx::build_cell::RandomCellDescription<double> >(mySsLibFactory.createCellDescription(blockNode[sslibkw::CELL_DESC]))
   );
 }
 

@@ -157,7 +157,7 @@ myFilterLength(3)
 
 	// First create the map to parameter space dimensions we will do edge detection for
 	// (i.e. all non-zero)
-	myExternalDims = _extents.dims;
+	myExternalDims = _extents.dims();
 	for(size_t i = 0; i < myExternalDims; ++i)
 	{
 		if(_extents[i] != 0)
@@ -245,8 +245,8 @@ bool EdgeMap::update(
 
   // To hold the result of the final directions value vector divided by the mask totals
   arma::Col<double> normValVector;
-	for(EdgeData::RemainingContainer::iterator it = edge.dimsToDo.begin();
-		it != edge.dimsToDo.end(); /* increment in body */)
+	for(EdgeData::RemainingContainer::iterator it = edge.dims()ToDo.begin();
+		it != edge.dims()ToDo.end(); /* increment in body */)
 	{
 		const DimDirectionPair & p = *it;
 		neighPos = idx + p.second;
@@ -265,23 +265,23 @@ bool EdgeMap::update(
 
       // Find ourselves amongst the neighbours neighbour list and remove
 			EdgeData::RemainingContainer::iterator itNeigh = 
-        std::find(neighbour.dimsToDo.begin(), neighbour.dimsToDo.end(), reverse);
-			if(itNeigh != neighbour.dimsToDo.end())
+        std::find(neighbour.dims()ToDo.begin(), neighbour.dims()ToDo.end(), reverse);
+			if(itNeigh != neighbour.dims()ToDo.end())
 			{
-				neighbour.dimsToDo.erase(itNeigh);
+				neighbour.dims()ToDo.erase(itNeigh);
 			}
 			else
 			{
 				throw "Neighbour reference not found, the mask should be symmetric!";
 			}
       // Finished processing this neighbour so remove it from our neighbour list
-			it = edge.dimsToDo.erase(it);
+			it = edge.dims()ToDo.erase(it);
 
 			// Drop the reference counts;
 			--edge.references;
 			--neighbour.references;
 
-			if(edge.references == 0 && edge.dimsToDo.empty())
+			if(edge.references == 0 && edge.dims()ToDo.empty())
 			{
         // Free up this comparison data, we won't be needing it anymore
         myComparator->releaseComparisonData(edge.compData);
@@ -294,7 +294,7 @@ bool EdgeMap::update(
 				}
 				finishedEdge = true;
 			}
-			if(neighbour.references == 0 && neighbour.dimsToDo.empty())
+			if(neighbour.references == 0 && neighbour.dims()ToDo.empty())
 			{
         // Free up this comparison data, we won't be needing it anymore
         myComparator->releaseComparisonData(neighbour.compData);
@@ -341,7 +341,7 @@ void EdgeMap::generateMask()
 		// Do 0th direction
     maskVal *= myDerivative(pos[0]);
 		// Now do all other directions
-		for(size_t i = 1; i < maskExtents.dims; ++i)
+		for(size_t i = 1; i < maskExtents.dims(); ++i)
 		{
       maskVal *= mySmoothing(pos[i]);
 		}
@@ -371,12 +371,12 @@ MultiIdx<size_t> EdgeMap::externalToInternal(const MultiIdx<size_t> & external)
 
 double EdgeMap::getMaskValue(const size_t dim, const MultiIdx<int> & dr) const
 {
-	MultiIdx<int> relPos(dr.dims);
+	MultiIdx<int> relPos(dr.dims());
 	relPos = dr;
 	// Swap around 0th and dim^th dr coordinates to get correct direction
 	::std::swap(relPos[0], relPos[dim]);
 	// Now translate to mask coordinate space
-	MultiIdx<size_t> pos(relPos.dims);
+	MultiIdx<size_t> pos(relPos.dims());
 	pos = relPos + *myMaskOrigin;
 
 	return (*myMask)[pos];

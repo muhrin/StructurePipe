@@ -12,23 +12,23 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-// From SSTbx
+#include <boost/shared_ptr.hpp>
 
+// From SSTbx
+#include <build_cell/RandomCellDescription.h>
+#include <build_cell/StructureDescription.h>
 
 // From PipelineLib
-#include <AbstractSimpleStartBlock.h>
+#include <pipelib/AbstractSimpleStartBlock.h>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
 namespace sstbx
 {
-	namespace build_cell
-	{
-		class ICrystalStructureGenerator;
-    template <typename FloatType>
-    class RandomCellDescription;
-    class StructureDescription;
-	}
+namespace build_cell
+{
+class ICrystalStructureGenerator;
+}
 }
 
 namespace spipe
@@ -39,11 +39,15 @@ class RandomStructure :
 	public pipelib::AbstractSimpleStartBlock<StructureDataTyp, SharedDataTyp>
 {
 public:
+
+  typedef ::boost::shared_ptr<const ::sstbx::build_cell::StructureDescription >           StructureDescPtr;
+  typedef ::boost::shared_ptr<const ::sstbx::build_cell::RandomCellDescription<double> >  CellDescPtr;
+
 	RandomStructure(
 		const size_t numToGenerate,
 		const ::sstbx::build_cell::ICrystalStructureGenerator &           structureGenerator,
-    const ::sstbx::build_cell::StructureDescription * const           structureDescription = NULL,
-    const ::sstbx::build_cell::RandomCellDescription<double> * const  cellDescription = NULL);
+    const StructureDescPtr & structureDescription = StructureDescPtr(),
+    const CellDescPtr &      cellDescription      = CellDescPtr());
 
   // From StartBlock ///
 	virtual void start();
@@ -66,9 +70,8 @@ private:
   /** Should the block use the cell description found in shared data */
   const bool  myUseSharedDataCellDesc;
 
-  const ::sstbx::build_cell::StructureDescription * myStructureDescription;
-
-  const ::sstbx::build_cell::RandomCellDescription<double> * myCellDescription;
+  ::boost::shared_ptr<const ::sstbx::build_cell::StructureDescription>            myStructureDescription;
+  ::boost::shared_ptr<const ::sstbx::build_cell::RandomCellDescription<double> >  myCellDescription;
 
 	const ::sstbx::build_cell::ICrystalStructureGenerator &	myStructureGenerator;
 

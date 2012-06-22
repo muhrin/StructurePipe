@@ -8,9 +8,15 @@
 // INCLUDES //////////////////////////////////
 #include "blocks/ParamPotentialGo.h"
 
-#include "common/StructureData.h"
-#include "common/SharedData.h"
-#include "common/UtilityFunctions.h"
+#include <cstring>
+#include <locale>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/tokenizer.hpp>
+
+#include <pipelib/IPipeline.h>
 
 // From SSTbx
 #include <common/Structure.h>
@@ -18,15 +24,10 @@
 #include <potential/IGeomOptimiser.h>
 #include <potential/IParameterisable.h>
 
-// From PipeLib
-#include <IPipeline.h>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/tokenizer.hpp>
-
-#include <locale>
+#include "common/PipeFunctions.h"
+#include "common/StructureData.h"
+#include "common/SharedData.h"
+#include "common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 
@@ -105,22 +106,23 @@ ParamPotentialGo::~ParamPotentialGo()
 
 void ParamPotentialGo::pipelineStarting()
 {
-	if(myPipeline->getSharedData().potentialParams)
-	{
-    const arma::vec actualParams = setPotentialParams(*myPipeline->getSharedData().potentialParams);
+  namespace spc = ::spipe::common;
+
+  // The pipeline is starting so try and get the potential parameters
+  spc::ObjectData<arma::vec>
+    params = spc::getObject(spc::GlobalKeys::POTENTIAL_PARAMS, *myPipeline);
+
+  if(params.first != spc::DataLocation::NONE)
+  {
+    const arma::vec actualParams = setPotentialParams(*params.second);
+
     // The potential may have changed the params so reset them in the shared data
-    myPipeline->getSharedData().potentialParams.reset(actualParams);
-	}
+    spc::setObject(spc::GlobalKeys::POTENTIAL_PARAMS, params.first, actualParams, *myPipeline);
+  }
 }
 
 void ParamPotentialGo::in(spipe::common::StructureData & data)
 {
-	// Designate the structure with a group if it's not already set
-	if(!data.group)
-	{
-		data.group.reset(myStructureGroup);
-	}
-
   ::boost::shared_ptr<sstbx::potential::StandardData<> > optData;
 	if(myOptimiser.optimise(*data.getStructure(), optData))
   {

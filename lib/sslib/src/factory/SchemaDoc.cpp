@@ -29,6 +29,11 @@ myRoot(root)
 
 }
 
+SchemaDoc::ElementInstPointer SchemaDoc::getRoot()
+{
+  return myRoot;
+}
+
 void SchemaDoc::registerElement(const SchemaElement::SharedPtrTyp & obj)
 {
   myElements.insert(ElementsContainer::value_type(obj->getUid(), obj));

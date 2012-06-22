@@ -65,10 +65,10 @@ public:
 
 	virtual size_t getNumAtomSpecies() const;
 	virtual size_t getNumAtomSpeciesDescendent() const;
-  virtual size_t getNumAtomsOfSpecies(const AtomSpeciesId species) const;
-  virtual size_t getNumAtomsOfSpeciesDescendent(const AtomSpeciesId species) const;
-	virtual void getAtomSpecies(::std::vector<AtomSpeciesId> & species) const;
-	virtual void getAtomSpeciesDescendent(::std::vector<AtomSpeciesId> & species) const;
+  virtual size_t getNumAtomsOfSpecies(const AtomSpeciesId::Value species) const;
+  virtual size_t getNumAtomsOfSpeciesDescendent(const AtomSpeciesId::Value species) const;
+  virtual void getAtomSpecies(::std::vector<AtomSpeciesId::Value> & species) const;
+  virtual void getAtomSpeciesDescendent(::std::vector<AtomSpeciesId::Value> & species) const;
 
 	/**
 	/* Get the number of atoms in this atom group.

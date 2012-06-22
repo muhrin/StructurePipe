@@ -10,8 +10,8 @@
 
 #include <boost/foreach.hpp>
 
-// From PipeLIb
-#include <IPipeline.h>
+
+#include <pipelib/IPipeline.h>
 
 // Local includes
 #include "common/StructureData.h"
@@ -33,7 +33,7 @@ namespace kw = ::spipe::common::yaml_keywords;
 
 #ifdef SP_USE_YAML
 
-IPipelineTyp * PipeBuilder::buildPipeFromYaml(const YAML::Node & node)
+SpPipelineTyp * PipeBuilder::buildPipeFromYaml(const YAML::Node & node)
 {
   // First let's build up the blocks
   BlocksMapYaml blocksMap;
@@ -73,7 +73,7 @@ IPipelineTyp * PipeBuilder::buildPipeFromYaml(const YAML::Node & node)
   }
 
 
-  IPipelineTyp * pipe = NULL;
+  SpPipelineTyp * pipe = NULL;
   // Now build the pipeline
   if(node[kw::PIPELINE])
   {

@@ -12,6 +12,11 @@
 // INCLUDES /////////////////////////////////////////////
 #include <vector>
 
+#include <boost/concept_check.hpp>
+#include <boost/concept/assert.hpp>
+
+#include "factory/SchemaMapSingle.h"
+
 #include "factory/IInputObject.h"
 #include "factory/ISchemaElementInstance.h"
 #include "factory/SchemaElement.h"
@@ -66,7 +71,9 @@ public:
   SchemaMap(
     const ::std::string &     name,
     const bool                required     = true,
-    const SchemaObjectUid &   uid          = SchemaObjectUid()
+    const SchemaObjectUid &   uid          = SchemaObjectUid(),
+    const bool                isAbstract   = false,
+    const SchemaObjectUid &   supertype    = SchemaElement::NULL_SUPERTYPE
   );
 
   // From SchemaElement ////////////////////
@@ -76,6 +83,9 @@ public:
   // End from SchemaElement ////////////////
 
   void insert(const ChildPtr & child);
+  template <class T>
+  void insertAnon(const ::boost::shared_ptr<T> & element);
+
   const ISchemaElementInstance::SharedPtrTyp operator [](const ::std::string & name) const;
 
 protected:
@@ -89,6 +99,17 @@ protected:
   ChildrenContainer         myChildren;
 
 };
+
+// IMPLEMENTATION //////////////////////////////
+template <class T>
+void SchemaMap::insertAnon(const ::boost::shared_ptr<T> & element)
+{
+  // Make sure we've received a schema element
+  BOOST_CONCEPT_ASSERT((::boost::Convertible<T*, SchemaElement*>));
+
+  insert(SchemaAnon<T>::create(element));
+}
+
 
 }
 }

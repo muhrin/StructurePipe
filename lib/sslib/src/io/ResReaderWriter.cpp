@@ -8,6 +8,16 @@
 // INCLUDES //////////////////////////////////
 #include "io/ResReaderWriter.h"
 
+#include <iomanip>
+#include <set>
+#include <vector>
+
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+
+#include <armadillo>
+
 #include "io/AdditionalData.h"
 #include "common/AbstractFmidCell.h"
 #include "common/Atom.h"
@@ -15,26 +25,9 @@
 #include "common/AtomSpeciesId.h"
 #include "common/AtomSpeciesInfo.h"
 #include "common/Structure.h"
-
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/tokenizer.hpp>
-#include <boost/version.hpp>
-
-#include <armadillo>
-
-#include <iomanip>
-#include <set>
-#include <vector>
+#include "utility/BoostFilesystem.h"
 
 // DEFINES /////////////////////////////////
-
-/** Should we use version 2 of the boost filesystem library? */
-#if (BOOST_VERSION / 100000) <= 1 && ((BOOST_VERSION / 100) % 1000) <= 45
-#define SSLIB_USE_BOOSTFS_V2
-#endif
 
 
 // NAMESPACES ////////////////////////////////
@@ -67,7 +60,7 @@ void ResReaderWriter::writeStructure(
 	const path dir = filepath.parent_path();
 	if(!dir.empty() && !exists(dir))
 	{
-		create_directory(dir);
+		create_directories(dir);
 	}
 
 	ofstream strFile;
@@ -142,17 +135,17 @@ void ResReaderWriter::writeStructure(
 	arma::Mat<double> positions;
 	str.getAtomPositionsDescendent(positions);
 
-	vector<AtomSpeciesId> species;
+  vector<AtomSpeciesId::Value> species;
 	str.getAtomSpeciesDescendent(species);
 
-	set<AtomSpeciesId> uniqueSpecies(species.begin(), species.end());
+  set<AtomSpeciesId::Value> uniqueSpecies(species.begin(), species.end());
 
 	// Output atom species
-	std::map<AtomSpeciesId, std::string> speciesSymbols;
-  std::map<AtomSpeciesId, unsigned int> speciesOrder;
+  std::map<AtomSpeciesId::Value, std::string> speciesSymbols;
+  std::map<AtomSpeciesId::Value, unsigned int> speciesOrder;
 	strFile << "SFAC";
   size_t idx = 1;
-	BOOST_FOREACH(const AtomSpeciesId id, uniqueSpecies)
+  BOOST_FOREACH(const AtomSpeciesId::Value id, uniqueSpecies)
 	{
 		const ::std::string * const name = speciesDb.getSymbol(id);
 		speciesSymbols[id] = name ? *name : "?";
@@ -166,7 +159,7 @@ void ResReaderWriter::writeStructure(
 	sstbx::common::Atom::Vec3 fracPos;
 	for(size_t i = 0; i < positions.n_cols; ++i)
 	{
-    const AtomSpeciesId id = species[i];
+    const AtomSpeciesId::Value id = species[i];
 		fracPos = cell->fractionalise(positions.col(i));
 		strFile << endl << ::std::setprecision(32) << speciesSymbols[id] << " " << speciesOrder[id] << " " <<
 			fracPos[0] << " " << fracPos[1] << " " << fracPos[2] << " 1.0";
@@ -195,7 +188,7 @@ void ResReaderWriter::readStructure(
 	const sstbx::common::AtomSpeciesDatabase & speciesDb,
 	AdditionalData * const              data) const
 {
-	using namespace boost::filesystem;
+  namespace utility = ::sstbx::utility;
   using sstbx::common::AbstractFmidCell;
   using sstbx::common::Atom;
 	using sstbx::common::AtomSpeciesId;
@@ -237,11 +230,7 @@ void ResReaderWriter::readStructure(
         if(++tokIt != toker.end())
           str.setName(*tokIt);
         else
-#ifdef SSLIB_USE_BOOSTFS_V2
-          str.setName(filepath.stem());
-#else
-          str.setName(filepath.stem().string());
-#endif
+          str.setName(utility::stemString(filepath));
 
         // Does the user want additional data?
         if(data)
@@ -392,9 +381,9 @@ void ResReaderWriter::readStructure(
           }
 
           // Try finding the species id
-          const AtomSpeciesId id = speciesDb.getIdFromSymbol(*atomTokIt);
+          const AtomSpeciesId::Value id = speciesDb.getIdFromSymbol(*atomTokIt);
 
-          if(id != sstbx::common::DUMMY)
+          if(id != sstbx::common::AtomSpeciesId::DUMMY)
           {
             bool hasMore = true;
             Atom * atom = new Atom(id);

@@ -31,20 +31,17 @@ class AbstractInputObject : public IInputObject
 {
 public:
 
-  virtual const ::std::string &   getName() const;
-  virtual Type                    getType() const;
+  static const ::std::string EMPTY_VALUE;
+
+  virtual Type                    getType() const = 0;
 
 protected:
 
-  AbstractInputObject(
-    const Type             type,
-    const ::std::string &  name
-  );
+  AbstractInputObject(const Type type);
 
 private:
 
   const Type                     myType;
-  const ::std::string            myName;
 
 };
 

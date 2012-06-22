@@ -34,7 +34,7 @@ class PipeBuilder
 public:
 
 #ifdef SP_USE_YAML
-  IPipelineTyp * buildPipeFromYaml(const YAML::Node & node);
+  SpPipelineTyp * buildPipeFromYaml(const YAML::Node & node);
 #endif // SP_USE_YAML
   
 

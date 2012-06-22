@@ -13,7 +13,7 @@
 
 namespace sstbx { namespace common {
 
-Atom::Atom(const AtomSpeciesId species):
+Atom::Atom(const AtomSpeciesId::Value species):
 mySpecies(species),
 myParent(NULL)
 {}
@@ -31,7 +31,7 @@ void Atom::setPosition(const Atom::Vec3 & pos)
 	eventFired(evt);
 }
 
-const AtomSpeciesId Atom::getSpecies() const
+const AtomSpeciesId::Value  Atom::getSpecies() const
 {
 	return mySpecies;
 }

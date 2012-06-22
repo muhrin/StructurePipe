@@ -37,6 +37,8 @@ public:
 
   void registerElement(const ElementPointer & obj);
 
+  ElementInstPointer getRoot();
+
 protected:
 
   typedef ::std::map<SchemaObjectUid, ElementPointer> ElementsContainer;

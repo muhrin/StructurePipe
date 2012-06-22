@@ -17,12 +17,12 @@
 namespace sstbx { namespace build_cell {
 
 AtomsDescription::AtomsDescription():
-mySpecies(sstbx::common::CUSTOM_1),
+mySpecies(sstbx::common::AtomSpeciesId::CUSTOM_1),
 count(0)
 {
 }
 
-AtomsDescription::AtomsDescription(const ::sstbx::common::AtomSpeciesId species, const size_t count):
+AtomsDescription::AtomsDescription(const ::sstbx::common::AtomSpeciesId::Value  species, const size_t count):
 mySpecies(species),
 count(count)
 {}
@@ -62,12 +62,12 @@ bool AtomsDescription::removeAtomConstraint(const AtomConstraintDescription * co
 	return true;
 }
 
-const ::sstbx::common::AtomSpeciesId AtomsDescription::getSpecies() const
+const ::sstbx::common::AtomSpeciesId::Value  AtomsDescription::getSpecies() const
 {
 	return mySpecies;
 }
 
-void AtomsDescription::setElementType(const ::sstbx::common::AtomSpeciesId species)
+void AtomsDescription::setElementType(const ::sstbx::common::AtomSpeciesId::Value  species)
 {
 	mySpecies = species;
 }

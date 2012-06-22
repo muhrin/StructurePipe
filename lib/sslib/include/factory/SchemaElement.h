@@ -42,6 +42,9 @@ public:
   typedef ::boost::shared_ptr<IInputObject>           DefaultValuePointer;
   typedef ::boost::shared_ptr<const IInputObject>     DefaultValueConstPointer;
 
+  static const SchemaObjectUid    NULL_SUPERTYPE;
+  static const SchemaObjectUid    UID_ANONYMOUS;
+
   virtual ~SchemaElement() {}
 
   const SchemaObjectUid &              getUid() const;
@@ -61,8 +64,9 @@ protected:
   SchemaElement(
     const IInputObject::Type        type,
     const ::std::string &           name,
-    const SchemaObjectUid &         uid      = SchemaObjectUid(),
-    const bool                      isAbstract = false
+    const SchemaObjectUid &         uid        = SchemaObjectUid(),
+    const bool                      isAbstract = false,
+    const SchemaObjectUid           supertype  = NULL_SUPERTYPE
   );
 
 private:

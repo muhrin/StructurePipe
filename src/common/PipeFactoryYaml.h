@@ -19,8 +19,8 @@
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
-// From Pipelib
-#include <DefaultBarrier.h>
+
+#include <pipelib/DefaultBarrier.h>
 
 // From SSTbx
 #include <io/StructureWriterManager.h>
@@ -58,7 +58,7 @@ public:
 
   PipeFactoryYaml();
 
-  IPipelineTyp *      createPipeline(const YAML::Node & pipeNode);
+  SpPipelineTyp *      createPipeline(const YAML::Node & pipeNode);
   SpPipeBlockTyp *    createBlock(const YAML::Node & blockNode);
   SpStartBlockTyp *   createStartBlock(const YAML::Node & blockNode);
 
@@ -87,7 +87,7 @@ private:
   /* The factory retains ownership and will cleanly release these under the
   /* RAII idiom when the factory is destroyed.
   /**/
-  ::boost::ptr_vector<IPipelineTyp>   myPipelines;
+  ::boost::ptr_vector<SpPipelineTyp>   myPipelines;
   ::boost::ptr_vector<SpBlockTyp>     myBlocks;
   ::boost::ptr_vector< ::pipelib::DefaultBarrier< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp> >
     myBarriers;

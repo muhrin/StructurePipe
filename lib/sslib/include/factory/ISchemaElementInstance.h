@@ -42,7 +42,7 @@ public:
   virtual bool                               isRequired() const = 0;
   virtual int                                getSize() const = 0;
   virtual bool                               validate(const IInputObject & obj, const SchemaDoc & doc) const = 0;
-  virtual SharedPtrTyp                       clone() const = 0;
+  //virtual SharedPtrTyp                       clone() const = 0;
   // Default entries
   virtual size_t                             numDefaults() const = 0;
   virtual const DefaultValueConstPtr         getDefault(const size_t idx) const = 0;

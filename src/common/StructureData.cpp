@@ -13,7 +13,12 @@
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe { namespace common {
+namespace spipe
+{
+namespace common
+{
+
+const ::sstbx::utility::Key< ::boost::filesystem::path> StructureObjectKeys::LAST_ABS_SAVE_PATH;
 
 StructureData::StructureData():
 myStructure(NULL)

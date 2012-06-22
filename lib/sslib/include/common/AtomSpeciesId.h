@@ -18,17 +18,20 @@ namespace sstbx
 namespace common
 {
 
-enum AtomSpeciesId
+struct AtomSpeciesId
 {
-  DUMMY,
-	H,
-	NA,
-	CL,
-	CUSTOM_1,
-	CUSTOM_2,
-	CUSTOM_3,
-	CUSTOM_4,
-	CUSTOM_5
+  enum Value
+  {
+    DUMMY,
+	  H,
+	  NA,
+	  CL,
+	  CUSTOM_1,
+	  CUSTOM_2,
+	  CUSTOM_3,
+	  CUSTOM_4,
+	  CUSTOM_5
+  };
 };
 
 }

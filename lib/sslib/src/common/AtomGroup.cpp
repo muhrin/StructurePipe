@@ -7,6 +7,7 @@
 
 // INCLUDES /////////////////
 #include "SSLib.h"
+#include "common/AtomGroup.h"
 
 #include <set>
 
@@ -14,7 +15,6 @@
 
 // Local includes
 #include "common/Atom.h"
-#include "common/AtomGroup.h"
 #include "common/StructureTreeEvent.h"
 
 
@@ -163,7 +163,7 @@ size_t AtomGroup::getNumAtomsDescendent() const
 
 size_t AtomGroup::getNumAtomSpecies() const
 {
-	::std::set<AtomSpeciesId> speciesSet;
+  ::std::set<AtomSpeciesId::Value> speciesSet;
 	for(size_t i = 0; i < atoms.size(); ++i)
 	{
 		speciesSet.insert(atoms[i]->getSpecies());
@@ -173,16 +173,16 @@ size_t AtomGroup::getNumAtomSpecies() const
 
 size_t AtomGroup::getNumAtomSpeciesDescendent() const
 {
-	::std::vector<AtomSpeciesId> species;
+  ::std::vector<AtomSpeciesId::Value> species;
 	getAtomSpeciesDescendent(species);
 
-	::std::set<AtomSpeciesId> speciesSet;
+  ::std::set<AtomSpeciesId::Value> speciesSet;
 	speciesSet.insert(species.begin(), species.end());
 
 	return speciesSet.size();
 }
 
-size_t AtomGroup::getNumAtomsOfSpecies(const AtomSpeciesId species) const
+size_t AtomGroup::getNumAtomsOfSpecies(const AtomSpeciesId::Value species) const
 {
   size_t numAtoms = 0;
   BOOST_FOREACH(const Atom * const a, atoms)
@@ -193,7 +193,7 @@ size_t AtomGroup::getNumAtomsOfSpecies(const AtomSpeciesId species) const
   return numAtoms;
 }
 
-size_t AtomGroup::getNumAtomsOfSpeciesDescendent(const AtomSpeciesId species) const
+size_t AtomGroup::getNumAtomsOfSpeciesDescendent(const AtomSpeciesId::Value species) const
 {
   size_t numAtoms = 0;
   BOOST_FOREACH(const AtomGroup * const g, groups)
@@ -206,7 +206,7 @@ size_t AtomGroup::getNumAtomsOfSpeciesDescendent(const AtomSpeciesId species) co
 }
 
 
-void AtomGroup::getAtomSpecies(::std::vector<AtomSpeciesId> & species) const
+void AtomGroup::getAtomSpecies(::std::vector<AtomSpeciesId::Value> & species) const
 {
 	for(size_t i = 0; i < atoms.size(); ++i)
 	{
@@ -214,7 +214,7 @@ void AtomGroup::getAtomSpecies(::std::vector<AtomSpeciesId> & species) const
 	}
 }
 
-void AtomGroup::getAtomSpeciesDescendent(::std::vector<AtomSpeciesId> & species) const
+void AtomGroup::getAtomSpeciesDescendent(::std::vector<AtomSpeciesId::Value> & species) const
 {
 	// First do mine...
 	getAtomSpecies(species);

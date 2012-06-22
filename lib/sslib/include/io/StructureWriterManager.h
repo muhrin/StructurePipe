@@ -40,7 +40,7 @@ public:
 	void deregisterWriter(IStructureWriter & writer);
 
 	
-	void writeStructure(
+	bool writeStructure(
 		const ::sstbx::common::Structure & str,
 		const ::boost::filesystem::path & path,
 		const AdditionalData * const data = NULL) const;

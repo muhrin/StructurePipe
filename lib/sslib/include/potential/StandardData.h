@@ -10,10 +10,13 @@
 #define STANDARD_DATA_H
 
 // INCLUDES /////////////////////////////////////////////
+#include <cstring>
+
+#include <armadillo>
+
 #include "common/Structure.h"
 #include "common/AbstractFmidCell.h"
 
-#include <armadillo>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -25,7 +28,7 @@ struct StandardData
 	explicit StandardData(const sstbx::common::Structure & structure);
 
 	sstbx::common::AbstractFmidCell<FloatType> unitCell;
-	std::size_t							        numParticles;
+  ::std::size_t							      numParticles;
 	FloatType							          totalEnthalpy;
 	typename arma::Mat<FloatType>		pos;
 	typename arma::Mat<FloatType>		forces;

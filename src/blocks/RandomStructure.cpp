@@ -19,7 +19,7 @@
 #include <common/Structure.h>
 
 // From PipelineLib
-#include <IPipeline.h>
+#include <pipelib/IPipeline.h>
 
 // Local includes
 #include "common/SharedData.h"
@@ -32,15 +32,15 @@ namespace spipe { namespace blocks {
 RandomStructure::RandomStructure(
 	const size_t numToGenerate,
   const ::sstbx::build_cell::ICrystalStructureGenerator &   structureGenerator,
-  const ::sstbx::build_cell::StructureDescription * const   structureDescription,
-  const ::sstbx::build_cell::RandomCellDescription<double> * const  cellDescription):
+  const ::boost::shared_ptr<const ::sstbx::build_cell::StructureDescription > & structureDescription,
+  const ::boost::shared_ptr<const ::sstbx::build_cell::RandomCellDescription<double> > & cellDescription):
 pipelib::Block<StructureDataTyp, SharedDataTyp>("Random structures"),
 myNumToGenerate(numToGenerate),
 myStructureGenerator(structureGenerator),
 myStructureDescription(structureDescription),
 myCellDescription(cellDescription),
-myUseSharedDataStructureDesc(!structureDescription),
-myUseSharedDataCellDesc(!cellDescription)
+myUseSharedDataStructureDesc(!structureDescription.get()),
+myUseSharedDataCellDesc(!cellDescription.get())
 {
 }
 
@@ -95,7 +95,7 @@ void RandomStructure::initDescriptions()
   const common::SharedData & sharedDat = myPipeline->getSharedData();
   if(myUseSharedDataStructureDesc)
   {
-    if(sharedDat.structureDescription)
+    if(sharedDat.structureDescription.get())
     {
       myStructureDescription = sharedDat.structureDescription;
     }
@@ -107,7 +107,7 @@ void RandomStructure::initDescriptions()
 
   if(myUseSharedDataCellDesc)
   {
-    if(sharedDat.cellDescription)
+    if(sharedDat.cellDescription.get())
     {
       myCellDescription = sharedDat.cellDescription;
     }

@@ -6,16 +6,17 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "StructurePipe.h"
+#include "blocks/WriteStructure.h"
 
-#include <boost/filesystem.hpp>
+#include <pipelib/IPipeline.h>
 
 // From SSTbx
 #include <io/AdditionalData.h>
 #include <io/StructureWriterManager.h>
+#include <utility/BoostFilesystem.h>
 
 // From local
-#include "blocks/WriteStructure.h"
+#include "common/SharedData.h"
 #include "common/StructureData.h"
 #include "common/UtilityFunctions.h"
 
@@ -46,13 +47,18 @@ void WriteStructure::in(::spipe::common::StructureData & data)
 	
 	// Create the path to store the structure
 	path p(*data.name + ".res");
-	if(data.group)
-	{
-		path folder(*data.group);
-		p = folder / p;
-	}
+
+  // Prepend the pipe output path
+  p = myPipeline->getSharedData().getOutputPath() / p;
 	
-	myWriterManager.writeStructure(*data.getStructure(), p, &ioData);
+	if(myWriterManager.writeStructure(*data.getStructure(), p, &ioData))
+  {
+    // Save the location that the file was written
+    data.objectsStore.insert(
+      ::spipe::common::StructureObjectKeys::LAST_ABS_SAVE_PATH,
+      ::boost::filesystem::absolute(p)
+    );
+  }
 
 	myOutput->in(data);
 }

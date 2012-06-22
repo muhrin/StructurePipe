@@ -14,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "factory/AbstractInputObject.h"
-#include "factory/ScalarValue.h"
+#include "factory/IInputObject.h"
 
 // DEFINES //////////////////////////////////////////////
 
@@ -26,26 +26,26 @@ namespace sstbx
 namespace factory
 {
 
-class ScalarValue;
-
 class Scalar : public AbstractInputObject
 {
 public:
 
-  explicit Scalar(const ::std::string & name);
+  typedef IInputObject::SharedPtrConstTyp InterfacePtrConst;
 
+  Scalar(const ::std::string & value);
+
+  // From IInputObject
   virtual size_t                  getSize() const;
-  virtual void                    insert(::boost::shared_ptr<IInputObject> & value);
-  virtual const IInputObject *    operator [](const size_t idx) const;
-
-  virtual ::boost::shared_ptr<IInputObject> clone() const;
+  virtual const ::std::string &   getValue() const;
+  // Access mechanism for sequences
+  virtual const SharedPtrConstTyp  operator [](const size_t idx) const;
+  // Access mechanism for maps
+  virtual const SharedPtrConstTyp  operator [](const ::std::string & key) const;
+  // End from IInputObject
 
 private:
 
-  // Copy constructor
-  Scalar(const Scalar & toCopy);
-
-  ::boost::shared_ptr<IInputObject>     myValue;
+  const ::std::string     myValue;
 
 };
 
