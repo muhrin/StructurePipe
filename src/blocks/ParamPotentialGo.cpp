@@ -115,7 +115,7 @@ void ParamPotentialGo::updateTable(const ::spipe::StructureDataTyp & strData)
   const ::std::string & strName = *strData.name;
 
   if(strData.enthalpy)
-    table.insert(strName, "energy", ::boost::lexical_cast<::std::string>(*strData.enthalpy));
+    table.insert(strName, "energy", ::boost::lexical_cast< ::std::string>(*strData.enthalpy));
 }
 
 

@@ -202,7 +202,7 @@ void StoichiometrySearch::releaseBufferedStructures(
     spacegroup = sweepPipeData->objectsStore.find(common::StructureObjectKeys::SPACEGROUP_NUMBER);
     if(spacegroup)
     {
-      table.insert(tableKey, "sg", ::boost::lexical_cast<::std::string>(*spacegroup));
+      table.insert(tableKey, "sg", ::boost::lexical_cast< ::std::string>(*spacegroup));
     }
 
     // Pass the structure on

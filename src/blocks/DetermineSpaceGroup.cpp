@@ -37,7 +37,7 @@ namespace common = ::spipe::common;
 namespace ssc = ::sstbx::common;
 
 DetermineSpaceGroup::DetermineSpaceGroup():
-Block< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>("Determine space group")
+::pipelib::Block< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>("Determine space group")
 {}
 
 void DetermineSpaceGroup::in(StructureDataTyp & data)

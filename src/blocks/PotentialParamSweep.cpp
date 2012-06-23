@@ -150,8 +150,8 @@ void PotentialParamSweep::updateTable(const utility::DataTable::Key & key, const
     {
       table.insert(
         key,
-        "param" + ::boost::lexical_cast<::std::string>(i),
-        ::boost::lexical_cast<::std::string>(params->operator [](i)));
+        "param" + ::boost::lexical_cast< ::std::string>(i),
+        ::boost::lexical_cast< ::std::string>(params->operator [](i)));
     }
   }
 
@@ -160,7 +160,7 @@ void PotentialParamSweep::updateTable(const utility::DataTable::Key & key, const
     table.insert(
       key,
       "energy",
-      ::boost::lexical_cast<::std::string>(*sweepStrData.enthalpy));
+      ::boost::lexical_cast< ::std::string>(*sweepStrData.enthalpy));
   }
 
   const fs::path savePath = sweepStrData.getRelativeSavePath(*myPipeline);
@@ -176,7 +176,7 @@ void PotentialParamSweep::updateTable(const utility::DataTable::Key & key, const
   const unsigned int * const spacegroup = sweepStrData.objectsStore.find(common::StructureObjectKeys::SPACEGROUP_NUMBER);
   if(spacegroup)
   {
-    table.insert(key, "sg", ::boost::lexical_cast<::std::string>(*spacegroup));
+    table.insert(key, "sg", ::boost::lexical_cast< ::std::string>(*spacegroup));
   }
 }
 

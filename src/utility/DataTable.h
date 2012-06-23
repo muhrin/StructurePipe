@@ -81,7 +81,7 @@ private:
   typedef ::std::vector<Column>            ColumnInfo;
 
   typedef ::pipelib::event::EventSupport<IDataTableChangeListener> ChangeListenerSupport;
-  typedef ::std::vector<::std::string>    NotesContainer;
+  typedef ::std::vector< ::std::string>    NotesContainer;
 
   void insertColumn(const Column & colInfo, const size_t col);
   Value insertValue(const Key & key, const size_t col, const Value & value);

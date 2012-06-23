@@ -40,7 +40,7 @@ namespace utility
 // FORWARD DECLARATIONS ////////////////////////////////////
 class DataTableWriter;
 
-class DataTableSupport : public ::pipelib::event::IPipeListener<::spipe::SpPipelineTyp>
+class DataTableSupport : public ::pipelib::event::IPipeListener< ::spipe::SpPipelineTyp>
 {
 public:
 
