@@ -55,13 +55,19 @@ endif()
     ${ARMADILLO_INCLUDE_DIRS}
   )
 
-add_subdirectory(lib/pipelib)   # Pipeline library
-add_subdirectory(lib/sslib)     # Structure searching library
-add_subdirectory(lib/yaml-cpp)  # YAML library
+## Subdirectories/libraries #############################
+
+add_subdirectory(lib/pipelib)    # Pipeline library
+add_subdirectory(lib/sslib)      # Structure searching library
+add_subdirectory(lib/yaml-cpp)   # YAML library (http://code.google.com/p/yaml-cpp/)
 add_subdirectory(lib/spglib)     # Space group library (https://sourceforge.net/projects/spglib/)
 add_subdirectory(src ${CMAKE_BINARY_DIR}/bin)
 
 # Suppress yaml-cpp warnings
-set_target_properties(yaml-cpp PROPERTIES COMPILE_FLAGS "-w")
+if(MSVC)
+  set_target_properties(yaml-cpp PROPERTIES COMPILE_FLAGS "/W0")
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+  set_target_properties(yaml-cpp PROPERTIES COMPILE_FLAGS "/-w")
+endif()
 
 set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")
