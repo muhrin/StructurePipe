@@ -11,6 +11,7 @@
 
 // INCLUDES /////////////////////////////////////////////
 
+#include <boost/shared_ptr.hpp>
 
 // DEFINES //////////////////////////////////////////////
 
@@ -42,7 +43,7 @@ public:
 
 	virtual bool optimise(
 		::sstbx::common::Structure & structure,
-		StandardData<double> * & data) const = 0;
+    ::boost::shared_ptr<StandardData<double> > & data) const = 0;
 };
 
 }}

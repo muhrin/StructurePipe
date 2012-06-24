@@ -9,16 +9,24 @@
 #ifndef STRUCTURE_PIPE_H
 #define STRUCTURE_PIPE_H
 
+#ifndef NULL
+#define NULL 0
+#endif
+
+#define DEBUG 1
+
+
 // Include the configuration header file
 #include "StructurePipeConfig.h"
 
-#define NULL 0
-
-#define DEBUG 1
+// Comment this out if YAML should not be used
+#define SP_USE_YAML
 
 #if !DEBUG
 	#define SP_ASSERT(x)
 #else
+  #include <iostream>
+
 	#define SP_ASSERT(x) \
 	if (! (x)) \
 	{ \
@@ -33,29 +41,65 @@
 		//} \
 
 
+// INCLUDES /////////////
+
+
 // FORWARD DECLARES //////////////
-namespace pipelib {
-	template <class DataType, class PipelineDataType>
-	class IPipeline;
+namespace pipelib
+{
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
+class Block;
+
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
+class IPipeline;
+
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
+class PipeBlock;
+
+template <
+  typename PipelineData,
+  typename SharedData,
+  typename GlobalData
+>
+class StartBlock;
+
 }
 
 namespace spipe
 {
-	namespace common
-	{
-		class SharedData;
-		class StructureData;
-	}
+namespace common
+{
+
+class SharedData;
+class StructureData;
+
 }
+}
+
 
 namespace spipe
 {
 
-	// TYPEDEFS ///////////////////////
+// TYPEDEFS ///////////////////////
 
-	typedef spipe::common::StructureData			StructureDataTyp;
-	typedef spipe::common::SharedData					SharedDataTyp;
-	typedef pipelib::IPipeline<StructureDataTyp, SharedDataTyp>	IPipelineTyp;
+typedef spipe::common::StructureData			                                    StructureDataTyp;
+typedef spipe::common::SharedData					                                    SharedDataTyp;
+typedef pipelib::IPipeline<StructureDataTyp, SharedDataTyp, SharedDataTyp>  	SpPipelineTyp;
+typedef pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>        SpBlockTyp;
+typedef pipelib::PipeBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>    SpPipeBlockTyp;
+typedef pipelib::StartBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>   SpStartBlockTyp;
 
 }
 

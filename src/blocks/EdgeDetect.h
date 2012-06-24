@@ -24,9 +24,9 @@
 #include <utility/MultiArray.h>
 #include <utility/MultiIdx.h>
 
-// From Pipelib
-#include <AbstractSimpleBlock.h>
-#include <IPipeline.h>
+
+#include <pipelib/AbstractSimpleBlock.h>
+#include <pipelib/IPipeline.h>
 
 // Local includes
 #include "common/StructureData.h"
@@ -36,14 +36,16 @@
 // FORWARD DECLARATIONS ////////////////////////////////////
 
 
-namespace spipe { namespace blocks {
+namespace spipe
+{
+namespace blocks
+{
 
-template <class CompDatTyp>
 class EdgeDetect : public pipelib::AbstractSimpleBlock<StructureDataTyp, SharedDataTyp>
 {
 public:
 
-	EdgeDetect(const ::sstbx::utility::IStructureComparator<CompDatTyp> & comparator);
+	EdgeDetect(const ::sstbx::utility::IStructureComparator & comparator);
 	virtual ~EdgeDetect();
 
 	// From Block ////////////////////////
@@ -65,41 +67,39 @@ private:
 	struct EdgeMapper
 	{
 		EdgeMapper(
-			const ::sstbx::utility::MultiIdx<size_t>					extents,
-			const ::sstbx::utility::IStructureComparator<CompDatTyp> &	comparator,
-			const ::std::string &										filePath);
+			const ::sstbx::utility::MultiIdx<size_t>				extents,
+			const ::sstbx::utility::IStructureComparator &	comparator,
+			const ::std::string &										        filePath);
 		~EdgeMapper();
 
-		size_t											              nParams;
-		::sstbx::utility::EdgeMap<CompDatTyp> *		edgeMap;
-		OutputData *									            outputData;
-		::std::ofstream									          outStream;
+		size_t											   nParams;
+		::sstbx::utility::EdgeMap *	  edgeMap;
+		OutputData *								  outputData;
+		::std::ofstream							  outStream;
 	};
 
 	void writeOutput(const FinishedEdgeContainer & finishedEdges);
 
-	const ::sstbx::utility::IStructureComparator<CompDatTyp> &	myComparator;
-	EdgeMapper *												myCurrentEdgeMapper;
+	const ::sstbx::utility::IStructureComparator &	myComparator;
+	EdgeMapper *												            myCurrentEdgeMapper;
 };
 
 // IMPLEMENTATION /////////////////////////////////
 
 // EdgeMapper implementation //
-template <class CompDatTyp>
-EdgeDetect<CompDatTyp>::EdgeMapper::EdgeMapper(
-	const ::sstbx::utility::MultiIdx<size_t>					extents,
-	const ::sstbx::utility::IStructureComparator<CompDatTyp> &	comparator,
-	const ::std::string &										filePath):
-nParams(extents.dims),
-edgeMap(new ::sstbx::utility::EdgeMap<CompDatTyp>(comparator, extents)),
+EdgeDetect::EdgeMapper::EdgeMapper(
+	const ::sstbx::utility::MultiIdx<size_t>				extents,
+	const ::sstbx::utility::IStructureComparator &	comparator,
+	const ::std::string &										        filePath):
+nParams(extents.dims()),
+edgeMap(new ::sstbx::utility::EdgeMap(comparator, extents)),
 outputData(new OutputData(extents, NULL))
 {
 	// Open the output file in append mode
 	outStream.open(filePath.c_str(), ::std::ios::app);
 }
 
-template <class CompDatTyp>
-EdgeDetect<CompDatTyp>::EdgeMapper::~EdgeMapper()
+EdgeDetect::EdgeMapper::~EdgeMapper()
 {
 	if(edgeMap)
 		delete edgeMap;
@@ -111,23 +111,20 @@ EdgeDetect<CompDatTyp>::EdgeMapper::~EdgeMapper()
 
 // EdgeDetect implementation //
 
-template <class CompDatTyp>
-EdgeDetect<CompDatTyp>::EdgeDetect(const ::sstbx::utility::IStructureComparator<CompDatTyp> & comparator):
+EdgeDetect::EdgeDetect(const ::sstbx::utility::IStructureComparator & comparator):
 pipelib::Block<StructureDataTyp, SharedDataTyp>("Edge detect"),
 myComparator(comparator),
 myCurrentEdgeMapper(NULL)
 {
 }
 
-template <class CompDatTyp>
-EdgeDetect<CompDatTyp>::~EdgeDetect()
+EdgeDetect::~EdgeDetect()
 {
 	if(myCurrentEdgeMapper)
 		delete myCurrentEdgeMapper;
 }
 
-template <class CompDatTyp>
-void EdgeDetect<CompDatTyp>::pipelineStarting()
+void EdgeDetect::pipelineStarting()
 {
 	using ::sstbx::utility::EdgeMap;
 	using ::sstbx::utility::MultiArray;
@@ -151,8 +148,7 @@ void EdgeDetect<CompDatTyp>::pipelineStarting()
 	}
 }
 
-template <class CompDatTyp>
-void EdgeDetect<CompDatTyp>::pipelineFinishing()
+void EdgeDetect::pipelineFinishing()
 {
 	// Clean up the edge data
 	if(myCurrentEdgeMapper)
@@ -162,8 +158,7 @@ void EdgeDetect<CompDatTyp>::pipelineFinishing()
 	}
 }
 
-template <class CompDatTyp>
-void EdgeDetect<CompDatTyp>::in(spipe::common::StructureData & data)
+void EdgeDetect::in(spipe::common::StructureData & data)
 {
 	using arma::Col;
 	using arma::vec;
@@ -198,8 +193,7 @@ void EdgeDetect<CompDatTyp>::in(spipe::common::StructureData & data)
 	myOutput->in(data);
 }
 
-template <class CompDatTyp>
-void EdgeDetect<CompDatTyp>::writeOutput(
+void EdgeDetect::writeOutput(
 	const FinishedEdgeContainer & finishedEdges)
 {
 	using ::sstbx::utility::FinishedEdgePair;

@@ -12,26 +12,35 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-#include "AbstractSimpleBlock.h"
+#include <map>
+
+#include <boost/filesystem/fstream.hpp>
 
 #include <armadillo>
 
-#include <boost/filesystem/fstream.hpp>
-#include <map>
+#include <pipelib/AbstractSimpleBlock.h>
+
+
+#include "utility/DataTable.h"
+#include "utility/DataTableSupport.h"
+
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
 namespace sstbx
 {
-	namespace potential
-	{
-		class IParameterisable;
-		class IGeomOptimiser;
-	}
+namespace potential
+{
+class IParameterisable;
+class IGeomOptimiser;
+}
 }
 
 
-namespace spipe { namespace blocks {
+namespace spipe
+{
+namespace blocks
+{
 
 class ParamPotentialGo : public pipelib::AbstractSimpleBlock<StructureDataTyp, SharedDataTyp>
 {
@@ -40,9 +49,10 @@ public:
 		::sstbx::potential::IParameterisable & paramPotential,
 		::sstbx::potential::IGeomOptimiser & optimiser);
 
-	virtual ~ParamPotentialGo();
-
+  // From Block /////////////////////////
+  virtual void pipelineInitialising();
 	virtual void pipelineStarting();
+  // End from Block ////////////////////
 
 	virtual void in(spipe::common::StructureData & data);
 
@@ -52,15 +62,13 @@ private:
 
   arma::vec setPotentialParams(const ::arma::vec & params);
 
-	::std::fstream & getDbStream();
+  void updateTable(const ::spipe::StructureDataTyp & strData);
 
-	::sstbx::potential::IParameterisable &	myParamPotential;
-	const sstbx::potential::IGeomOptimiser & myOptimiser;
+	::sstbx::potential::IParameterisable &      myParamPotential;
+	const sstbx::potential::IGeomOptimiser &    myOptimiser;
+  ::arma::vec                                 myCurrentParams;
 
-	boost::filesystem::fstream				myDbStream;
-	PotDbTyp								myDb;
-
-	::std::string							myStructureGroup;
+  ::spipe::utility::DataTableSupport          myTableSupport;
 };
 
 }}

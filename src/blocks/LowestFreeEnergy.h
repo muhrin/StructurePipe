@@ -12,7 +12,7 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-#include <AbstractSimpleBarrier.h>
+#include <pipelib/AbstractSimpleBarrier.h>
 
 
 // FORWARD DECLARATIONS ////////////////////////////////////

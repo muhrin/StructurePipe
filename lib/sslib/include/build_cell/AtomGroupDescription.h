@@ -10,23 +10,24 @@
 
 // INCLUDES ///////////////////
 #include "SSLib.h"
-#include "IAtomConstrainable.h"
 
+#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
+
+#include "build_cell/AtomConstraintDescription.h"
+#include "build_cell/IAtomConstrainable.h"
 #include "build_cell/ConstraintDescriptionId.h"
 
-#include <map>
-#include <vector>
 
 
 // FORWARD DECLARES ///////////
 namespace sstbx
 {
-  namespace build_cell
-  {
-	  class AtomConstraintDescription;
-	  class AtomsDescription;
-	  class IConstraintDescription;
-  }
+namespace build_cell
+{
+class AtomsDescription;
+class IConstraintDescription;
+}
 }
 
 
@@ -36,6 +37,9 @@ class AtomGroupDescription : public IAtomConstrainable
 {
 public:
 
+  typedef ::boost::ptr_vector<AtomsDescription>     AtomsContainer;
+  typedef ::boost::ptr_vector<AtomGroupDescription> GroupsContainer;
+
 	friend class AtomsDescription;
 
 	AtomGroupDescription(AtomGroupDescription * const parent = NULL);
@@ -43,7 +47,7 @@ public:
 
 	/** Child groups */
 
-	const ::std::vector<AtomGroupDescription *> & getChildGroups() const;
+	const GroupsContainer & getChildGroups() const;
 
 	void addChild(AtomGroupDescription * const childGroup);
 
@@ -51,40 +55,36 @@ public:
 
 	/** Child atoms */
 
-	const ::std::vector<AtomsDescription *> & getChildAtoms() const;
+	const AtomsContainer & getChildAtoms() const;
 
 	void addChild(AtomsDescription * const childAtom);
 
   void clearChildAtoms();
 
-	/** IAtomConstrainable */
-
-	virtual AtomConstraintDescription * getAtomConstraint(const ConstraintDescriptionId id) const;
-
+	// From IAtomConstrainable //
+	virtual const AtomConstraintDescription * getAtomConstraint(const ConstraintDescriptionId id) const;
 	virtual void addAtomConstraint(AtomConstraintDescription * const atomConstraint);
-
-	virtual bool removeAtomConstraint(AtomConstraintDescription * const atomConstraint);
+	virtual bool removeAtomConstraint(const AtomConstraintDescription * const atomConstraint);
+  // End from IAtomConstrainable
 
 	template <class CType>
 	CType * getAtomConstraint(const ConstraintDescriptionId id) const;
 
 protected:
 
-	typedef ::std::map<ConstraintDescriptionId, AtomConstraintDescription *> AtomCMap;
-
-	typedef ::std::pair<ConstraintDescriptionId, AtomConstraintDescription *> AtomCMapPair;
+  typedef ::boost::ptr_map<const ConstraintDescriptionId, AtomConstraintDescription> AtomCMap;
 
 	/** Parent group */
 
 	void setParent(AtomGroupDescription * const parent);
 
-	AtomConstraintDescription * getAtomConstraintInherits(const ConstraintDescriptionId id) const;
+	const AtomConstraintDescription *
+    getAtomConstraintInherits(const ConstraintDescriptionId id) const;
 
 	AtomGroupDescription *					myParent;
 
-	::std::vector<AtomsDescription *>		childAtoms;
-
-	::std::vector<AtomGroupDescription *>	childGroups;
+	AtomsContainer		              myChildAtoms;
+	GroupsContainer                 myChildGroups;
 
 	AtomCMap myAtomConstraints;
 

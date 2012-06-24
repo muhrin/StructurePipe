@@ -10,41 +10,43 @@
 #define WRITE_STRUCTURE_H
 
 // INCLUDES /////////////////////////////////////////////
+#include "StructurePipe.h"
 
-#include "AbstractSimpleBlock.h"
+#include "pipelib/AbstractSimpleBlock.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
 
 namespace sstbx
 {
-	namespace io
-	{
-		struct AdditionalData;
-		class StructureWriterManager;
-	}
+namespace io
+{
+struct AdditionalData;
+class StructureWriterManager;
+}
 }
 
 
-// TODO: Make TpsdGeomOptimiser have interface superclass that is non generic
-// so that this block does not need to be generic itself.
+namespace spipe
+{
+namespace blocks
+{
 
-namespace spipe { namespace blocks {
 
-
-class WriteStructure : public pipelib::AbstractSimpleBlock<StructureDataTyp, SharedDataTyp>
+class WriteStructure : public pipelib::AbstractSimpleBlock< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>
 {
 public:
 	WriteStructure(const ::sstbx::io::StructureWriterManager & writerManager);
 
-	virtual void in(spipe::common::StructureData & data);
+  virtual void in(spipe::StructureDataTyp & data);
 
 
 private:
 	const ::sstbx::io::StructureWriterManager & myWriterManager;
 };
 
-}}
+}
+}
 
 
 #endif /* WRITE_STRUCTURE_H */

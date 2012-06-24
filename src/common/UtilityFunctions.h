@@ -11,6 +11,8 @@
 
 // INCLUDES /////////////////////////////////////////////
 
+#include <string>
+
 // Tell boost not to try to link to the date_time library as interprocess
 // only uses a portion that doesn't need compilation.
 // See: http://www.boost.org/doc/libs/1_49_0/doc/html/interprocess.html#interprocess.intro.introduction_building_interprocess
@@ -23,18 +25,18 @@
 // FORWARD DECLARES ////////////////////////////////
 namespace spipe
 {
-  namespace common
-  {
-    class StructureData;
-  }
+namespace common
+{
+class StructureData;
+}
 }
 
 namespace sstbx
 {
-  namespace io
-  {
-    struct AdditionalData;
-  }
+namespace io
+{
+struct AdditionalData;
+}
 }
 
 // DEFINES ////////////////////////////////////////
@@ -51,28 +53,28 @@ namespace sstbx
 // FUNCTIONS ////////////////////////////////////////
 
 namespace spipe {
-  namespace common {
+namespace common {
 
-    ProcessId getProcessId();
+ProcessId getProcessId();
 
-    std::string generateUniqueName();
+std::string generateUniqueName();
 
-    void generateIoDataFromStructure(
-      const ::spipe::common::StructureData & strData,
-      sstbx::io::AdditionalData & ioData);
+void generateIoDataFromStructure(
+  const ::spipe::common::StructureData & strData,
+  sstbx::io::AdditionalData & ioData);
 
-    void generateStructureDataFromIo(
-      const sstbx::io::AdditionalData & ioData,
-      spipe::common::StructureData & strData);
+void generateStructureDataFromIo(
+  const sstbx::io::AdditionalData & ioData,
+  spipe::common::StructureData & strData);
 
-    bool parseParamString(
-      const std::string & str,
-      double &            from,
-      double &            step,
-      unsigned int &      nSteps
-    );
+bool parseParamString(
+  const std::string & str,
+  double &            from,
+  double &            step,
+  unsigned int &      nSteps
+);
 
-  }
+}
 }
 
 #endif /* UTILITY_FUNCTIONS_H */

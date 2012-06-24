@@ -14,3 +14,6 @@ CMakeLocal.txt
 CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
+
+# Temporary editor file
+*~

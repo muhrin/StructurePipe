@@ -13,12 +13,14 @@
 // INCLUDES /////////////////////////////////////////////
 #include "SSLib.h"
 
+#include "utility/IBufferedComparator.h"
 #include "utility/IStructureComparator.h"
 #include "utility/Loops.h"
 #include "utility/MultiArray.h"
 #include "utility/MultiIdx.h"
 
 #include <boost/foreach.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <armadillo>
 
@@ -32,7 +34,6 @@ namespace sstbx { namespace utility {
 
 typedef ::std::pair<sstbx::utility::MultiIdx<size_t>, double> FinishedEdgePair;
 
-template <typename CompDatTyp>
 class EdgeMap
 {
 public:
@@ -49,7 +50,6 @@ public:
 		typedef ::std::vector<DimDirectionPair > RemainingContainer;
 
 		EdgeData();
-		~EdgeData();
 
 		void init(const size_t numDirections);
 
@@ -57,8 +57,8 @@ public:
       const DimDirectionPair &  neigh,
       const double              maskVal);
 
-		/** The comparison data for this element */
-		const CompDatTyp *					compData;
+		/** The comparison data handle for this element */
+    IBufferedComparator::DataHandle compData;
 		/** The neighbours we still have to perform edge detection against */
 		RemainingContainer					dimsToDo;
 		/** The edge detection values along each parameter direction */
@@ -72,9 +72,8 @@ public:
 	};
 
 	EdgeMap(
-		const IStructureComparator<CompDatTyp> & comparator,
+		const IStructureComparator & comparator,
 		const MultiIdx<size_t> & extents);
-	~EdgeMap();
 
 
 	/**
@@ -95,7 +94,7 @@ private:
 
 	double getMaskValue(const size_t dim, const MultiIdx<int> & dr) const;
 
-	const IStructureComparator<CompDatTyp> &	myComparator;
+  const ::boost::shared_ptr<IBufferedComparator>	myComparator;
 
 	size_t										myExternalDims;
 	/** The number of dimensions in parameter space that we are doing edge detection on. */
@@ -107,10 +106,10 @@ private:
 	::std::vector<size_t>					myDimsMap;
 
 	/** The convolution mask for each parameter space point */
-	MultiArray<double>	*					myMask;
-	MultiIdx<int> *								myMaskOrigin;
+  ::boost::shared_ptr<MultiArray<double> >    myMask;
+  ::boost::shared_ptr<MultiIdx<int> >					myMaskOrigin;
 
-	MultiArray<EdgeData> *				myEdgeData;
+  ::boost::shared_ptr<MultiArray<EdgeData> >	myEdgeData;
 
 	const size_t								  myFilterLength;
 	::arma::Col<int>							mySmoothing;
@@ -121,23 +120,14 @@ private:
 
 
 // EdgeData implementation //
-template <typename CompDatTyp>
-EdgeMap<CompDatTyp>::EdgeData::EdgeData():
+EdgeMap::EdgeData::EdgeData():
 compData(NULL),
 value(0.0),
 references(0)
 {
 }
 
-template <typename CompDatTyp>
-EdgeMap<CompDatTyp>::EdgeData::~EdgeData()
-{
-	if(compData)
-		delete compData;
-}
-
-template <typename CompDatTyp>
-void EdgeMap<CompDatTyp>::EdgeData::init(const size_t numDirections)
+void EdgeMap::EdgeData::init(const size_t numDirections)
 {
 	directionValues.set_size(numDirections);
   directionValues.fill(0);
@@ -145,8 +135,7 @@ void EdgeMap<CompDatTyp>::EdgeData::init(const size_t numDirections)
   maskTotals.fill(0);
 }
 
-template <typename CompDatTyp>
-void EdgeMap<CompDatTyp>::EdgeData::addNeighbour(
+void EdgeMap::EdgeData::addNeighbour(
   const DimDirectionPair &  neigh,
   const double              maskVal)
 {
@@ -157,22 +146,18 @@ void EdgeMap<CompDatTyp>::EdgeData::addNeighbour(
 
 // EdgeMap implementation /////////////////
 
-template <typename CompDatTyp>
-EdgeMap<CompDatTyp>::EdgeMap(
-	const IStructureComparator<CompDatTyp> & comparator,
+EdgeMap::EdgeMap(
+	const IStructureComparator & comparator,
 	const MultiIdx<size_t> & _extents):
-myComparator(comparator),
-myFilterLength(3),
-myMaskOrigin(NULL),
-myMask(NULL),
-myEdgeData(NULL)
+myComparator(comparator.generateBuffered()),
+myFilterLength(3)
 {
 	using ::sstbx::utility::MultiArray;
 	using ::sstbx::utility::MultiIdx;
 
 	// First create the map to parameter space dimensions we will do edge detection for
 	// (i.e. all non-zero)
-	myExternalDims = _extents.dims;
+	myExternalDims = _extents.dims();
 	for(size_t i = 0; i < myExternalDims; ++i)
 	{
 		if(_extents[i] != 0)
@@ -198,7 +183,7 @@ myEdgeData(NULL)
 		reducedExtents[i] = _extents[myDimsMap[i]];
 	}
 
-	myEdgeData = new MultiArray<EdgeData>(reducedExtents);
+	myEdgeData.reset(new MultiArray<EdgeData>(reducedExtents));
 
 	// Set the initial values for the edge data
 	for(Loops<size_t> loops(reducedExtents); !loops.isAtEnd(); ++loops)
@@ -236,19 +221,7 @@ myEdgeData(NULL)
 	}
 }
 
-template <typename CompDatTyp>
-EdgeMap<CompDatTyp>::~EdgeMap()
-{
-	if(myMaskOrigin)
-		delete myMaskOrigin;
-	if(myMask)
-		delete myMask;
-	if(myEdgeData)
-		delete myEdgeData;
-}
-
-template <typename CompDatTyp>
-bool EdgeMap<CompDatTyp>::update(
+bool EdgeMap::update(
 	const ::sstbx::common::Structure &			str,
 	const MultiIdx<size_t> &					pos,
 	::std::vector<FinishedEdgePair > * const	finishedEdges)
@@ -262,7 +235,7 @@ bool EdgeMap<CompDatTyp>::update(
 	EdgeData & edge = (*myEdgeData)[idx];
 
 	// Generate the comparison data for this point
-	edge.compData = myComparator.generateComparisonData(str);
+	edge.compData = myComparator->generateComparisonData(str);
 
 	// Now do comparison with neighbours
 	MultiIdx<size_t> neighPos(myNDims);
@@ -272,8 +245,8 @@ bool EdgeMap<CompDatTyp>::update(
 
   // To hold the result of the final directions value vector divided by the mask totals
   arma::Col<double> normValVector;
-	for(typename EdgeData::RemainingContainer::iterator it = edge.dimsToDo.begin();
-		it != edge.dimsToDo.end(); /* increment in body */)
+	for(EdgeData::RemainingContainer::iterator it = edge.dims()ToDo.begin();
+		it != edge.dims()ToDo.end(); /* increment in body */)
 	{
 		const DimDirectionPair & p = *it;
 		neighPos = idx + p.second;
@@ -286,32 +259,33 @@ bool EdgeMap<CompDatTyp>::update(
       // Calculate the difference between the structures
 			const double difference =
         getMaskValue(p.first, p.second) *
-        myComparator.compareStructures(*edge.compData, *neighbour.compData);
+        myComparator->compareStructures(edge.compData, neighbour.compData);
 			edge.directionValues(p.first)       += difference;
 			neighbour.directionValues(p.first)  += difference;
 
       // Find ourselves amongst the neighbours neighbour list and remove
-			typename EdgeData::RemainingContainer::iterator itNeigh = 
-        std::find(neighbour.dimsToDo.begin(), neighbour.dimsToDo.end(), reverse);
-			if(itNeigh != neighbour.dimsToDo.end())
+			EdgeData::RemainingContainer::iterator itNeigh = 
+        std::find(neighbour.dims()ToDo.begin(), neighbour.dims()ToDo.end(), reverse);
+			if(itNeigh != neighbour.dims()ToDo.end())
 			{
-				neighbour.dimsToDo.erase(itNeigh);
+				neighbour.dims()ToDo.erase(itNeigh);
 			}
 			else
 			{
 				throw "Neighbour reference not found, the mask should be symmetric!";
 			}
       // Finished processing this neighbour so remove it from our neighbour list
-			it = edge.dimsToDo.erase(it);
+			it = edge.dims()ToDo.erase(it);
 
 			// Drop the reference counts;
 			--edge.references;
 			--neighbour.references;
 
-			if(edge.references == 0 && edge.dimsToDo.empty())
+			if(edge.references == 0 && edge.dims()ToDo.empty())
 			{
-				delete edge.compData;
-				edge.compData = NULL;
+        // Free up this comparison data, we won't be needing it anymore
+        myComparator->releaseComparisonData(edge.compData);
+
         normValVector = edge.directionValues / edge.maskTotals;
 				edge.value	= sqrt(dot(normValVector, normValVector) / myNDims);
 				if(finishedEdges)
@@ -320,10 +294,11 @@ bool EdgeMap<CompDatTyp>::update(
 				}
 				finishedEdge = true;
 			}
-			if(neighbour.references == 0 && neighbour.dimsToDo.empty())
+			if(neighbour.references == 0 && neighbour.dims()ToDo.empty())
 			{
-				delete neighbour.compData;
-				neighbour.compData = NULL;
+        // Free up this comparison data, we won't be needing it anymore
+        myComparator->releaseComparisonData(neighbour.compData);
+
         normValVector = neighbour.directionValues / neighbour.maskTotals;
 				neighbour.value	= sqrt(dot(normValVector, normValVector) / myNDims);
 				if(finishedEdges)
@@ -343,21 +318,19 @@ bool EdgeMap<CompDatTyp>::update(
 	return finishedEdge;
 }
 
-template <typename CompDatTyp>
-void EdgeMap<CompDatTyp>::generateMask()
+void EdgeMap::generateMask()
 {
 	using ::sstbx::utility::Loops;
 
-	myMaskOrigin = new MultiIdx<int>(
-    myNDims,
-    1 /*This needs to be the center of filter*/
+	myMaskOrigin.reset(
+    new MultiIdx<int>(myNDims, 1 /*This needs to be the center of filter*/)
   );
 
 	// Create an extent for the convolution mask (size = 3^myNDims)
 	const MultiIdx<size_t> maskExtents(myNDims, 3);
 
 	// Generate the convolution mask along the 0th parameter direction
-	myMask = new MultiArray<double>(maskExtents);
+	myMask.reset(new MultiArray<double>(maskExtents));
 	myMask->fill(1);	// Fill with 1 so multiplication works
 
   double maskVal = 0.0;
@@ -368,7 +341,7 @@ void EdgeMap<CompDatTyp>::generateMask()
 		// Do 0th direction
     maskVal *= myDerivative(pos[0]);
 		// Now do all other directions
-		for(size_t i = 1; i < maskExtents.dims; ++i)
+		for(size_t i = 1; i < maskExtents.dims(); ++i)
 		{
       maskVal *= mySmoothing(pos[i]);
 		}
@@ -376,8 +349,7 @@ void EdgeMap<CompDatTyp>::generateMask()
 	}
 }
 
-template <typename CompDatTyp>
-MultiIdx<size_t> EdgeMap<CompDatTyp>::internalToExternal(const MultiIdx<size_t> & internal)
+MultiIdx<size_t> EdgeMap::internalToExternal(const MultiIdx<size_t> & internal)
 {
 	MultiIdx<size_t> idx(myExternalDims, 0);
 	for(size_t i = 0; i < myNDims; ++i)
@@ -387,8 +359,7 @@ MultiIdx<size_t> EdgeMap<CompDatTyp>::internalToExternal(const MultiIdx<size_t> 
 	return idx;
 }
 
-template <typename CompDatTyp>
-MultiIdx<size_t> EdgeMap<CompDatTyp>::externalToInternal(const MultiIdx<size_t> & external)
+MultiIdx<size_t> EdgeMap::externalToInternal(const MultiIdx<size_t> & external)
 {
 	MultiIdx<size_t> idx(myNDims);
 	for(size_t i = 0; i < myNDims; ++i)
@@ -398,15 +369,14 @@ MultiIdx<size_t> EdgeMap<CompDatTyp>::externalToInternal(const MultiIdx<size_t> 
 	return idx;
 }
 
-template <typename CompDatTyp>
-double EdgeMap<CompDatTyp>::getMaskValue(const size_t dim, const MultiIdx<int> & dr) const
+double EdgeMap::getMaskValue(const size_t dim, const MultiIdx<int> & dr) const
 {
-	MultiIdx<int> relPos(dr.dims);
+	MultiIdx<int> relPos(dr.dims());
 	relPos = dr;
 	// Swap around 0th and dim^th dr coordinates to get correct direction
 	::std::swap(relPos[0], relPos[dim]);
 	// Now translate to mask coordinate space
-	MultiIdx<size_t> pos(relPos.dims);
+	MultiIdx<size_t> pos(relPos.dims());
 	pos = relPos + *myMaskOrigin;
 
 	return (*myMask)[pos];

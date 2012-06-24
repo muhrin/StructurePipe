@@ -11,23 +11,33 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
-// From SSTbx
-#include <utility/MultiIdx.h>
+#include <vector>
 
-// From PipeLib
-#include <AbstractSimpleStartBlock.h>
-#include <IDataSink.h>
+#include <boost/shared_ptr.hpp>
 
 #include <armadillo>
 
-#include <vector>
+#include <pipelib/AbstractSimpleStartBlock.h>
+#include <pipelib/IDataSink.h>
+
+// From SSTbx
+#include <utility/MultiIdx.h>
+
+// Local includes
+#include "utility/DataTable.h"
+#include "utility/DataTableSupport.h"
+
+namespace spipe
+{
 
 // FORWARD DECLARATIONS ////////////////////////////////////
-template <class DataType, class GlobalDataType>
-class IPipeline;
+namespace common
+{
+class DataTableWriter;
+}
 
-
-namespace spipe { namespace blocks {
+namespace blocks
+{
 
 class PotentialParamSweep :
 	public pipelib::AbstractSimpleStartBlock<StructureDataTyp, SharedDataTyp>,
@@ -38,16 +48,28 @@ public:
 		const ::arma::vec	&		from,
 		const ::arma::vec	&		step,
 		const ::arma::Col<unsigned int> & nSteps,
-		IPipelineTyp &				sweepPipeline);
+		SpPipelineTyp &				sweepPipeline);
 
 	// From Block /////////////////////////////////
 	virtual void pipelineInitialising();
 	virtual void pipelineInitialised();
 	virtual void start();
-	virtual void in(StructureDataTyp * const data);
 	// End from Block //////////////////////////////
 
+  // From IDataSink /////////////////////////////
+  virtual void in(StructureDataTyp * const data);
+  // End from IDataSink /////////////////////////
+
 private:
+
+  void releaseBufferedStructures(
+    const ::spipe::utility::DataTable::Key & key
+  );
+
+  void updateTable(
+    const utility::DataTable::Key & key,
+    const StructureDataTyp & sweepStrData
+  );
 
 	size_t								              myNumParams;
 	const ::arma::vec					          myFrom;
@@ -55,7 +77,9 @@ private:
 	const ::arma::Col<unsigned int>			myNSteps;
 	::sstbx::utility::MultiIdx<size_t>	myStepExtents;
 
-	IPipelineTyp &                      mySweepPipeline;
+  ::spipe::utility::DataTableSupport  myTableSupport;
+
+	SpPipelineTyp &                      mySweepPipeline;
 
 	/** Buffer to store structure that have finished their path through the sub pipeline. */
 	::std::vector<StructureDataTyp *>		myBuffer;

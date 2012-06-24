@@ -56,14 +56,14 @@ private:
 template <typename CounterType>
 Loops<CounterType>::Loops(const MultiIdx<CounterType> & extents):
 myExtents(extents),
-myPosition(extents.dims),
+myPosition(extents.dims()),
 myGlobalPos(0)
 {
 	reset();
 
 	// Calculate the total number of loops
 	myTotalLoops = myExtents[0] != 0 ? myExtents[0] : 1;
-	for(size_t i = 1; i < myExtents.dims; ++i)
+	for(size_t i = 1; i < myExtents.dims(); ++i)
 	{
 		myTotalLoops *= (myExtents[i] != 0 ? myExtents[i] : 1);
 	}
@@ -87,7 +87,7 @@ template <typename CounterType>
 Loops<CounterType> & Loops<CounterType>::operator ++()
 {
 	bool increment = true;
-	for(size_t i = 0; increment && i < myExtents.dims; ++i)
+	for(size_t i = 0; increment && i < myExtents.dims(); ++i)
 	{
 		// Increment the position vector and check it does not exceed
 		// the max number of loops

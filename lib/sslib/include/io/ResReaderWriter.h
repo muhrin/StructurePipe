@@ -18,10 +18,10 @@
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx
 {
-	namespace common
-	{
-		class AtomSpeciesDatabase;
-	}
+namespace common
+{
+class AtomSpeciesDatabase;
+}
 }
 
 

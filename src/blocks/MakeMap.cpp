@@ -10,8 +10,8 @@
 
 #include "common/StructureData.h"
 
-// From Pipelib
-#include <IPipeline.h>
+
+#include <pipelib/IPipeline.h>
 
 // NAMESPACES ////////////////////////////////
 

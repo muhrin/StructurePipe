@@ -37,6 +37,25 @@ set(sslib_Header_Files__common
 )
 source_group("Header Files\\common" FILES ${sslib_Header_Files__common})
 
+set(sslib_Header_Files__factory
+  include/factory/AbstractInputObject.h
+  include/factory/IInputObject.h
+  include/factory/ISchemaElementInstance.h
+  include/factory/Scalar.h
+  include/factory/SchemaAnon.h
+  include/factory/SchemaDoc.h
+  include/factory/SchemaElement.h
+  include/factory/SchemaList.h
+  include/factory/SchemaMap.h
+  include/factory/SchemaMapSingle.h
+  include/factory/SchemaObjectUid.h
+  include/factory/SchemaScalarValue.h
+  include/factory/SchemaScalarValueAny.h
+  include/factory/SchemaScalarValueLiteral.h
+  include/factory/SslibElements.h
+)
+source_group("Header Files\\factory" FILES ${sslib_Header_Files__factory})
+
 set(sslib_Header_Files__io
   include/io/AdditionalData.h
   include/io/IStructureReader.h
@@ -60,8 +79,11 @@ set(sslib_Header_Files__potential
 source_group("Header Files\\potential" FILES ${sslib_Header_Files__potential})
 
 set(sslib_Header_Files__utility
-  include/utility/AbstractComparator.h
+  include/utility/BoostFilesystem.h
   include/utility/EdgeMap.h
+  include/utility/GenericBufferedComparator.h
+  include/utility/HeterogeneousMap.h
+  include/utility/IBufferedComparator.h
   include/utility/IStructureComparator.h
   include/utility/IStructureSet.h
   include/utility/Loops.h
@@ -69,7 +91,6 @@ set(sslib_Header_Files__utility
   include/utility/MultiArray.h
   include/utility/MultiIdx.h
   include/utility/PromotableType.h
-  include/utility/PropertiesMap.h
   include/utility/SortedDistanceComparator.h
   include/utility/StableComparison.h
   include/utility/UniqueStructureSet.h
@@ -83,6 +104,7 @@ source_group("Header Files" FILES ${sslib_Header_Files__})
 set(sslib_Header_Files
   ${sslib_Header_Files__build_cell}
   ${sslib_Header_Files__common}
+  ${sslib_Header_Files__factory}
   ${sslib_Header_Files__io}
   ${sslib_Header_Files__potential}
   ${sslib_Header_Files__utility}

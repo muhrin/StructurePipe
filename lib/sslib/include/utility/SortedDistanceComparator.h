@@ -10,22 +10,26 @@
 #define SORTED_DISTANCE_COMPARATOR_H
 
 // INCLUDES /////////////////////////////////////////////
-#include "utility/AbstractComparator.h"
+#include <vector>
+
+#include <boost/shared_ptr.hpp>
 
 #include "common/AbstractFmidCell.h"
-
-#include <vector>
+#include "utility/IStructureComparator.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx
 {
-	namespace common
-	{
-		class Structure;
-	}
+namespace common
+{
+class Structure;
+}
 }
 
-namespace sstbx { namespace utility {
+namespace sstbx
+{
+namespace utility
+{
 
 struct SortedDistanceComparisonData
 {
@@ -33,31 +37,47 @@ struct SortedDistanceComparisonData
     const ::sstbx::common::AbstractFmidCell<> & _cell ,
     const double _maxDist):
 		cell(_cell), maxDist(_maxDist) {}
+
 	const ::sstbx::common::AbstractFmidCell<>	cell;
 	::std::vector<double>						sortedDistances;
   const double                    maxDist;
 };
 
-class SortedDistanceComparator : public AbstractComparator<SortedDistanceComparisonData>
+class SortedDistanceComparator : public IStructureComparator
 {
 public:
 
 	typedef SortedDistanceComparisonData DataTyp;
-
-  // Our compareStructures/areSimilar will hide these in our parent so explicitly
-  // bring them back into scope
-  using AbstractComparator<SortedDistanceComparisonData>::compareStructures;
-  using AbstractComparator<SortedDistanceComparisonData>::areSimilar;
+  /*typedef GenericBufferedComparator<
+    SortedDistanceComparator,
+    SortedDistanceComparator::DataTyp> BufferedTyp*/
+  typedef IBufferedComparator   BufferedTyp;
 
 	SortedDistanceComparator(double tolerance = DEFAULT_TOLERANCE);
 
+  // From IStructureComparator ////////////////
+
 	virtual double compareStructures(
+		const sstbx::common::Structure & str1,
+		const sstbx::common::Structure & str2) const;
+
+	virtual bool areSimilar(
+		const sstbx::common::Structure & str1,
+		const sstbx::common::Structure & str2) const;
+
+  virtual ::boost::shared_ptr<BufferedTyp> generateBuffered() const;
+
+  // End from IStructureComparator /////////////
+
+  // Methods needed to conform to expectations laid out by GenericBufferedComparator ///
+	double compareStructures(
 		const SortedDistanceComparisonData & dist1,
 		const SortedDistanceComparisonData & dist2) const;
 
-	virtual bool areSimilar(
+	bool areSimilar(
 		const SortedDistanceComparisonData & dist1,
 		const SortedDistanceComparisonData & dist2) const;
+  // End conformation methods //////////////
 
 	virtual const DataTyp * generateComparisonData(const ::sstbx::common::Structure & str) const;
 

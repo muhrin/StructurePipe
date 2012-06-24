@@ -10,7 +10,7 @@
 
 // INCLUDES /////////////////////////////////////////////
 
-#include "AbstractSimpleBlock.h"
+#include "pipelib/AbstractSimpleBlock.h"
 
 #include <map>
 
@@ -37,17 +37,15 @@ public:
 
 	virtual void in(::spipe::common::StructureData & data);
 
+  // From Block /////////////////////////
 	virtual void pipelineFinishing();
+  // End from Block ///////////////////
 
 private:
 
 	typedef ::std::map<
 		::sstbx::common::Structure *,
 		::spipe::common::StructureData *> StructureDataMap;
-
-	typedef ::std::pair<
-		::sstbx::common::Structure *,
-		::spipe::common::StructureData *> StructureDataMapPair;
 
 	sstbx::utility::IStructureSet & myStructureSet;
 

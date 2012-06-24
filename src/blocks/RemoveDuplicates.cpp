@@ -17,7 +17,7 @@
 #include <utility/IStructureSet.h>
 
 // From PipelineLib
-#include <IPipeline.h>
+#include <pipelib/IPipeline.h>
 
 #include <boost/foreach.hpp>
 
@@ -41,7 +41,7 @@ void RemoveDuplicates::in(::spipe::common::StructureData & data)
 	{
 		// Flag the data to say that we will want to use it again
 		myPipeline->flagData(*this, data);
-		myStructureDataMap.insert(StructureDataMapPair(data.getStructure(), &data));
+    myStructureDataMap.insert(StructureDataMap::value_type(data.getStructure(), &data));
 		data.timesFound.reset(1);
 
 		myOutput->in(data);
@@ -76,7 +76,7 @@ void RemoveDuplicates::in(::spipe::common::StructureData & data)
 void RemoveDuplicates::pipelineFinishing()
 {
 	// Make sure we clean up any data we are holding on to
-	BOOST_FOREACH(StructureDataMapPair pair, myStructureDataMap)
+  BOOST_FOREACH(const StructureDataMap::value_type & pair, myStructureDataMap)
 	{
 		myPipeline->unflagData(*this, *pair.second);
 	}

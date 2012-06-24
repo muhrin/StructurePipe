@@ -18,15 +18,15 @@
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx
 {
-	namespace common
-	{
-		class Structure;
-	}
-	namespace io
-	{
-		struct AdditionalData;
-		class IStructureWriter;
-	}
+namespace common
+{
+class Structure;
+}
+namespace io
+{
+struct AdditionalData;
+class IStructureWriter;
+}
 }
 
 
@@ -40,7 +40,7 @@ public:
 	void deregisterWriter(IStructureWriter & writer);
 
 	
-	void writeStructure(
+	bool writeStructure(
 		const ::sstbx::common::Structure & str,
 		const ::boost::filesystem::path & path,
 		const AdditionalData * const data = NULL) const;
@@ -49,7 +49,6 @@ public:
 protected:
 
 	typedef ::std::map<std::string, IStructureWriter *> ExtensionsMap;
-	typedef ::std::pair<std::string, IStructureWriter *> ExtensionsMapPair;
 
 	ExtensionsMap	myExtensionsMap;
 };

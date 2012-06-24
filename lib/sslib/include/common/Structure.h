@@ -16,14 +16,20 @@
 #include <map>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
-namespace sstbx { namespace common {
-	enum AtomSpeciesId;
+namespace sstbx
+{
+namespace common
+{
 
 	template <typename FloatType>
 	class AbstractFmidCell;
-}}
+}
+}
 
-namespace sstbx { namespace common {
+namespace sstbx
+{
+namespace common
+{
 
 class Structure : public AtomGroup {
 public:

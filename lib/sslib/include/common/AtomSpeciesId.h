@@ -13,22 +13,29 @@
 
 // FORWARD DECLARATIONS ///////
 
-namespace sstbx { namespace common {
-
-enum AtomSpeciesId
+namespace sstbx
 {
-  DUMMY,
-	H,
-	NA,
-	CL,
-	CUSTOM_1,
-	CUSTOM_2,
-	CUSTOM_3,
-	CUSTOM_4,
-	CUSTOM_5
+namespace common
+{
+
+struct AtomSpeciesId
+{
+  enum Value
+  {
+    DUMMY,
+	  H,
+	  NA,
+	  CL,
+	  CUSTOM_1,
+	  CUSTOM_2,
+	  CUSTOM_3,
+	  CUSTOM_4,
+	  CUSTOM_5
+  };
 };
 
-}}
+}
+}
 
 
 #endif /* ATOM_SPECIES_IDS_H */
