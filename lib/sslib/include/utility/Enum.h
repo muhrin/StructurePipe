@@ -63,7 +63,7 @@ public:
 
     const Enumerator * operator[](const int ordinal) const
     {
-      const ListType::const_iterator it =
+      const typename ListType::const_iterator it =
         ::std::find_if(
           myList.begin(),
           myList.end(),

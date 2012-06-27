@@ -11,11 +11,8 @@
 
 // INCLUDES /////////////////////////////////////////////
 
-#include <vector>
-
 #include "common/AtomSpeciesId.h"
 #include "common/Structure.h"
-#include "potential/SimplePairPotential.h"
 #include "potential/StandardData.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
@@ -31,9 +28,20 @@ namespace potential
 template <typename FloatType = double>
 struct SimplePairPotentialData : public StandardData<FloatType>
 {
-  // TODO: Sort this
-  // should be: typedef typename SimplePairPotential<FloatType>::SpeciesList SpeciesList;
-  typedef typename ::std::vector< typename ::sstbx::common::AtomSpeciesId::Value>  SpeciesList;
+  /**
+  /* A list from 0 to N of the species that each row (and column) of the parameter
+  /* matrices corresponds to.  The entries should be unique.
+  /*                      Na Cl
+  /* epsilon_{ij} = Na (  1  0.5 )
+  /*                CL ( 0.5  1  )
+  /* speciesMap(0 => Na, 1 => Cl)
+  /**/
+  typedef ::std::vector< typename ::sstbx::common::AtomSpeciesId::Value>  SpeciesList;
+
+  /**
+  /* Any atoms that are not being considered by the potential will be labelled with this.
+  /**/
+  static const int IGNORE_ATOM = -1;
 
 	SimplePairPotentialData(
     const sstbx::common::Structure & structure,
@@ -79,7 +87,7 @@ StandardData<FloatType>(structure)
     }
     if(!found)
     {
-      species[i] = SimplePairPotential<FloatType>::IGNORE_ATOM;
+      species[i] = IGNORE_ATOM;
     }
   }
 
@@ -89,3 +97,4 @@ StandardData<FloatType>(structure)
 }
 
 #endif /* SIMPLE_PAIR_POTENTIAL_DATA_H */
+

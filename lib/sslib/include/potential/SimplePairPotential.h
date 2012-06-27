@@ -58,12 +58,7 @@ public:
   /*                CL ( 0.5  1  )
   /* speciesMap(0 => Na, 1 => Cl)
   /**/
-  typedef ::std::vector< typename ::sstbx::common::AtomSpeciesId::Value>  SpeciesList;
-
-  /**
-  /* Any atoms that are not being considered by the potential will be labelled with this.
-  /**/
-  static const int IGNORE_ATOM = -1;
+  typedef typename SimplePairPotentialData<FloatType>::SpeciesList  SpeciesList;
 
   /**
   /* Combining rules for setting off-diagonal length/energy scale terms. See
@@ -116,6 +111,8 @@ public:
   void evaluate(SimplePairPotentialData<FloatType> & data) const;
 
 private:
+
+  typedef SimplePairPotentialData<FloatType> DataType;
 
   typedef GenericPotentialEvaluator<SimplePairPotential<FloatType>, SimplePairPotentialData<FloatType> >
     EvaluatorTyp;
@@ -493,7 +490,7 @@ void SimplePairPotential<FloatType>::evaluate(
 	for(size_t i = 0; i < data.numParticles; ++i)
 	{
 		speciesI = data.species[i];
-    if(speciesI == IGNORE_ATOM)
+    if(speciesI == DataType::IGNORE_ATOM)
       continue;
 
 		posI = data.pos.col(i);
@@ -501,7 +498,7 @@ void SimplePairPotential<FloatType>::evaluate(
 		for(size_t j = i; j < data.numParticles; ++j)
 		{
 			speciesJ = data.species[j];
-      if(speciesJ == IGNORE_ATOM)
+      if(speciesJ == DataType::IGNORE_ATOM)
         continue;
 
 			posJ = data.pos.col(j);
@@ -598,3 +595,4 @@ void SimplePairPotential<FloatType>::resetAccumulators(SimplePairPotentialData<F
 }}
 
 #endif /* SIMPLE_PAIR_POTENTIAL_H */
+

@@ -75,13 +75,14 @@ find_package_handle_standard_args(Qhull DEFAULT_MSG QHULL_LIBRARY QHULL_INCLUDE_
 
 ## QHull C++ component check
 
+if(QHULL_FOUND)
 foreach(COMPONENT ${Qhull_FIND_COMPONENTS})
   if(${COMPONENT} STREQUAL "QhullCpp") 
     find_file(QHULLCPP_HEADER
-      NAMES libqhullcpp/QHull.h
+      NAMES libqhullcpp/Qhull.h
       HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}" "${QHULL_INCLUDE_DIR}"
       PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
-      PATH_SUFFIXES src/libqhullcpp libqhullcpp include)
+      PATH_SUFFIXES qhull src/libqhull libqhull include)
 
     find_library(QHULLCPP_LIBRARY 
       NAMES ${QHULLCPP_RELEASE_NAME}
@@ -104,6 +105,7 @@ foreach(COMPONENT ${Qhull_FIND_COMPONENTS})
 
   endif()
 endforeach()
+endif(QHULL_FOUND)
 
 mark_as_advanced(QHULL_LIBRARY QHULL_LIBRARY_DEBUG QHULL_INCLUDE_DIR)
 
