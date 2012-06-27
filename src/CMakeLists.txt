@@ -6,6 +6,7 @@ set(spipe_Header_Files__blocks
   blocks/EdgeDetect.h
   blocks/LoadPotStructures.h
   blocks/LowestFreeEnergy.h
+  blocks/MakeConvexHull.h
   blocks/MakeMap.h
   blocks/NiggliReduction.h
   blocks/ParamPotentialGo.h
@@ -22,6 +23,7 @@ set(spipe_Source_Files__blocks
   blocks/DetermineSpaceGroup.cpp
   blocks/LoadPotStructures.cpp
   blocks/LowestFreeEnergy.cpp
+  blocks/MakeConvexHull.cpp
   blocks/MakeMap.cpp
   blocks/NiggliReduction.cpp
   blocks/ParamPotentialGo.cpp
@@ -140,11 +142,28 @@ add_executable(spipe
 add_dependencies(spipe sslib yaml_cpp spglib)
 
 # Libraries we need to link to
+target_link_libraries(spipe
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
+  ${ARMADILLO_LIBRARIES}
+  sslib
+  yaml-cpp
+  spglib
+)
+if(SP_USE_QHULL)
   target_link_libraries(spipe
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SYSTEM_LIBRARY}	# filesystem depends on this
-    ${ARMADILLO_LIBRARIES}
-    sslib
-    yaml-cpp
-    spglib
+    ${QHULL_LIBRARIES}
   )
+endif(SP_USE_QHULL)
+
+
+###########################
+## StructurePipe Library ##
+###########################
+add_library(libspipe
+  ${spipe_Files}
+)
+
+add_dependencies(libspipe sslib yaml_cpp spglib)
+
+

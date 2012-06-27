@@ -10,13 +10,12 @@
 #define SIMPLE_PAIR_POTENTIAL_DATA_H
 
 // INCLUDES /////////////////////////////////////////////
-#include <map>
-#include <set>
 
-#include <armadillo>
+#include <vector>
 
 #include "common/AtomSpeciesId.h"
 #include "common/Structure.h"
+#include "potential/SimplePairPotential.h"
 #include "potential/StandardData.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
@@ -24,21 +23,32 @@
 
 // DEFINITION //////////////////////////////////////////////
 
-namespace sstbx { namespace potential {
+namespace sstbx
+{
+namespace potential
+{
 
 template <typename FloatType = double>
 struct SimplePairPotentialData : public StandardData<FloatType>
 {
-	SimplePairPotentialData(const sstbx::common::Structure & structure);
+  // TODO: Sort this
+  // should be: typedef typename SimplePairPotential<FloatType>::SpeciesList SpeciesList;
+  typedef typename ::std::vector< typename ::sstbx::common::AtomSpeciesId::Value>  SpeciesList;
 
-	std::vector<size_t>				species;
+	SimplePairPotentialData(
+    const sstbx::common::Structure & structure,
+    const SpeciesList &              speciesList);
+
+	std::vector<int>				species;
 
 };
 
 // IMPLEMENTATION //////////////////////////////////////////
 
 template <typename FloatType>
-SimplePairPotentialData<FloatType>::SimplePairPotentialData(const sstbx::common::Structure & structure):
+SimplePairPotentialData<FloatType>::SimplePairPotentialData(
+  const sstbx::common::Structure & structure,
+  const typename SimplePairPotentialData<FloatType>::SpeciesList & speciesList):
 StandardData<FloatType>(structure)
 {
   using sstbx::common::AtomSpeciesId;
@@ -47,27 +57,35 @@ StandardData<FloatType>(structure)
   std::vector<AtomSpeciesId::Value> strSpecies;
 	structure.getAtomSpeciesDescendent(strSpecies);
 
-	// Copy the species over to a set and sort so we know which
-	// species we have overall and in ascending order
-  std::set<AtomSpeciesId::Value> speciesSet(strSpecies.begin(), strSpecies.end());
-
-  std::vector<AtomSpeciesId::Value> sortedSpecies(speciesSet.begin(), speciesSet.end());
-	std::sort(sortedSpecies.begin(), sortedSpecies.end());
-
 	// Now populate our species vector
-	species.resize(strSpecies.size());
-	for(size_t i = 0; i < sortedSpecies.size(); ++i)
-	{
-		for(size_t j = 0; j < strSpecies.size(); ++j)
-		{
-			if(strSpecies[j] == sortedSpecies[i])
-			{
-				species[j] = i;
-			}
-		}
-	}
+  const size_t numAtoms = strSpecies.size();
+	species.resize(numAtoms);
+
+  bool found;
+  const size_t numSpecies = speciesList.size();
+  AtomSpeciesId::Value currentSpecies;
+  for(size_t i = 0; i < numAtoms; ++i)
+  {
+    currentSpecies = strSpecies[i];
+    found = false;
+    for(size_t j = 0; j < numSpecies; ++i)
+    {
+      if(currentSpecies == speciesList[i])
+      {
+        found = true;
+        species[i] = j;
+        break;
+      }
+    }
+    if(!found)
+    {
+      species[i] = SimplePairPotential<FloatType>::IGNORE_ATOM;
+    }
+  }
+
 }
 
-}}
+}
+}
 
 #endif /* SIMPLE_PAIR_POTENTIAL_DATA_H */
