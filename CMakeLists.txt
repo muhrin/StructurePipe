@@ -60,18 +60,25 @@ configure_file (
   "${PROJECT_BINARY_DIR}/src/StructurePipeConfig.h"
 )
 
-# Include directories with header files
-include_directories(
-  ${Boost_INCLUDE_DIRS}
-  ${ARMADILLO_INCLUDE_DIRS}
-  "${PROJECT_BINARY_DIR}/src"  # So that we find StructurePipeConfig.h
-)
-
 if(SP_USE_QHULL)
 include_directories(
   ${QHULL_INCLUDE_DIRS}
 )
 endif(SP_USE_QHULL)
+
+set(SPIPE_INCLUDE_DIRS
+  ${PROJECT_BINARY_DIR}/src  # So that we find StructurePipeConfig.h
+  ${PROJECT_SOURCE_DIR}/src
+  CACHE FILEPATH INTERNAL FORCE
+)
+
+# Include directories with header files
+include_directories(
+  ${Boost_INCLUDE_DIRS}
+  ${ARMADILLO_INCLUDE_DIRS}
+  ${SPIPE_INCLUDE_DIRS}
+)
+
 
 ## Subdirectories/libraries #############################
 

@@ -105,8 +105,8 @@ public:
 
 
   // From IPotential /////////////
-  virtual ::boost::shared_ptr<IPotentialEvaluator> createEvaluator(const sstbx::common::Structure & structure) const;
-  // End from IPotential
+  virtual ::boost::shared_ptr< IPotentialEvaluator > createEvaluator(const sstbx::common::Structure & structure) const;
+  // End from IPotential /////////
 
   void evaluate(SimplePairPotentialData<FloatType> & data) const;
 
@@ -114,7 +114,7 @@ private:
 
   typedef SimplePairPotentialData<FloatType> DataType;
 
-  typedef GenericPotentialEvaluator<SimplePairPotential<FloatType>, SimplePairPotentialData<FloatType> >
+  typedef GenericPotentialEvaluator< SimplePairPotential< FloatType >, SimplePairPotentialData< FloatType > >
     EvaluatorTyp;
 
 	void initCutoff(const FloatType cutoff);
@@ -256,7 +256,7 @@ size_t SimplePairPotential<FloatType>::getNumParams() const
 {
   const float fNumSpecies = myNumSpecies;
   // 2 (eps/sig) * n * (n + 1) / 2 + n(species) = n( n + 3)
-  return (size_t)(fNumSpecies * (fNumSpecies + 1.0));
+  return (size_t)(fNumSpecies * (fNumSpecies + 2.0));
 }
 
 template <typename FloatType>
@@ -575,7 +575,7 @@ template <typename FloatType>
   SimplePairPotential<FloatType>::createEvaluator(const sstbx::common::Structure & structure) const
 {
   // Build the data from the structure
-  ::boost::shared_ptr<SimplePairPotentialData<FloatType> > data(
+  ::boost::shared_ptr< SimplePairPotentialData< FloatType > > data(
     new SimplePairPotentialData<FloatType>(structure, mySpeciesList)
   );
 

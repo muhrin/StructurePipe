@@ -76,9 +76,9 @@ StandardData<FloatType>(structure)
   {
     currentSpecies = strSpecies[i];
     found = false;
-    for(size_t j = 0; j < numSpecies; ++i)
+    for(size_t j = 0; j < numSpecies; ++j)
     {
-      if(currentSpecies == speciesList[i])
+      if(currentSpecies == speciesList[j])
       {
         found = true;
         species[i] = j;
