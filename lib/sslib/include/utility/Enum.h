@@ -89,7 +89,7 @@ public:
 
   static const EnumeratorsList & values()
   {
-    return Enumerator::enumerators;
+    return Enumerator::enumerators();
   }
 
   inline int ordinal() const
@@ -128,14 +128,14 @@ protected:
     Enumerator():
       myOrdinal(++lastOrdinal)
     {
-      enumerators.insert(this);
+      enumerators().insert(this);
     }
 
     Enumerator(const int ordinal):
       myOrdinal(ordinal)
     {
       lastOrdinal = ordinal;
-      enumerators.insert(this);
+      enumerators().insert(this);
     }
 
     inline int ordinal() const { return myOrdinal; }
@@ -153,8 +153,18 @@ protected:
 
   private:
 
+    /**
+    /* Have to use this static initialization technique as it is possible that
+    /* an enumerator could be created before the enumerators list is.
+    /* See http://www.parashift.com/c++-faq-lite/ctors.html#faq-10.14 for details.
+    /**/
+    static EnumeratorsList & enumerators()
+    {
+      static EnumeratorsList enumerators;
+      return enumerators;
+    }
+
     static int             lastOrdinal;
-    static EnumeratorsList enumerators;
 
     const int myOrdinal;
 
@@ -199,9 +209,6 @@ private:
 // Start the list of enumerators at 0
 template <class Derived>
 int Enum<Derived>::Enumerator::lastOrdinal = 0;
-
-template <class Derived>
-typename Enum<Derived>::EnumeratorsList Enum<Derived>::Enumerator::enumerators;
 
 }
 }

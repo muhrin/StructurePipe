@@ -503,10 +503,9 @@ void SimplePairPotential<FloatType>::evaluate(
 
 			posJ = data.pos.col(j);
 
-			// TODO: Configure atom species and corresponding cutoffs
       // TODO: Buffer rSqs as getAllVectorsWithinCutoff needs to calculate it anyway!
 			imageVectors.clear();
-			uc.getAllVectorsWithinCutoff(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors);
+			uc.getAllVectorsWithinCutoff(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors, 10000);
 
       BOOST_FOREACH(r, imageVectors)
 			{			
