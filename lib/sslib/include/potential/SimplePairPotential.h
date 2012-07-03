@@ -79,6 +79,8 @@ public:
 	typedef typename arma::Mat<FloatType>						          Mat;
 	typedef typename arma::Col<FloatType>::template fixed<3>	Vec3;
 
+  static const unsigned int MAX_INTERACTION_VECTORS = 10000;
+
 	SimplePairPotential(
 		const size_t &				  numSpecies,
     const SpeciesList &     speciesList,
@@ -108,7 +110,7 @@ public:
   virtual ::boost::shared_ptr< IPotentialEvaluator > createEvaluator(const sstbx::common::Structure & structure) const;
   // End from IPotential /////////
 
-  void evaluate(SimplePairPotentialData<FloatType> & data) const;
+  bool evaluate(SimplePairPotentialData<FloatType> & data) const;
 
 private:
 
@@ -467,7 +469,7 @@ const ::std::string & SimplePairPotential<FloatType>::getParamString() const
 }
 
 template<typename FloatType>
-void SimplePairPotential<FloatType>::evaluate(
+bool SimplePairPotential<FloatType>::evaluate(
 	SimplePairPotentialData<FloatType> & data) const
 {
 	using namespace arma;
@@ -484,7 +486,7 @@ void SimplePairPotential<FloatType>::evaluate(
 
 	vector<SPP_TYPE::Vec3> imageVectors;
 
-	const sstbx::common::AbstractFmidCell<FloatType> & uc = data.unitCell;
+	const sstbx::common::AbstractFmidCell & uc = data.unitCell;
 	
 	// Loop over all particle pairs (including self-interaction)
 	for(size_t i = 0; i < data.numParticles; ++i)
@@ -505,7 +507,13 @@ void SimplePairPotential<FloatType>::evaluate(
 
       // TODO: Buffer rSqs as getAllVectorsWithinCutoff needs to calculate it anyway!
 			imageVectors.clear();
-			uc.getAllVectorsWithinCutoff(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors, 10000);
+			uc.getAllVectorsWithinCutoff(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors, MAX_INTERACTION_VECTORS);
+
+      // Check that there aren't too many interaction vectors
+      if(imageVectors.size() > MAX_INTERACTION_VECTORS)
+      {
+        return false;
+      }
 
       BOOST_FOREACH(r, imageVectors)
 			{			
@@ -567,10 +575,13 @@ void SimplePairPotential<FloatType>::evaluate(
 	// And convert to absoloute values
 	const FloatType invVolume = 1.0 / uc.getVolume();
 	data.stressMtx *= invVolume;
+
+  // Completed successfully
+  return true;
 }
 
 template <typename FloatType>
-::boost::shared_ptr<IPotentialEvaluator>
+::boost::shared_ptr< IPotentialEvaluator >
   SimplePairPotential<FloatType>::createEvaluator(const sstbx::common::Structure & structure) const
 {
   // Build the data from the structure

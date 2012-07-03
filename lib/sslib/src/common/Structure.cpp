@@ -8,15 +8,16 @@
 // INCLUDES /////////////////////////////////////
 #include "common/Structure.h"
 
+#include <vector>
+
 #include "common/AbstractFmidCell.h"
 #include "common/Atom.h"
 #include "common/StructureTreeEvent.h"
-
-#include <vector>
+#include "common/Types.h"
 
 namespace sstbx { namespace common {
 
-Structure::Structure(AbstractFmidCell<double> * const cell):
+Structure::Structure(AbstractFmidCell * const cell):
 myCell(cell),
 myNumAtomsDescendent(0),
 myAtomPositionsCurrent(false)
@@ -39,17 +40,17 @@ void Structure::setName(const std::string & name)
 	myName = name;
 }
 
-AbstractFmidCell<double> * Structure::getUnitCell()
+AbstractFmidCell * Structure::getUnitCell()
 {
 	return myCell;
 }
 
-const AbstractFmidCell<double> * Structure::getUnitCell() const
+const AbstractFmidCell * Structure::getUnitCell() const
 {
 	return myCell;
 }
 
-void Structure::setUnitCell(AbstractFmidCell<double> * const cell)
+void Structure::setUnitCell(AbstractFmidCell * const cell)
 {
 	if(myCell)
 	{
@@ -129,8 +130,8 @@ void Structure::childAdded(AtomGroup & childGroup)
 	}
 
 	// Now go through all atoms
-	const vector<Atom *> & atoms = childGroup.getAtoms();
-	for(vector<Atom *>::const_iterator it = atoms.begin(), end = atoms.end();
+	const vector<AtomPtr> & atoms = childGroup.getAtoms();
+	for(vector<AtomPtr>::const_iterator it = atoms.begin(), end = atoms.end();
 		it != end; ++it)
 	{
 		atomAdded(**it);
@@ -150,8 +151,8 @@ void Structure::childRemoved(AtomGroup & childGroup)
 	}
 
 	// Now go through all atoms
-	const vector<Atom *> & atoms = childGroup.getAtoms();
-	for(vector<Atom *>::const_iterator it = atoms.begin(), end = atoms.end();
+	const vector<AtomPtr> & atoms = childGroup.getAtoms();
+	for(vector<AtomPtr>::const_iterator it = atoms.begin(), end = atoms.end();
 		it != end; ++it)
 	{
 		atomRemoved(**it);

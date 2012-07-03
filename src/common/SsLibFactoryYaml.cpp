@@ -205,7 +205,7 @@ ssbc::StructureDescription * SsLibFactoryYaml::createStructureDescription(const 
   return strPtr;
 }
 
-::sstbx::build_cell::ICellGenerator<double> *
+::sstbx::build_cell::ICellGenerator *
 SsLibFactoryYaml::createCellGenerator(const YAML::Node & node)
 {
   //// Make sure we have a cell generator node
@@ -214,7 +214,7 @@ SsLibFactoryYaml::createCellGenerator(const YAML::Node & node)
   //  throw FactoryError() << ErrorType(BAD_TAG) << NodeName(node.Scalar());
   //}
 
-  ssbc::ICellGenerator<double> * generator = NULL;
+  ssbc::ICellGenerator * generator = NULL;
 
   if(node[kw::TYPE])
   {
@@ -245,7 +245,7 @@ SsLibFactoryYaml::createCrystalStructureGenerator(const YAML::Node & node)
 
   // First try to create the unit cell generator
 
-  ssbc::ICellGenerator<double> * cellGenerator = NULL;
+  ssbc::ICellGenerator * cellGenerator = NULL;
 
   if(node[kw::CELL_GENERATOR])
   {

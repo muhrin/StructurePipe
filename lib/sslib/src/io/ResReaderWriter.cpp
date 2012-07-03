@@ -155,7 +155,7 @@ void ResReaderWriter::writeStructure(
 	}
 
 	// Now write out the atom positions along with the spcies
-	const sstbx::common::AbstractFmidCell<double> * cell = str.getUnitCell();
+	const sstbx::common::AbstractFmidCell * cell = str.getUnitCell();
 	sstbx::common::Atom::Vec3 fracPos;
 	for(size_t i = 0; i < positions.n_cols; ++i)
 	{
@@ -342,7 +342,7 @@ void ResReaderWriter::readStructure(
           // Check if we found all six values
           foundParams = foundParams && i == 6;
 
-          str.setUnitCell(new AbstractFmidCell<double>(params));
+          str.setUnitCell(new AbstractFmidCell(params));
         } // end if(hasMore)
       } // end if(*tokIt == "CELL")
     } // while !foundCell
@@ -415,7 +415,7 @@ void ResReaderWriter::readStructure(
 
               if(readCoordinates)
               {
-                const AbstractFmidCell<double> * const cell = str.getUnitCell();
+                const AbstractFmidCell * const cell = str.getUnitCell();
                 // Try to orthoginalise the position
                 if(cell)
                 {

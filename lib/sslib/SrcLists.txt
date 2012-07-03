@@ -68,8 +68,6 @@ set(sslib_Source_Files__utility
 source_group("Source Files\\utility" FILES ${sslib_Source_Files__utility})
 
 set(sslib_Source_Files__
-  src/SSLibConfig.h
-  src/SSLib.h
 )
 source_group("Header Files" FILES ${sslib_Source_Files__})
 

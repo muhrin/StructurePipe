@@ -18,13 +18,15 @@ namespace sstbx { namespace build_cell {
 
 AtomsDescription::AtomsDescription():
 mySpecies(sstbx::common::AtomSpeciesId::CUSTOM_1),
-count(0)
+myCount(1),
+myRadius(0.0)
 {
 }
 
 AtomsDescription::AtomsDescription(const ::sstbx::common::AtomSpeciesId::Value  species, const size_t count):
 mySpecies(species),
-count(count)
+myCount(count),
+myRadius(0.0)
 {}
 
 const AtomConstraintDescription *
@@ -62,7 +64,7 @@ bool AtomsDescription::removeAtomConstraint(const AtomConstraintDescription * co
 	return true;
 }
 
-const ::sstbx::common::AtomSpeciesId::Value  AtomsDescription::getSpecies() const
+const ::sstbx::common::AtomSpeciesId::Value & AtomsDescription::getSpecies() const
 {
 	return mySpecies;
 }
@@ -74,12 +76,22 @@ void AtomsDescription::setElementType(const ::sstbx::common::AtomSpeciesId::Valu
 
 size_t AtomsDescription::getCount() const
 {
-	return count;
+	return myCount;
 }
 
 void AtomsDescription::setCount(const size_t newCount)
 {
-	count = newCount;
+	myCount = newCount;
+}
+
+double AtomsDescription::getRadius() const
+{
+  return myRadius;
+}
+
+void AtomsDescription::setRadius(const double radius)
+{
+  myRadius = radius;
 }
 
 void AtomsDescription::setParent(const sstbx::build_cell::AtomGroupDescription *const parent)

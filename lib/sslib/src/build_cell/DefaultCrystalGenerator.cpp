@@ -7,9 +7,12 @@
 
 
 // INCLUDES //////////////////////////////////////
+#include "build_cell/DefaultCrystalGenerator.h"
+
 #include <memory>
 
-#include "build_cell/DefaultCrystalGenerator.h"
+#include <boost/foreach.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "build_cell/AtomConstraintDescription.h"
 #include "build_cell/AtomGroupDescription.h"
@@ -23,12 +26,18 @@
 #include "common/AbstractFmidCell.h"
 #include "common/Atom.h"
 #include "common/Structure.h"
+#include "common/Types.h"
 #include "common/Utils.h"
 
-namespace sstbx { namespace build_cell {
+namespace sstbx
+{
+namespace build_cell
+{
+
+namespace common = ::sstbx::common;
 
 DefaultCrystalGenerator::DefaultCrystalGenerator(
-		const ICellGenerator<double> &	cellGenerator):
+		const ICellGenerator &	cellGenerator):
 myCellGenerator(cellGenerator),
 maxAttempts(10000)
 {
@@ -56,7 +65,7 @@ DefaultCrystalGenerator::~DefaultCrystalGenerator()
 	for(int i = 0; i < maxAttempts; ++i)
 	{
 		// Create a new unit cell
-    ::std::auto_ptr<AbstractFmidCell<double> > cell(myCellGenerator.generateCell(cellDesc));
+    ::std::auto_ptr<AbstractFmidCell> cell(myCellGenerator.generateCell(cellDesc));
 
     // Check that the cell isn't collapsed
     if(cell->getNormVolume() < 0.1)
@@ -119,10 +128,7 @@ DefaultCrystalGenerator::GenerationStatus DefaultCrystalGenerator::generateAtomG
 		}
 		if(!valid)
 			outcome = FAILED_MAX_ATTEMPTS;
-	}
-
-
-	
+	}	
 
 	return outcome;
 }
@@ -137,7 +143,7 @@ bool DefaultCrystalGenerator::positionGroupsAndAtoms(
 	using ::sstbx::common::Atom;
 	using ::sstbx::common::AtomGroup;
 
-	const AbstractFmidCell<double> * cell = builder.getStructure()->getUnitCell();
+	const AbstractFmidCell * cell = builder.getStructure()->getUnitCell();
 
 	// Place the child groups
 	const vector<AtomGroup *> & childGroups = atomGroup.getGroups();
@@ -149,11 +155,10 @@ bool DefaultCrystalGenerator::positionGroupsAndAtoms(
 	}
 
 	// Now let's place the atoms
-	const vector<Atom *> & atoms = atomGroup.getAtoms();
-	for(vector<Atom *>::const_iterator it = atoms.begin(),
-		end = atoms.end(); it != end; ++it)
+  const vector<common::AtomPtr> & atoms = atomGroup.getAtoms();
+  common::AtomPtr atom;
+  BOOST_FOREACH(atom, atoms)
 	{
-		Atom * const atom = *it;
 		atom->setPosition(cell->randomPoint());
 	}
 
@@ -171,7 +176,7 @@ bool DefaultCrystalGenerator::checkConstraints(
 
 	// Assume that each child group satisfies its constraints individually
 	// so just check the atoms of this group
-	const AbstractFmidCell<double> * const cell = builder.getStructure()->getUnitCell();
+	const AbstractFmidCell * const cell = builder.getStructure()->getUnitCell();
 
 	Atom::Mat myAndDescendentAtoms;
 
@@ -179,12 +184,14 @@ bool DefaultCrystalGenerator::checkConstraints(
 
 	bool constraintsSatisfied = true;
 	double sepSq, minsep, minsepSq;
-	const vector<Atom *> & atoms = atomGroup.getAtoms();
+  const vector<common::AtomPtr> & atoms = atomGroup.getAtoms();
+
+  common::AtomConstPtr atom;
 	for(size_t i = 0; constraintsSatisfied && i < atoms.size(); ++i)
 	{
-		const Atom * const atom = atoms[i];
+		atom = atoms[i];
 		// Get the description for the atom which contains the constraints
-		const AtomsDescription * desc = builder.getAtomsDescription(atom);
+		const AtomsDescription * desc = builder.getAtomsDescription(atom.get());
 
 		const Minsep * const constraint = desc->getAtomConstraint<Minsep>(MINSEP);
 

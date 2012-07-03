@@ -69,7 +69,7 @@ public:
 
   ::sstbx::build_cell::RandomCellDescription<double> *    createCellDescription(const YAML::Node & desc);
   ::sstbx::build_cell::StructureDescription *             createStructureDescription(const YAML::Node & desc);
-  ::sstbx::build_cell::ICellGenerator<double> *           createCellGenerator(const YAML::Node & desc);
+  ::sstbx::build_cell::ICellGenerator *                   createCellGenerator(const YAML::Node & desc);
   ::sstbx::build_cell::ICrystalStructureGenerator *       createCrystalStructureGenerator(const YAML::Node & desc);
   ::sstbx::potential::IPotential *                        createPotential(const YAML::Node & desc);
   ::sstbx::potential::IGeomOptimiser *                    createGeometryOptimiser(const YAML::Node & desc);
@@ -93,7 +93,7 @@ private:
   /* RAII idiom when the factory is destroyed.
   /**/
   ::boost::ptr_vector< ::sstbx::build_cell::RandomCellDescription<double> >    myCellDescriptions;
-  ::boost::ptr_vector< ::sstbx::build_cell::ICellGenerator<double> >           myCellGenerators;
+  ::boost::ptr_vector< ::sstbx::build_cell::ICellGenerator>                    myCellGenerators;
   ::boost::ptr_vector< ::sstbx::build_cell::ICrystalStructureGenerator>        myCrystalStructureGenerators;
   ::boost::ptr_vector< ::sstbx::io::IStructureWriter>                          myStructureWriters;
   ::boost::ptr_vector< ::sstbx::potential::IGeomOptimiser>                     myOptimisers;

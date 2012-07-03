@@ -4,8 +4,9 @@ cmake_minimum_required(VERSION 2.6)
 
 set(SP_VERSION_MAJOR 0)
 set(SP_VERSION_MINOR 3)
+set(SP_VERSION_PATCH 0)
 
-message(STATUS "Configuring StructurePipe ${SP_VERSION_MAJOR}.${SP_VERSION_MINOR}")
+message(STATUS "Configuring StructurePipe ${SP_VERSION_MAJOR}.${SP_VERSION_MINOR}.${SP_VERSION_PATCH}")
 
 project(StructurePipe)
 
@@ -55,6 +56,18 @@ set(SP_USE_QHULL ${QHULL_QHULLCPP_FOUND})
 
 ## END FIND PACKAGES ####################################
 
+
+## First libraries #####################################
+
+add_subdirectory(lib/pipelib)    # Pipeline library
+add_subdirectory(lib/sslib)      # Structure searching library
+if(SP_USE_YAML)
+  add_subdirectory(lib/yaml-cpp) # YAML library (http://code.google.com/p/yaml-cpp/)
+endif(SP_USE_YAML)
+add_subdirectory(lib/spglib)     # Space group library (https://sourceforge.net/projects/spglib/)
+
+## Now StructurePipe ####################################
+
 configure_file (
   "${PROJECT_SOURCE_DIR}/src/StructurePipeConfig.h.in"
   "${PROJECT_BINARY_DIR}/src/StructurePipeConfig.h"
@@ -78,16 +91,6 @@ include_directories(
   ${ARMADILLO_INCLUDE_DIRS}
   ${SPIPE_INCLUDE_DIRS}
 )
-
-
-## Subdirectories/libraries #############################
-
-add_subdirectory(lib/pipelib)    # Pipeline library
-add_subdirectory(lib/sslib)      # Structure searching library
-if(SP_USE_YAML)
-  add_subdirectory(lib/yaml-cpp) # YAML library (http://code.google.com/p/yaml-cpp/)
-endif(SP_USE_YAML)
-add_subdirectory(lib/spglib)     # Space group library (https://sourceforge.net/projects/spglib/)
 
 add_subdirectory(src ${CMAKE_BINARY_DIR}/bin)
 

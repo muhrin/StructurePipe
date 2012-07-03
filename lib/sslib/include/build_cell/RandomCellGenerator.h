@@ -24,7 +24,7 @@ namespace sstbx { namespace build_cell {
 namespace sstbx { namespace build_cell {
 
 template <typename FloatType = double>
-class RandomCellGenerator : public ICellGenerator<FloatType>
+class RandomCellGenerator : public ICellGenerator
 {
 public:
 
@@ -35,7 +35,7 @@ public:
 	static const FloatType DEFAULT_MAX_ANGLE;
 	static const FloatType MIN_RAND_LATTICE_LENGTH;
 
-	virtual ::sstbx::common::AbstractFmidCell<FloatType> *
+	virtual ::sstbx::common::AbstractFmidCell *
     generateCell(const RandomCellDescription<FloatType> & cellDesc) const;
 
 private:
@@ -87,10 +87,10 @@ const FloatType RandomCellGenerator<FloatType>::MIN_RAND_LATTICE_LENGTH = 1e-4;
 
 
 template <typename FloatType>
-::sstbx::common::AbstractFmidCell<FloatType> *
+::sstbx::common::AbstractFmidCell *
 RandomCellGenerator<FloatType>::generateCell(const RandomCellDescription<FloatType> & cellDesc) const
 {
-	::sstbx::common::AbstractFmidCell<FloatType> * cell = NULL;
+	::sstbx::common::AbstractFmidCell * cell = NULL;
 
 	// New set of lattice parameters
 	double latticeParams[6];
@@ -143,7 +143,7 @@ RandomCellGenerator<FloatType>::generateCell(const RandomCellDescription<FloatTy
 	}
 
 	// Create the unit cell
-	cell = new sstbx::common::AbstractFmidCell<FloatType>(latticeParams);
+	cell = new sstbx::common::AbstractFmidCell(latticeParams);
 
 	// Finally set the volume
 	cell->setVolume(generateVolume(cellDesc, cell->getVolume()));

@@ -83,7 +83,7 @@ private:
 // CONSTANTS ////////////////////////////////////////////////
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
-const size_t TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_MAX_STEPS = 1000;
+const size_t TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_MAX_STEPS = 50000;
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
 const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_TOLERANCE = 1e-13;
@@ -200,7 +200,7 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 	// Forces, current are in data.myForces
 	Mat3	f0(3, data.numParticles), deltaF(3, data.numParticles);
 
-	sstbx::common::AbstractFmidCell<FloatType> & uc = data.unitCell;
+	sstbx::common::AbstractFmidCell & uc = data.unitCell;
 
 	Mat33 latticeCar;
 	FloatType gamma, volume, volumeSq, gammaNumIonsOVolume;
@@ -233,7 +233,12 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 		volumeSq	= volume * volume;
 
 		// Evaluate the potential
-		evaluator.evalPotential();
+		if(!evaluator.evalPotential())
+    {
+      // Couldn't evaluate potential for some reason.  Probably the unit cell
+      // has collapsed and there are too many r12 vectors to evaluate.  Bail.
+      break;
+    }
 
 		// Now balance forces
 		// (do sum of values for each component and divide by number of particles)

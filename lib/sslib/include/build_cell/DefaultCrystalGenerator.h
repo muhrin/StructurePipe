@@ -14,28 +14,29 @@
 // FORWARD DECLARES /////////////////////////////////////////////
 namespace sstbx
 {
-	namespace common
-	{
-		template<typename FloatType>
-		class AbstractFmidCell;
-		class AtomGroup;
-		class Structure;
-	}
-	namespace build_cell
-	{
+namespace common
+{
+class AbstractFmidCell;
+class AtomGroup;
+class Structure;
+}
+namespace build_cell
+{
 
-		class AbstractConstraintDescription;
-		class AtomGroupDescription;
-		template <typename FloatType>
-		class ICellGenerator;
-    template <typename FloatType>
-    class RandomCellDescription;
-		class StructureBuilder;
-		class StructureDescription;
-	}
+class AbstractConstraintDescription;
+class AtomGroupDescription;
+class ICellGenerator;
+template <typename FloatType>
+class RandomCellDescription;
+class StructureBuilder;
+class StructureDescription;
+}
 }
 
-namespace sstbx { namespace build_cell {
+namespace sstbx
+{
+namespace build_cell
+{
 
 class DefaultCrystalGenerator : public ICrystalStructureGenerator
 {
@@ -43,7 +44,7 @@ public:
 
   enum GenerationStatus { SUCCESS, FAILED_MAX_ATTEMPTS, NOT_STARTED };
 
-	DefaultCrystalGenerator(const ICellGenerator<double> &	cellGenerator);
+	DefaultCrystalGenerator(const ICellGenerator &	cellGenerator);
 
 	virtual ~DefaultCrystalGenerator();
 
@@ -65,9 +66,9 @@ private:
 	/**
 	 * The generator used the create the cell for the crystal.
 	 */
-	const ICellGenerator<double> & myCellGenerator;
+	const ICellGenerator & myCellGenerator;
 
-	::sstbx::common::Structure * const generateStructure(const ::sstbx::common::AbstractFmidCell<double> * const cell) const;
+	::sstbx::common::Structure * const generateStructure(const ::sstbx::common::AbstractFmidCell * const cell) const;
 
 
 	GenerationStatus generateAtomGroupPositions(
