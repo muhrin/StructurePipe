@@ -100,6 +100,8 @@ public:
 
 protected:
 
+  typedef ::std::vector<AtomPtr> AtomsContainer;
+
 	void setParent(AtomGroup * const parent);
 
 	virtual void eventFired(const StructureTreeEvent & evt);
@@ -107,7 +109,7 @@ protected:
 	AtomGroup *                     myParent;
 
 	/** The atoms contained in this group */
-	std::vector<AtomPtr>            myAtoms;
+	AtomsContainer                  myAtoms;
 
 	/** The position of the atom group relative to its parent */
 	Vec3                            position;

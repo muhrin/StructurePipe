@@ -15,11 +15,12 @@
 
 
 // FORWARD DECLARES //////////////////////////////////////
-namespace sstbx { namespace build_cell {
-	class CellDescription;
-	template <typename FloatType>
-	class RandomCellDescription;
-}}
+namespace sstbx {
+namespace build_cell {
+class CellDescription;
+class RandomCellDescription;
+}
+}
 
 namespace sstbx { namespace build_cell {
 
@@ -36,21 +37,21 @@ public:
 	static const FloatType MIN_RAND_LATTICE_LENGTH;
 
 	virtual ::sstbx::common::AbstractFmidCell *
-    generateCell(const RandomCellDescription<FloatType> & cellDesc) const;
+    generateCell(const RandomCellDescription & cellDesc) const;
 
 private:
 
 	enum LatticeParams {A, B, C, ALPHA, BETA, GAMMA, TOTAL_PARAMS};
 
-	FloatType generateAngle(const RandomCellDescription<FloatType> & cellDesc) const;
+	FloatType generateAngle(const RandomCellDescription & cellDesc) const;
 
 	FloatType generateLength(
-    const RandomCellDescription<FloatType> & cellDesc,
+    const RandomCellDescription & cellDesc,
     const FloatType a,
     const FloatType b = 0.0) const;
 
 	FloatType generateVolume(
-    const RandomCellDescription<FloatType> & cellDesc,
+    const RandomCellDescription & cellDesc,
     const FloatType currentVolume) const;
 
 };
@@ -88,7 +89,7 @@ const FloatType RandomCellGenerator<FloatType>::MIN_RAND_LATTICE_LENGTH = 1e-4;
 
 template <typename FloatType>
 ::sstbx::common::AbstractFmidCell *
-RandomCellGenerator<FloatType>::generateCell(const RandomCellDescription<FloatType> & cellDesc) const
+RandomCellGenerator<FloatType>::generateCell(const RandomCellDescription & cellDesc) const
 {
 	::sstbx::common::AbstractFmidCell * cell = NULL;
 
@@ -155,7 +156,7 @@ RandomCellGenerator<FloatType>::generateCell(const RandomCellDescription<FloatTy
 template <typename FloatType>
 FloatType
 RandomCellGenerator<FloatType>::generateAngle(
-  const RandomCellDescription<FloatType> & cellDesc) const
+  const RandomCellDescription & cellDesc) const
 {
   const FloatType min = cellDesc.myMinAngle ? *cellDesc.myMinAngle : DEFAULT_MIN_ANGLE;
   const FloatType max = cellDesc.myMaxAngle ? *cellDesc.myMaxAngle : DEFAULT_MAX_ANGLE;
@@ -164,7 +165,7 @@ RandomCellGenerator<FloatType>::generateAngle(
 
 template <typename FloatType>
 FloatType RandomCellGenerator<FloatType>::generateLength(
-  const RandomCellDescription<FloatType> & cellDesc,
+  const RandomCellDescription & cellDesc,
   const FloatType a,
   const FloatType b) const
 {
@@ -177,7 +178,7 @@ FloatType RandomCellGenerator<FloatType>::generateLength(
 
 template <typename FloatType>
 FloatType RandomCellGenerator<FloatType>::generateVolume(
-  const RandomCellDescription<FloatType> & cellDesc,
+  const RandomCellDescription & cellDesc,
   const FloatType currentVolume) const
 {
 	// Find the target volume, the volume constraint superceeds a volume

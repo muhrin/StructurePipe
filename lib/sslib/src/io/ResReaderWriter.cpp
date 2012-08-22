@@ -25,6 +25,7 @@
 #include "common/AtomSpeciesId.h"
 #include "common/AtomSpeciesInfo.h"
 #include "common/Structure.h"
+#include "common/Types.h"
 #include "utility/BoostFilesystem.h"
 
 // DEFINES /////////////////////////////////
@@ -33,7 +34,10 @@
 // NAMESPACES ////////////////////////////////
 
 
-namespace sstbx { namespace io {
+namespace sstbx {
+namespace io {
+
+namespace common = ::sstbx::common;
 
 void ResReaderWriter::writeStructure(
 	const sstbx::common::Structure &str,
@@ -342,7 +346,7 @@ void ResReaderWriter::readStructure(
           // Check if we found all six values
           foundParams = foundParams && i == 6;
 
-          str.setUnitCell(new AbstractFmidCell(params));
+          str.setUnitCell(common::UnitCellPtr(new AbstractFmidCell(params)));
         } // end if(hasMore)
       } // end if(*tokIt == "CELL")
     } // while !foundCell
@@ -395,7 +399,7 @@ void ResReaderWriter::readStructure(
             {
               // Try to get the coordinates
               bool readCoordinates = true;
-              arma::vec pos(3);
+              arma::vec3 pos;
               unsigned int coord = 0;
               for(++atomTokIt;
                 coord < 3 && atomTokIt != atomToker.end();

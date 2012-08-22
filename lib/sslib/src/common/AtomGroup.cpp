@@ -159,7 +159,7 @@ size_t AtomGroup::getNumAtomsDescendent() const
 size_t AtomGroup::getNumAtomSpecies() const
 {
   ::std::set<AtomSpeciesId::Value> speciesSet;
-  AtomConstPtr atom;
+  ConstAtomPtr atom;
 	BOOST_FOREACH(atom, myAtoms)
 	{
 		speciesSet.insert(atom->getSpecies());
@@ -181,7 +181,7 @@ size_t AtomGroup::getNumAtomSpeciesDescendent() const
 size_t AtomGroup::getNumAtomsOfSpecies(const AtomSpeciesId::Value species) const
 {
   size_t numAtoms = 0;
-  AtomConstPtr atom;
+  ConstAtomPtr atom;
   BOOST_FOREACH(atom, myAtoms)
   {
     if(atom->getSpecies() == species)
@@ -205,7 +205,7 @@ size_t AtomGroup::getNumAtomsOfSpeciesDescendent(const AtomSpeciesId::Value spec
 
 void AtomGroup::getAtomSpecies(::std::vector<AtomSpeciesId::Value> & species) const
 {
-  AtomConstPtr atom;
+  ConstAtomPtr atom;
 	BOOST_FOREACH(atom, myAtoms)
 	{
 		species.push_back(atom->getSpecies());

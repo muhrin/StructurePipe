@@ -10,20 +10,28 @@
 #define TYPES_H
 
 // INCLUDES /////////////////////////////////////////////
+#include <boost/shared_ptr.hpp>
 
 // DEFINES ////////////////////////////////////////////////
-
-// FORWARD DECLARATIONS ////////////////////////////////////
 
 namespace sstbx
 {
 namespace common
 {
 
+// FORWARD DECLARATIONS ////////////////////////////////////
+class AbstractFmidCell;
 class Atom;
+class Structure;
 
 typedef ::boost::shared_ptr<Atom> AtomPtr;
-typedef ::boost::shared_ptr<const Atom> AtomConstPtr;
+typedef ::boost::shared_ptr<const Atom> ConstAtomPtr;
+
+typedef ::boost::shared_ptr<Structure> StructurePtr;
+typedef ::boost::shared_ptr<const Structure> ConstStructurePtr;
+
+typedef ::boost::shared_ptr<AbstractFmidCell> UnitCellPtr;
+typedef ::boost::shared_ptr<const AbstractFmidCell> ConstUnitCellPtr;
 
 }
 }

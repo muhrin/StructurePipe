@@ -45,8 +45,7 @@ public:
     const FloatType minNormVolume = DEFAULT_MIN_NORM_VOLUME);
 
 	// IGeomOptimiser interface //////////////////////////////
-
-	virtual const IPotential & getPotential() const;
+  virtual const IPotential * getPotential() const;
 
 	virtual bool optimise(
     ::sstbx::common::Structure &  structure,
@@ -65,11 +64,9 @@ public:
 		const FloatType           eTol,
     const ::arma::mat * const externalPressure) const;
 
-	static const size_t		DEFAULT_MAX_STEPS;
+	static const size_t		  DEFAULT_MAX_STEPS;
 	static const FloatType	DEFAULT_TOLERANCE;
-	static const FloatType	DEFAULT_CELL_ANGLE_THRESHOLD;
   static const FloatType  DEFAULT_MIN_NORM_VOLUME;
-	static const FloatType	MAX_DH_TO_H_RATIO;
 
 private:
 
@@ -91,12 +88,6 @@ const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_TOLERANCE = 1e-13;
 template TPSD_GEOM_OPTIMISER_TPARAMS
 const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_MIN_NORM_VOLUME = 0.05;
 
-template TPSD_GEOM_OPTIMISER_TPARAMS
-const FloatType TPSD_GEOM_OPTIMISER_TTYPE::MAX_DH_TO_H_RATIO = 10000;
-
-template TPSD_GEOM_OPTIMISER_TPARAMS
-const FloatType TPSD_GEOM_OPTIMISER_TTYPE::DEFAULT_CELL_ANGLE_THRESHOLD = 15;
-
 // IMPLEMENTATION //////////////////////////////////////////////////////////
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
@@ -111,10 +102,11 @@ myTolerance(tolerance),
 myMinNormVolume(minNormVolume)
 {}
 
+
 template TPSD_GEOM_OPTIMISER_TPARAMS
-const IPotential & TPSD_GEOM_OPTIMISER_TTYPE::getPotential() const
+const IPotential * TPSD_GEOM_OPTIMISER_TTYPE::getPotential() const
 {
-	return myPotential;
+	return &myPotential;
 }
 
 template TPSD_GEOM_OPTIMISER_TPARAMS
@@ -294,14 +286,6 @@ bool TPSD_GEOM_OPTIMISER_TTYPE::optimise(
 		dH = h - h0;
 
 		converged = fabs(dH) < eTol;
-
-
-		// TODO: Temporary escape condition to catch pathological cases!
-		if(dH / h > MAX_DH_TO_H_RATIO)
-    {
-      converged = false;
-			break;
-    }
 
 		if((i % 40 == 0) && data.unitCell.getNormVolume() < myMinNormVolume)
     {

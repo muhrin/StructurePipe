@@ -15,19 +15,14 @@
 #include "common/StructureTreeEvent.h"
 #include "common/Types.h"
 
-namespace sstbx { namespace common {
+namespace sstbx {
+namespace common {
 
 Structure::Structure(AbstractFmidCell * const cell):
 myCell(cell),
 myNumAtomsDescendent(0),
 myAtomPositionsCurrent(false)
 {
-}
-
-Structure::~Structure()
-{
-	if(myCell)
-		delete myCell;
 }
 
 const std::string & Structure::getName() const
@@ -42,20 +37,16 @@ void Structure::setName(const std::string & name)
 
 AbstractFmidCell * Structure::getUnitCell()
 {
-	return myCell;
+	return myCell.get();
 }
 
 const AbstractFmidCell * Structure::getUnitCell() const
 {
-	return myCell;
+	return myCell.get();
 }
 
-void Structure::setUnitCell(AbstractFmidCell * const cell)
+void Structure::setUnitCell(const UnitCellPtr cell)
 {
-	if(myCell)
-	{
-		delete myCell;
-	}
 	myCell = cell;
 }
 

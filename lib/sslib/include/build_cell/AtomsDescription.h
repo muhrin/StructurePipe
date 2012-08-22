@@ -12,6 +12,7 @@
 
 #include <string>
 
+#include <boost/optional.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
 #include "build_cell/IAtomConstrainable.h"
@@ -52,8 +53,10 @@ public:
 	size_t getCount() const;
 	void setCount(const size_t newCount);
 
-  double getRadius() const;
+  ::boost::optional<double> getRadius() const;
   void setRadius(const double radius);
+
+  const AtomGroupDescription * getParent() const;
 
 	// From IAtomConstrainable /////////////////
 	virtual const AtomConstraintDescription *
@@ -73,7 +76,7 @@ private:
 
   ::sstbx::common::AtomSpeciesId::Value	mySpecies;
 	const AtomGroupDescription *          myParent;
-  double                                myRadius;
+  ::boost::optional<double>             myRadius;
 
 	/**
 	/* The number of this type of atom represented.
