@@ -2,7 +2,8 @@
 ## Configure the tests header file
 
 # Figure out if we are using dynamic or static boost libraries
-if(!Boost_USE_STATIC_LIBS)
+if(Boost_USE_STATIC_LIBS)
+else()
   set(SSLIB_BOOST_DYN_LINK ON)
 endif()
 

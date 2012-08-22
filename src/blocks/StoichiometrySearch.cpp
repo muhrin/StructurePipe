@@ -238,7 +238,7 @@ ssu::MultiIdxRange<unsigned int> StoichiometrySearch::getStoichRange()
 
 void StoichiometrySearch::updateTable(
   const utility::DataTable::Key &             key,
-  const ::sstbx::utility::MultiIdx<size_t> & currentIdx)
+  const ::sstbx::utility::MultiIdx<unsigned int> & currentIdx)
 {
   using ::boost::lexical_cast;
   using ::std::string;

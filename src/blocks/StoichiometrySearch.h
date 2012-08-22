@@ -109,7 +109,7 @@ private:
 
   void updateTable(
     const utility::DataTable::Key &             key,
-    const ::sstbx::utility::MultiIdx<size_t> & currentIdx
+    const ::sstbx::utility::MultiIdx<unsigned int> & currentIdx
   );
 
   SpPipelineTyp &                       mySubpipe;

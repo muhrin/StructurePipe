@@ -15,7 +15,6 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/iterator_range.hpp>
-#include <boost/range/irange.hpp>
 
 #include "utility/MultiIdx.h"
 
@@ -103,7 +102,7 @@ private:
 
   void advance(difference_type & offset)
   {
-    myValue += difference;
+    myValue += offset;
   }
 
   difference_type distance_to(const ConstMultiIdxIterator & other) const
@@ -156,7 +155,10 @@ private:
   const MultiIdx<Integer> myFirst;
   const MultiIdx<Integer> myLast;
 
-  friend class iterator_t;
+  // Sadly can't use iterator_t typedef here as this behaviour is not supported
+  // until C++11.
+  // See e.g.: http://stackoverflow.com/questions/392120/why-cant-i-declare-a-friend-through-a-typedef
+  friend class utility_detail::ConstMultiIdxIterator<Integer>;
 };
 
 
