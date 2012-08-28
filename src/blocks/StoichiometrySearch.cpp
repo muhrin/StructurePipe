@@ -99,9 +99,8 @@ void StoichiometrySearch::start()
   size_t totalAtoms = 0;
   ::std::string sweepPipeOutputPath;
 
-  ssu::MultiIdx<unsigned int> currentIdx;
   ssu::MultiIdxRange<unsigned int> stoichRange = getStoichRange();
-  BOOST_FOREACH(currentIdx, stoichRange)
+  BOOST_FOREACH(const ssu::MultiIdx<unsigned int> & currentIdx, stoichRange)
   {
     totalAtoms = currentIdx.sum();
     if(totalAtoms == 0 || totalAtoms > myMaxAtoms)
@@ -147,8 +146,8 @@ void StoichiometrySearch::start()
     // Generate the unit cell
     sweepPipeData.cellDescription = CellDescPtr(new ::sstbx::build_cell::RandomCellDescription());
 
-    // Find out where all the structures are going to be saved
-    sweepPipeOutputPath = sweepPipeData.getRelativeOutputPath().string();
+    // Find out the pipeline relative path to where all the structures are going to be saved
+    sweepPipeOutputPath = sweepPipeData.getPipeRelativeOutputPath().string();
 
     // Start the sweep pipeline
     mySubpipe.start();

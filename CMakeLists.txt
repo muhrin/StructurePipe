@@ -18,7 +18,8 @@ set(ARMADILLO_ROOT "" CACHE FILEPATH "Path to armadillo linear algebra library")
 set(QHULL_ROOT "" CACHE FILEPATH "Path to qhull library")
 
 # Build settings
-set(SP_USE_YAML TRUE CACHE BOOL "")
+set(SP_USE_YAML TRUE CACHE BOOL "Build StructurePipe with YAML support.")
+set(SP_USE_QHULL FALSE CACHE BOOL "Build StructurePipe with QHull support.")
 
 ## End configuration options ###########################
 
@@ -48,11 +49,13 @@ if("${ARMADILLO_INCLUDE_DIRS}" STREQUAL "")
 endif()
 
 ## QHull ##
-if(WIN32)
-  set(QHULL_USE_STATIC ON)
-endif(WIN32)
-find_package(Qhull COMPONENTS QhullCpp)
-set(SP_USE_QHULL ${QHULL_QHULLCPP_FOUND})
+if(SP_USE_QHULL)
+  if(WIN32)
+    set(QHULL_USE_STATIC ON)
+  endif(WIN32)
+  find_package(Qhull COMPONENTS QhullCpp)
+  set(SP_USE_QHULL ${QHULL_QHULLCPP_FOUND})
+endif()
 
 ## END FIND PACKAGES ####################################
 

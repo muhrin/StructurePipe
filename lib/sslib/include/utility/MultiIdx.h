@@ -58,7 +58,9 @@ public:
 	MultiIdx<Integer> & operator +=(const MultiIdx<Integer> & rhs);
 	MultiIdx<Integer> & operator -=(const MultiIdx<Integer> & rhs);
 	bool operator ==(const MultiIdx<Integer> & rhs) const;
+  bool operator !=(const MultiIdx<Integer> & rhs) const;
   bool operator <=(const MultiIdx<Integer> & rhs) const;
+  bool operator >(const MultiIdx<Integer> & rhs) const;
 	MultiIdx<int> operator<(const MultiIdx<Integer> & rhs) const;
 
 	// Different index type
@@ -100,6 +102,8 @@ public:
 private:
 
   typedef ::boost::scoped_array<Integer> IdxPtr;
+
+  bool resize(const size_t dims);
 
   /** The current number of dimensions */
   size_t    myDims;
@@ -211,8 +215,9 @@ MultiIdx<Integer> & MultiIdx<Integer>::operator =(const MultiIdx<Integer> & rhs)
 {
 	if(myDims != rhs.myDims)
 	{
-		throw ::std::logic_error("Multi index dimension mismatch");
+    resize(rhs.dims());
 	}
+
 	memcpy(myIdx.get(), rhs.myIdx.get(), sizeof(Integer) * myDims);
 	return *this;
 }
@@ -294,6 +299,12 @@ bool MultiIdx<Integer>::operator ==(const MultiIdx<Integer> & rhs) const
 }
 
 template <typename Integer>
+bool MultiIdx<Integer>::operator !=(const MultiIdx<Integer> & rhs) const
+{
+	return !(*this == rhs);
+}
+
+template <typename Integer>
 bool MultiIdx<Integer>::operator <=(const MultiIdx<Integer> & rhs) const
 {
 	if(myDims != rhs.myDims)
@@ -309,6 +320,12 @@ bool MultiIdx<Integer>::operator <=(const MultiIdx<Integer> & rhs) const
 		}
 	}
 	return result;
+}
+
+template <typename Integer>
+bool MultiIdx<Integer>::operator >(const MultiIdx<Integer> & rhs) const
+{
+	return !(*this <= rhs);
 }
 
 template <typename Integer>
@@ -487,6 +504,17 @@ inline ::std::ostream & operator <<(
 	return os;
 }
 
+template <typename Integer>
+bool MultiIdx<Integer>::resize(const size_t dims)
+{
+  if(myDims == dims)
+    return false;
+
+  myIdx.reset(new Integer[dims]);
+  myDims = dims;
+
+  return true;
+}
 
 }
 }

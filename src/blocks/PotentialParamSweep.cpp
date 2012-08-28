@@ -154,7 +154,7 @@ void PotentialParamSweep::updateTable(const utility::DataTable::Key & key, const
       table.insert(
         key,
         "param" + ::boost::lexical_cast< ::std::string>(i),
-        ::boost::lexical_cast< ::std::string>(params->operator [](i)));
+        ::boost::lexical_cast< ::std::string>((*params)[i]));
     }
   }
 
