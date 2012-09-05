@@ -11,6 +11,8 @@
 // INCLUDES ///////////////////////////////////
 #include <armadillo>
 
+#include "SSLibAssert.h"
+
 namespace sstbx {
 namespace common {
 
@@ -74,7 +76,7 @@ public:
 
   inline ::arma::mat & fracsToCartInplace(::arma::mat & fracs) const
   {
-    BOOST_ASSERT(fracs.n_rows == 3);
+    SSLIB_ASSERT(fracs.n_rows == 3);
 
     fracs = myOrthoMtx * fracs;
     return fracs;
@@ -94,7 +96,7 @@ public:
 
   inline ::arma::mat & cartsToFracInplace(::arma::mat & carts) const
   {
-    BOOST_ASSERT(carts.n_rows == 3);
+    SSLIB_ASSERT(carts.n_rows == 3);
 
 	  carts = myFracMtx * carts;
 	  return carts;
@@ -105,7 +107,7 @@ public:
 
   inline ::arma::mat & wrapVecsInplace(::arma::mat & carts) const
   {
-    BOOST_ASSERT(carts.n_rows == 3);
+    SSLIB_ASSERT(carts.n_rows == 3);
 
     carts = myFracMtx * carts;     // cart to frac
     carts -= ::arma::floor(carts); // wrap
@@ -118,7 +120,7 @@ public:
 
   inline ::arma::mat & wrapVecsFracInplace(::arma::mat & fracs) const
   {
-    BOOST_ASSERT(fracs.n_rows == 3);
+    SSLIB_ASSERT(fracs.n_rows == 3);
 
     fracs -= ::arma::floor(fracs);
     return fracs;

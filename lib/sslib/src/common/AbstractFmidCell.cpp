@@ -6,10 +6,9 @@
  */
 
 // INCLUDES ///////////////
-#include <boost/assert.hpp>
 
+#include "SSLibAssert.h"
 #include "common/AbstractFmidCell.h"
-
 #include "utility/StableComparison.h"
 
 namespace sstbx
@@ -496,10 +495,10 @@ void AbstractFmidCell::init(
 	const double alpha, const double beta, const double gamma)
 {
   // Sanity checks on parameters
-  BOOST_ASSERT_MSG(alpha+beta+gamma <= 360.0, "Non-physical lattice parameters supplied - required that alpha+beta+gamma <= 360.0");
-  BOOST_ASSERT_MSG(abs(alpha-beta) <= gamma, "Non-physical lattice parameters supplied - require that abs(alpha-beta) < gamma");
-  BOOST_ASSERT_MSG(abs(beta-gamma) <= alpha, "Non-physical lattice parameters supplied - require that abs(beta-gamma) < alpha");
-  BOOST_ASSERT_MSG(abs(gamma-alpha) <= beta, "Non-physical lattice parameters supplied - require that abs(gamma-alpha) < beta");
+  SSLIB_ASSERT_MSG(alpha+beta+gamma <= 360.0, "Non-physical lattice parameters supplied - required that alpha+beta+gamma <= 360.0");
+  SSLIB_ASSERT_MSG(abs(alpha-beta) <= gamma, "Non-physical lattice parameters supplied - require that abs(alpha-beta) < gamma");
+  SSLIB_ASSERT_MSG(abs(beta-gamma) <= alpha, "Non-physical lattice parameters supplied - require that abs(beta-gamma) < alpha");
+  SSLIB_ASSERT_MSG(abs(gamma-alpha) <= beta, "Non-physical lattice parameters supplied - require that abs(gamma-alpha) < beta");
 
 	myLatticeParams[0] = a;
 	myLatticeParams[1] = b;

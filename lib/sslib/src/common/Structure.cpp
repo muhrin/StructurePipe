@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "SSLibAssert.h"
 #include "common/Atom.h"
 #include "common/Types.h"
 #include "common/UnitCell.h"
@@ -130,7 +131,7 @@ void Structure::getAtomPositions(::arma::mat & posMtx) const
 void Structure::setAtomPositions(const ::arma::mat & posMtx)
 {
   const size_t numAtoms = getNumAtoms();
-  BOOST_ASSERT(posMtx.n_rows == 3 && posMtx.n_cols == numAtoms);
+  SSLIB_ASSERT(posMtx.n_rows == 3 && posMtx.n_cols == numAtoms);
 
   for(size_t i = 0; i < numAtoms; ++i)
   {

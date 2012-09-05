@@ -125,6 +125,7 @@ set(sslib_Header_Files__utility
 source_group("Header Files\\utility" FILES ${sslib_Header_Files__utility})
 
 set(sslib_Header_Files__
+  include/SSLibAssert.h
   include/SSLib.h
   include/SSLibConfig.h
   include/SSLibTypes.h

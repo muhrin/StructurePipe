@@ -8,8 +8,7 @@
 // INCLUDES //////////////////////////////////////
 #include "build_cell/RandomUnitCell.h"
 
-#include <boost/assert.hpp>
-
+#include "SSLibAssert.h"
 #include "common/UnitCell.h"
 #include "common/Utils.h"
 
@@ -26,7 +25,7 @@ const double RandomUnitCell::DEFAULT_VOLUME_DELTA = 0.25;
 
 RandomUnitCell::ParamValue RandomUnitCell::getMin(const size_t param) const
 {
-  BOOST_ASSERT(param < 6);
+  SSLIB_ASSERT(param < 6);
 
   ParamValue returnVal;
   if(myParameters[param].first)
@@ -52,7 +51,7 @@ RandomUnitCell::ParamValue RandomUnitCell::getMin(const size_t param) const
 
 RandomUnitCell::ParamValue RandomUnitCell::getMax(const size_t param) const
 {
-  BOOST_ASSERT(param < 6);
+  SSLIB_ASSERT(param < 6);
 
   ParamValue returnVal;
   if(myParameters[param].second)
@@ -78,14 +77,14 @@ RandomUnitCell::ParamValue RandomUnitCell::getMax(const size_t param) const
 
 void RandomUnitCell::setMin(const size_t param, const OptionalDouble min)
 {
-  BOOST_ASSERT(param < 6);
+  SSLIB_ASSERT(param < 6);
 
   myParameters[param].first = min;
 }
 
 void RandomUnitCell::setMax(const size_t param, const OptionalDouble max)
 {
-  BOOST_ASSERT(param < 6);
+  SSLIB_ASSERT(param < 6);
 
   myParameters[param].second = max;
 }
@@ -186,7 +185,7 @@ void RandomUnitCell::setVolumeDelta(const OptionalDouble delta)
 
 double RandomUnitCell::generateParameter(const size_t param) const
 {
-  BOOST_ASSERT(param < 6);
+  SSLIB_ASSERT(param < 6);
 
   if(isLength(param))
   {
