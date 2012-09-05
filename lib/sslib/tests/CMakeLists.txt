@@ -83,6 +83,7 @@ add_dependencies(sslibtest sslib)
 # Libraries we need to link to
 target_link_libraries(sslibtest
   ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+  ${ARMADILLO_LIBRARIES}
   sslib
 )
 

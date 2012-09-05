@@ -9,6 +9,8 @@
 
 #include "utility/SortedDistanceComparator.h"
 
+#include <memory>
+
 #include <boost/scoped_ptr.hpp>
 
 #include <armadillo>
@@ -33,8 +35,8 @@ double SortedDistanceComparator::compareStructures(
 	const sstbx::common::Structure & str1,
 	const sstbx::common::Structure & str2) const
 {
-  ::boost::scoped_ptr<const SortedDistanceComparator::DataTyp> comp1(generateComparisonData(str1));
-  ::boost::scoped_ptr<const SortedDistanceComparator::DataTyp> comp2(generateComparisonData(str2));
+  ::std::auto_ptr<const SortedDistanceComparator::DataTyp> comp1(generateComparisonData(str1));
+  ::std::auto_ptr<const SortedDistanceComparator::DataTyp> comp2(generateComparisonData(str2));
 
   return compareStructures(str1, *comp1, str2, *comp2);
 }
@@ -43,8 +45,8 @@ bool SortedDistanceComparator::areSimilar(
 	const sstbx::common::Structure & str1,
 	const sstbx::common::Structure & str2) const
 {
-  ::boost::scoped_ptr<const SortedDistanceComparator::DataTyp> comp1(generateComparisonData(str1));
-  ::boost::scoped_ptr<const SortedDistanceComparator::DataTyp> comp2(generateComparisonData(str2));
+  ::std::auto_ptr<const SortedDistanceComparator::DataTyp> comp1(generateComparisonData(str1));
+  ::std::auto_ptr<const SortedDistanceComparator::DataTyp> comp2(generateComparisonData(str2));
 
   return areSimilar(str1, *comp1, str2, *comp2);
 }

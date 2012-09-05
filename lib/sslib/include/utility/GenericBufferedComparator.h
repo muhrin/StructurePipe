@@ -114,7 +114,7 @@ GenericBufferedComparator<ComparatorTyp>::getComparisonData(const common::Struct
   const ::std::auto_ptr<DataTyp> comparisonData;
 
   // Have we seen this structure before?
-  DataMap::iterator it = myComparisonData.find(structure);
+  typename DataMap::iterator it = myComparisonData.find(structure);
   if(it == myComparisonData.end())
   {
     it = myComparisonData.insert(structure, myComparator.generateComparisonData(*structure)).first;
