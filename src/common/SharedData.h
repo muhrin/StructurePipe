@@ -38,7 +38,6 @@ class PipeStateChanged;
 
 namespace sstbx {
 namespace build_cell {
-class RandomCellDescription;
 class StructureDescription;
 }
 }
@@ -111,8 +110,6 @@ public:
 	::boost::optional< ::arma::Col< unsigned int > >	potSweepNSteps;
 
   ::boost::shared_ptr< sstbx::build_cell::StructureDescription>            structureDescription;
-  ::boost::shared_ptr< sstbx::build_cell::RandomCellDescription>           cellDescription;
-
 
   ::std::string                       outputFilename;
 

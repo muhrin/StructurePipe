@@ -117,7 +117,6 @@ void SharedData::reset()
   potSweepNSteps.reset();
 
   structureDescription.reset();
-  cellDescription.reset();
 
   objectsStore.clear();
 

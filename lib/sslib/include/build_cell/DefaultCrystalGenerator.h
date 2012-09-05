@@ -9,7 +9,7 @@
 #define DEFAULT_CRYSTAL_GENERATOR_H
 
 // INCLUDES /////////////////////////////////////////////////////
-#include "ICrystalStructureGenerator.h"
+#include "IStructureGenerator.h"
 
 // FORWARD DECLARES /////////////////////////////////////////////
 namespace sstbx
@@ -24,8 +24,6 @@ namespace build_cell {
 
 class AbstractConstraintDescription;
 class AtomGroupDescription;
-class ICellGenerator;
-class RandomCellDescription;
 class StructureBuilder;
 class StructureDescription;
 class StructureDescriptionMap;
@@ -37,43 +35,45 @@ namespace sstbx
 namespace build_cell
 {
 
-class DefaultCrystalGenerator : public ICrystalStructureGenerator
+class DefaultCrystalGenerator : public IStructureGenerator
 {
 public:
 
-  typedef ICrystalStructureGenerator::Result Result;
+  typedef IStructureGenerator::Result Result;
 
-	DefaultCrystalGenerator(const ICellGenerator &	cellGenerator);
+	DefaultCrystalGenerator(const bool useExtrudeMethod = false);
   virtual ~DefaultCrystalGenerator() {}
 
 	/**
 	 * Generate a cell based on the current set of constraints.
 	 *
 	 */
-  virtual Result generateStructure(
-    const StructureDescription &  strDesc,
-    const RandomCellDescription & cellDesc) const;
+  virtual Result generateStructure(const StructureDescription &  strDesc) const;
 
 private:
+
+  ::sstbx::common::Structure * const generateStructure(const ::sstbx::common::AbstractFmidCell * const cell) const;
+
+  bool generateUnitCell(
+    const StructureDescription & structureDescription,
+    common::Structure & structure,
+    const StructureBuilder & builder) const;
+
+  StructureGenerationOutcome::Value generateAtomPositions(
+	  StructureDescriptionMap & descriptionMap) const;
 
 	/**
 	/* The maximum number of times to attempt to create a structure before giving up.
 	/**/
 	const u32               myMaxAttempts;
 
-	/**
-	 * The generator used the create the cell for the crystal.
-	 */
-	const ICellGenerator & myCellGenerator;
-
-	::sstbx::common::Structure * const generateStructure(const ::sstbx::common::AbstractFmidCell * const cell) const;
-
-  bool generateUnitCell(
-    const RandomCellDescription & cellDesc,
-    ::sstbx::common::Structure &  structure) const;
-
-  StructureGenerationOutcome::Value generateAtomPositions(
-	  StructureDescriptionMap & descriptionMap) const;
+  /**
+  /* This option turns on using a method that extrudes any overlapping atoms after an initial
+  /* random configuration has been generated.  Otherwise random configuration will be generated
+  /* and checked for overlap, if an overlap is detected the configuration is thrown away and
+  /* a new one generated.
+  /**/
+  const bool              myUseExtrudeMethod;
 };
 
 }}
