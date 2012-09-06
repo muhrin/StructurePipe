@@ -30,14 +30,14 @@ namespace ssc = ::sstbx::common;
 
 BOOST_AUTO_TEST_CASE(ExtrusionTest)
 {
-  const size_t numStructure = 10;
+  // SETTINGS ///////
+  const size_t numStructures = 5, maxAtoms = 15;
 
   ssbc::RandomUnitCell randomCell;
   randomCell.setVolumeDelta(0.0);
 
   ssbc::AtomExtruder extruder;
 
-  const size_t numStructures = 10, maxAtoms = 50;
   const double radius = 1.0, minsep = 2.0 * radius - 0.1, minsepSq = minsep * minsep;
   size_t numAtoms;
 

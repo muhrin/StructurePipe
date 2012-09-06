@@ -42,19 +42,21 @@ public:
   virtual inline double getDistSqMinImg(const Atom & atom1, const Atom & atom2) const
   { return myDelegate->getDistSqMinImg(atom1, atom2); }
 
-  virtual void getDistsBetween(
+  virtual inline bool getDistsBetween(
     const ::arma::vec3 & a,
     const ::arma::vec3 & b,
     const double cutoff,
-    ::std::vector<double> & outDistances) const
-  { myDelegate->getDistsBetween(a, b, cutoff, outDistances); }
+    ::std::vector<double> & outDistances,
+    const size_t maxDistances = DEFAULT_MAX_OUTPUTS) const
+  { return myDelegate->getDistsBetween(a, b, cutoff, outDistances, maxDistances); }
 
-  virtual inline void getDistsBetween(
+  virtual inline bool getDistsBetween(
     const Atom & atom1,
     const Atom & atom2,
     const double cutoff,
-    ::std::vector<double> & outDistances) const
-  { myDelegate->getDistsBetween(atom1, atom2, cutoff, outDistances); }
+    ::std::vector<double> & outDistances,
+    const size_t maxDistances = DEFAULT_MAX_OUTPUTS) const
+  { return myDelegate->getDistsBetween(atom1, atom2, cutoff, outDistances, maxDistances); }
 
   virtual ::arma::vec3 getVecMinImg(const ::arma::vec3 & a, const ::arma::vec3 & b) const
   { return myDelegate->getVecMinImg(a, b); }
@@ -62,21 +64,21 @@ public:
   virtual ::arma::vec3 getVecMinImg(const Atom & atom1, const Atom & atom2) const
   { return myDelegate->getVecMinImg(atom1, atom2); }
 
-  virtual void getVecsBetween(
+  virtual bool getVecsBetween(
     const ::arma::vec3 & a,
     const ::arma::vec3 & b,
     const double cutoff,
     ::std::vector< ::arma::vec3> & outVectors,
-    const size_t maxVectors = DEFAULT_MAX_OUT_VECTORS) const
-  { myDelegate->getVecsBetween(a, b, cutoff, outVectors, maxVectors); }
+    const size_t maxVectors = DEFAULT_MAX_OUTPUTS) const
+  { return myDelegate->getVecsBetween(a, b, cutoff, outVectors, maxVectors); }
 
-  virtual void getVecsBetween(
+  virtual bool getVecsBetween(
     const Atom & atom1,
     const Atom & atom2,
     const double cutoff,
     ::std::vector< ::arma::vec3> & outVectors,
-    const size_t maxVectors = DEFAULT_MAX_OUT_VECTORS) const
-  { myDelegate->getVecsBetween(atom1, atom2, cutoff, outVectors, maxVectors); }
+    const size_t maxVectors = DEFAULT_MAX_OUTPUTS) const
+  { return myDelegate->getVecsBetween(atom1, atom2, cutoff, outVectors, maxVectors); }
 
   bool isValid() const
   { return myDelegate->isValid(); }
@@ -92,7 +94,8 @@ private:
     enum Value
     {
       CLUSTER,
-      UNIVERSAL_CRYSTAL
+      UNIVERSAL_CRYSTAL,
+      ORTHO_CELL
     };
   };
 

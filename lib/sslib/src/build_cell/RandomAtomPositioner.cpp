@@ -28,7 +28,9 @@ namespace build_cell {
 RandomAtomPositioner::RandomAtomPositioner(StructureDescriptionMap & descriptionMap):
 myDescriptionMap(descriptionMap),
 myStructure(descriptionMap.getStructure())
-{}
+{
+  myCurrentPosition.fill(0.0);
+}
 
 void RandomAtomPositioner::enteringAtomGroup(const AtomGroupDescription & atomGroup)
 {
@@ -52,7 +54,8 @@ bool RandomAtomPositioner::visitAtomGroup(const AtomGroupDescription & atomGroup
   
   BOOST_FOREACH(atom, range)
   {
-    pos = cell->wrapVec(myCurrentPosition + cell->randomPoint());
+    pos = myCurrentPosition + cell->randomPoint();
+    cell->wrapVecInplace(pos);
     atom->setPosition(pos);
   }
 

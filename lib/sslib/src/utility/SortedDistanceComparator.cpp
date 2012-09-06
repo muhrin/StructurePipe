@@ -104,7 +104,9 @@ SortedDistanceComparator::generateComparisonData(const sstbx::common::Structure 
   double maxDist = 0.0;
   if(unitCell)
   {
-    maxDist = 1.75 * unitCell->getLongestCellVectorLength();
+    ::arma::vec3 diag = unitCell->getLongestDiagonal();
+    double longestDiag = sqrt(::arma::dot(diag, diag));
+    maxDist = 1.75 * longestDiag;
   }
 
 	// Copy over the unit cell so we can do distance calculations

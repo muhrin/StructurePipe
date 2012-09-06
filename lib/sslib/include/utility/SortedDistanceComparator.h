@@ -14,7 +14,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "common/AbstractFmidCell.h"
 #include "utility/IStructureComparator.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////

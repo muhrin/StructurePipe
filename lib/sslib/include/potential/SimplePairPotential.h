@@ -27,7 +27,6 @@
 #include <armadillo>
 
 // Local includes
-#include "common/AbstractFmidCell.h"
 #include "common/Structure.h"
 #include "common/Utils.h"
 #include "potential/GenericPotentialEvaluator.h"

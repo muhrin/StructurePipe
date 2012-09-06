@@ -9,6 +9,7 @@
 #include "common/DistanceCalculatorDelegator.h"
 
 #include "common/ClusterDistanceCalculator.h"
+#include "common/OrthoCellDistanceCalculator.h"
 #include "common/UnitCell.h"
 #include "common/UniversalCrystalDistanceCalculator.h"
 
@@ -30,7 +31,7 @@ void DistanceCalculatorDelegator::unitCellChanged()
 
 void DistanceCalculatorDelegator::updateDelegate()
 {
-  const UnitCell * const unitCell = NULL/* = myStructure.getUnitCell()*/;
+  const UnitCell * const unitCell = myStructure.getUnitCell();
 
   if(unitCell == NULL)
   {
@@ -47,7 +48,8 @@ void DistanceCalculatorDelegator::updateDelegate()
       latticeSystem == UnitCell::LatticeSystem::CUBIC ||
       latticeSystem == UnitCell::LatticeSystem::ORTHORHOMBIC)
     {
-      // TODO: create orthorhombic distance calculator
+        myDelegate.reset(new OrthoCellDistanceCalculator(myStructure));
+        myDelegateType = CalculatorType::ORTHO_CELL;
     }
     else
     {

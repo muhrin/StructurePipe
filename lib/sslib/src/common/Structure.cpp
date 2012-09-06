@@ -154,6 +154,18 @@ void Structure::getAtomSpecies(::std::vector<AtomSpeciesId::Value> & species) co
   }
 }
 
+size_t Structure::getNumAtomsOfSpecies(const AtomSpeciesId::Value species) const
+{
+  const size_t numAtoms = getNumAtoms();
+  size_t num = 0;
+  for(size_t i = 0; i < numAtoms; ++i)
+  {
+    if(myAtoms[i].getSpecies() == species)
+      ++num;
+  }
+  return num;
+}
+
 const DistanceCalculator & Structure::getDistanceCalculator() const
 {
   return myDistanceCalculator;

@@ -12,11 +12,8 @@
 #include "IStructureGenerator.h"
 
 // FORWARD DECLARES /////////////////////////////////////////////
-namespace sstbx
-{
-namespace common
-{
-class AbstractFmidCell;
+namespace sstbx {
+namespace common {
 class AtomGroup;
 class Structure;
 }
@@ -51,8 +48,6 @@ public:
   virtual Result generateStructure(const StructureDescription &  strDesc) const;
 
 private:
-
-  ::sstbx::common::Structure * const generateStructure(const ::sstbx::common::AbstractFmidCell * const cell) const;
 
   bool generateUnitCell(
     const StructureDescription & structureDescription,

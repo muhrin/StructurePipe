@@ -142,21 +142,14 @@ void RandomUnitCell::setVolumeDelta(const OptionalDouble delta)
     params[i] = generateParameter(i);
   }
 
-
   bool anglesValid = false;
-  double angleSum;
   for(size_t iters = 0; iters < 1000 && !anglesValid; ++iters)
   {
-    angleSum = 0;
     for(i = 3; i < 6; ++i)
     {
       params[i] = generateParameter(i);
-      angleSum += params[i];
     }
-    if(angleSum < 360)
-    {
-      anglesValid = true;
-    }
+    anglesValid = areParametersValid(params);
   }
 
   // If the angles still aren't valid then use the
@@ -214,6 +207,18 @@ double RandomUnitCell::generateVolume(const double overrideVolume) const
   const double delta = myVolumeDelta ? *myVolumeDelta : DEFAULT_VOLUME_DELTA;
 
   return common::randDouble(target * (1.0 - delta), target * (1 + delta));
+}
+
+bool RandomUnitCell::areParametersValid(const double (&params)[6]) const
+{
+  double anglesSum = params[ALPHA] + params[BETA] + params[GAMMA];
+
+  if(anglesSum >= 360.0) return false;
+  if(abs(params[ALPHA]-params[BETA]) > params[GAMMA]) return false;
+  if(abs(params[BETA]-params[GAMMA]) > params[ALPHA]) return false;
+  if(abs(params[GAMMA]-params[ALPHA]) > params[BETA]) return false;
+
+  return true;
 }
 
 }

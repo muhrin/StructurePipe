@@ -14,7 +14,7 @@
 namespace sstbx {
 namespace common {
 
-const size_t DEFAULT_MAX_OUT_VECTORS = 10000;
+const size_t DistanceCalculator::DEFAULT_MAX_OUTPUTS = 10000;
 
 DistanceCalculator::DistanceCalculator(const Structure & structure):
 myStructure(structure)

@@ -63,6 +63,7 @@ public:
   void setAtomPositions(const ::arma::mat & posMtx);
 
   void getAtomSpecies(::std::vector<AtomSpeciesId::Value> & species) const;
+  size_t getNumAtomsOfSpecies(const AtomSpeciesId::Value species) const;
 
   const DistanceCalculator & getDistanceCalculator() const;
 

@@ -22,7 +22,7 @@ class DistanceCalculator
 {
 public:
 
-  static const size_t DEFAULT_MAX_OUT_VECTORS;
+  static const size_t DEFAULT_MAX_OUTPUTS;
 
   DistanceCalculator(const Structure & structure);
   virtual ~DistanceCalculator() {}
@@ -39,19 +39,21 @@ public:
     return ::arma::dot(dr, dr);
   }
 
-  virtual void getDistsBetween(
+  virtual bool getDistsBetween(
     const ::arma::vec3 & a,
     const ::arma::vec3 & b,
     const double cutoff,
-    ::std::vector<double> & outDistances) const = 0;
+    ::std::vector<double> & outDistances,
+    const size_t maxDistances = DEFAULT_MAX_OUTPUTS) const = 0;
 
-  virtual inline void getDistsBetween(
+  virtual inline bool getDistsBetween(
     const Atom & atom1,
     const Atom & atom2,
     const double cutoff,
-    ::std::vector<double> & outDistances) const
+    ::std::vector<double> & outDistances,
+    const size_t maxDistances = DEFAULT_MAX_OUTPUTS) const
   {
-    getDistsBetween(atom1.getPosition(), atom2.getPosition(), cutoff, outDistances);
+    return getDistsBetween(atom1.getPosition(), atom2.getPosition(), cutoff, outDistances, maxDistances);
   }
 
   virtual inline double getDistSqMinImg(const Atom & atom1, const Atom & atom2) const
@@ -62,20 +64,20 @@ public:
   virtual ::arma::vec3 getVecMinImg(const Atom & atom1, const Atom & atom2) const
   { return getVecMinImg(atom1.getPosition(), atom2.getPosition()); }
 
-  virtual void getVecsBetween(
+  virtual bool getVecsBetween(
     const ::arma::vec3 & a,
     const ::arma::vec3 & b,
     const double cutoff,
     ::std::vector< ::arma::vec3> & outVectors,
-    const size_t maxVectors = DEFAULT_MAX_OUT_VECTORS) const = 0;
+    const size_t maxVectors = DEFAULT_MAX_OUTPUTS) const = 0;
 
-  virtual inline void getVecsBetween(
+  virtual inline bool getVecsBetween(
     const Atom & atom1,
     const Atom & atom2,
     const double cutoff,
     ::std::vector< ::arma::vec3> & outVectors,
-    const size_t maxVectors = DEFAULT_MAX_OUT_VECTORS) const
-  { getVecsBetween(atom1.getPosition(), atom2.getPosition(), cutoff, outVectors, maxVectors); }
+    const size_t maxVectors = DEFAULT_MAX_OUTPUTS) const
+  { return getVecsBetween(atom1.getPosition(), atom2.getPosition(), cutoff, outVectors, maxVectors); }
 
   virtual bool isValid() const = 0;
 

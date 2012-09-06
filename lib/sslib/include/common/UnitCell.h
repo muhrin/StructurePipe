@@ -47,25 +47,39 @@ public:
 
   const double (&getLatticeParams() const)[6];
 
-  ::arma::vec3 getAVec() const;
-  ::arma::vec3 getBVec() const;
-  ::arma::vec3 getCVec() const;
+  inline ::arma::vec3 UnitCell::getAVec() const
+  {
+    return myOrthoMtx.col(X);
+  }
+
+  inline ::arma::vec3 UnitCell::getBVec() const
+  {
+    return myOrthoMtx.col(Y);
+  }
+
+  inline ::arma::vec3 UnitCell::getCVec() const
+  {
+    return myOrthoMtx.col(Z);
+  }
 
   double getLongestCellVectorLength() const;
 
   const ::arma::mat33 & getOrthoMtx() const;
   const void setOrthoMtx(const ::arma::mat33 & orthoMtx);
 
+  const ::arma::mat33 & getFracMtx() const;
+
 	double getVolume() const;
 	double setVolume(const double volume);
   double getNormVolume() const;
+
+  ::arma::vec3 getLongestDiagonal() const;
 
   LatticeSystem::Value getLatticeSystem() const;
 
   inline ::arma::vec3 fracToCart(const ::arma::vec3 & frac) const
   {
-    ::arma::vec3 toCart(frac);
-    return fracToCartInplace(toCart);
+    return myOrthoMtx * frac;
   }
 
   inline ::arma::vec3 & fracToCartInplace(::arma::vec3 & frac) const
@@ -128,7 +142,7 @@ public:
 
   ::arma::vec3 randomPoint() const;
 
-  bool niggliReduce() const { /* TODO: IMPLEMENT! */ return true; }
+  bool niggliReduce();
 
   void setStructure(const Structure * const structure);
 

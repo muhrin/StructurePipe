@@ -49,13 +49,29 @@ bool TpsdGeomOptimiser::optimise(
 {
   ::boost::shared_ptr<IPotentialEvaluator> evaluator = myPotential.createEvaluator(structure);
 
-	return optimise(
-    structure,
-    *evaluator,
-    DEFAULT_MAX_STEPS,
-    DEFAULT_TOLERANCE,
-    externalPressure
-  );
+  common::UnitCell * const unitCell = structure.getUnitCell();
+
+  if(unitCell)
+  {
+	  return optimise(
+      structure,
+      *unitCell,
+      *evaluator,
+      DEFAULT_MAX_STEPS,
+      DEFAULT_TOLERANCE,
+      externalPressure
+    );
+  }
+  else
+  {
+	  return optimise(
+      structure,
+      *evaluator,
+      DEFAULT_MAX_STEPS,
+      DEFAULT_TOLERANCE,
+      externalPressure
+    );
+  }
 }
 
 
@@ -66,13 +82,30 @@ bool TpsdGeomOptimiser::optimise(
 {
   ::boost::shared_ptr<IPotentialEvaluator> evaluator = myPotential.createEvaluator(structure);
 
-	const bool outcome = optimise(
-    structure,
-    *evaluator,
-    DEFAULT_MAX_STEPS,
-    DEFAULT_TOLERANCE,
-    externalPressure
-  );
+  common::UnitCell * const unitCell = structure.getUnitCell();
+
+  bool outcome;
+  if(unitCell)
+  {
+	  outcome = optimise(
+      structure,
+      *unitCell,
+      *evaluator,
+      DEFAULT_MAX_STEPS,
+      DEFAULT_TOLERANCE,
+      externalPressure
+    );
+  }
+  else
+  {
+	  outcome = optimise(
+      structure,
+      *evaluator,
+      DEFAULT_MAX_STEPS,
+      DEFAULT_TOLERANCE,
+      externalPressure
+    );
+  }
 
   // Copy over data from the geometry optimisation
   data = evaluator->getData();
@@ -119,8 +152,10 @@ bool TpsdGeomOptimiser::optimise(
 	const size_t numIonsSq	= data.numParticles * data.numParticles;
 
 	bool converged = false;
+  size_t numLastEvaluationsWithProblem = 0;
+
 	// Set the initial step size so get mooving
-	double step = 0.001;
+	double step = eTol * 1e8;
 	for(size_t i = 0; !converged && i < maxSteps; ++i)
 	{
 		h0 = h;
@@ -130,8 +165,13 @@ bool TpsdGeomOptimiser::optimise(
 		if(!evaluator.evalPotential().second)
     {
       // Couldn't evaluate potential for some reason.  Probably the unit cell
-      // has collapsed and there are too many r12 vectors to evaluate.  Bail.
-      break;
+      // has collapsed and there are too many r12 vectors to evaluate.
+      ++numLastEvaluationsWithProblem;
+    }
+    else
+    {
+      // That evaluation was fine, so reset counter
+      numLastEvaluationsWithProblem = 0;
     }
 
 		// Now balance forces
@@ -167,7 +207,9 @@ bool TpsdGeomOptimiser::optimise(
 		converged = fabs(dH) < eTol;
 	}
 
-	return converged;
+  // Only a successful optimisation if it has converged
+  // and the last potential evaluation had no problems
+  return converged && numLastEvaluationsWithProblem == 0;
 }
 
 bool TpsdGeomOptimiser::optimise(
@@ -193,7 +235,7 @@ bool TpsdGeomOptimiser::optimise(
 	double h, h0, dH;
 
 	// Stress matrices
-  ::arma::vec3	s, s0, deltaS, deltaLatticeCar;
+  ::arma::mat33	s, s0, deltaS, deltaLatticeCar;
 	// Position matrices, current are in data.myPos
   ::arma::mat deltaPos(3, data.numParticles);
 	// Forces, current are in data.myForces
@@ -217,8 +259,9 @@ bool TpsdGeomOptimiser::optimise(
 	const size_t numIonsSq	= data.numParticles * data.numParticles;
 
 	bool converged = false;
+  size_t numLastEvaluationsWithProblem = 0;
 	// Set the initial step size so get mooving
-	double step = 0.001;
+	double step = eTol * 1e8;
 	for(size_t i = 0; !converged && i < maxSteps; ++i)
 	{
 		h0 = h;
@@ -232,8 +275,13 @@ bool TpsdGeomOptimiser::optimise(
 		if(!evaluator.evalPotential().second)
     {
       // Couldn't evaluate potential for some reason.  Probably the unit cell
-      // has collapsed and there are too many r12 vectors to evaluate.  Bail.
-      break;
+      // has collapsed and there are too many r12 vectors to evaluate.
+      ++numLastEvaluationsWithProblem;
+    }
+    else
+    {
+      // That evaluation was fine, so reset counter
+      numLastEvaluationsWithProblem = 0;
     }
 
 		// Now balance forces
@@ -304,7 +352,7 @@ bool TpsdGeomOptimiser::optimise(
 	// Wrap the particle positions so they stay in the central unit cell
 	unitCell.wrapVecsInplace(data.pos);
 
-	return converged;
+	return converged && numLastEvaluationsWithProblem == 0;
 }
 
 

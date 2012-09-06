@@ -354,6 +354,8 @@ bool SimplePairPotential::evaluate(const common::Structure & structure, SimplePa
 
   const common::DistanceCalculator & distCalc = structure.getDistanceCalculator();
 	
+  bool problemDuringCalculation = false;
+
 	// Loop over all particle pairs (including self-interaction)
 	for(size_t i = 0; i < data.numParticles; ++i)
 	{
@@ -373,12 +375,10 @@ bool SimplePairPotential::evaluate(const common::Structure & structure, SimplePa
 
       // TODO: Buffer rSqs as getAllVectorsWithinCutoff needs to calculate it anyway!
 			imageVectors.clear();
-      distCalc.getVecsBetween(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors, MAX_INTERACTION_VECTORS);
-
-      // Check that there aren't too many interaction vectors
-      if(imageVectors.size() > MAX_INTERACTION_VECTORS)
+      if(!distCalc.getVecsBetween(posI, posJ, rCutoff(speciesI, speciesJ), imageVectors, MAX_INTERACTION_VECTORS))
       {
-        return false;
+        // We reached the maximum number of interaction vectors so indicate that there was a problem
+        problemDuringCalculation = true;
       }
 
       BOOST_FOREACH(r, imageVectors)
@@ -448,7 +448,7 @@ bool SimplePairPotential::evaluate(const common::Structure & structure, SimplePa
   }
 
   // Completed successfully
-  return true;
+  return !problemDuringCalculation;
 }
 
 

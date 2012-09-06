@@ -20,20 +20,24 @@ public:
 
   UniversalCrystalDistanceCalculator(const Structure & structure);
 
+  using DistanceCalculator::getDistsBetween;
+  using DistanceCalculator::getVecsBetween;
+
   virtual ::arma::vec3 getVecMinImg(const ::arma::vec3 & a, const ::arma::vec3 & b) const;
 
-  virtual void getDistsBetween(
+  virtual bool getDistsBetween(
     const ::arma::vec3 & a,
     const ::arma::vec3 & b,
     const double cutoff,
-    ::std::vector<double> & outDistances) const;
+    ::std::vector<double> & outDistances,
+    const size_t maxDistances = DistanceCalculator::DEFAULT_MAX_OUTPUTS) const;
 
-  virtual void getVecsBetween(
+  virtual bool getVecsBetween(
     const ::arma::vec3 & a,
     const ::arma::vec3 & b,
     const double cutoff,
     ::std::vector< ::arma::vec3> & outVectors,
-    const size_t maxVectors = DistanceCalculator::DEFAULT_MAX_OUT_VECTORS) const;
+    const size_t maxVectors = DistanceCalculator::DEFAULT_MAX_OUTPUTS) const;
 
   virtual bool isValid() const;
 

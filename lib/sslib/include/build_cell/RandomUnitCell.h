@@ -28,11 +28,6 @@ public:
   typedef ::boost::optional<double> OptionalDouble;
   typedef ::std::pair<double, bool> ParamValue;
 
-  struct Parameter
-  {
-    enum Value {A, B, C, ALPHA, BETA, GAMMA};
-  };
-
   static const double DEFAULT_MIN_ANGLE;
   static const double DEFAULT_MAX_ANGLE;
   static const double DEFAULT_MIN_LENGTH;
@@ -64,11 +59,15 @@ private:
 
   typedef ::std::pair<OptionalDouble, OptionalDouble> MinMax;
 
+  enum Param {A, B, C, ALPHA, BETA, GAMMA};
+
   inline bool isLength(const size_t param) const { return param < 3; }
 
   double generateParameter(const size_t param) const;
 
   double generateVolume(const double overrideVolume = 0.0) const;
+
+  bool areParametersValid(const double (&latticeParams)[6]) const;
 
   /** An array of the optional min/max values of the unit cell lattice parameters. */
   MinMax myParameters[6];

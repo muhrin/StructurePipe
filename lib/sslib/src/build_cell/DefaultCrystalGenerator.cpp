@@ -48,7 +48,6 @@ myMaxAttempts(10000)
 
 IStructureGenerator::Result DefaultCrystalGenerator::generateStructure(const StructureDescription &  structureDescription) const
 {
-	using ::sstbx::common::AbstractFmidCell;
 	using ::sstbx::common::Structure;
 
   const bool hasUnitCell = structureDescription.getUnitCell().get() != NULL;
