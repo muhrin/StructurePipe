@@ -63,11 +63,11 @@ endif()
 ## First libraries #####################################
 
 add_subdirectory(lib/pipelib)    # Pipeline library
+add_subdirectory(lib/spglib)     # Space group library (https://sourceforge.net/projects/spglib/)
 add_subdirectory(lib/sslib)      # Structure searching library
 if(SP_USE_YAML)
   add_subdirectory(lib/yaml-cpp) # YAML library (http://code.google.com/p/yaml-cpp/)
 endif(SP_USE_YAML)
-add_subdirectory(lib/spglib)     # Space group library (https://sourceforge.net/projects/spglib/)
 
 ## Now StructurePipe ####################################
 

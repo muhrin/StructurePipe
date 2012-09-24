@@ -32,27 +32,43 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
   const ::arma::vec3 r12 = cell.wrapVec(r2) - cell.wrapVec(r1);
   const double (&params)[6] = cell.getLatticeParams();
 
+  const ::arma::vec3 A = cell.getAVec();
+  const ::arma::vec3 B = cell.getBVec();
+  const ::arma::vec3 C = cell.getCVec();
+
   // Maximum multiples of cell vectors we need to go to
   const int maxA = (int)ceil(cutoff / params[0]);
-  const int maxB = (int)ceil(cutoff / params[1]);
-  const int maxC = (int)ceil(cutoff / params[2]);
+  int maxB = (int)ceil(cutoff / params[1]);
+  int maxC = (int)ceil(cutoff / params[2]);
 
   const double cutoffSq = cutoff * cutoff;
-  ::arma::vec3 dFrac, dRImg;
-  const ::arma::mat33 & orthoMtx = cell.getOrthoMtx();
   double dRDistSq;
   size_t numDistances = 0;
+
+  ::arma::vec3
+    nA,
+    nAPlusNB,
+    dRImg;
+
+  double rCutMinNA, tmpASq, tmpBSq;  // TEMPORARY
 	for(int a = -maxA; a <= maxA; ++a)
 	{
-		dFrac[0] = a;
+    nA = a * A;
+
+    tmpASq = (abs(a) - 1.0) * params[0];
+    tmpASq *= tmpASq;
+    rCutMinNA = cutoffSq - tmpASq;
+    maxB = (int)ceil(sqrt(rCutMinNA) / params[1]);
 		for(int b = -maxB; b <= maxB; ++b)
 		{
-		  dFrac[1] = b;
+      nAPlusNB = nA + b * B;
+
+      tmpBSq = (abs(b) - 1.0) * params[1];
+      tmpBSq *= tmpBSq;
+      maxC = (int)ceil(sqrt(rCutMinNA - tmpBSq) / params[2]);
 			for(int c = -maxC; c <= maxC; ++c)
 			{
-				dFrac[2] = c;
-
-        dRImg = orthoMtx * dFrac + r12;
+        dRImg = c * C + nAPlusNB + r12;
         dRDistSq = ::arma::dot(dRImg, dRImg);
 
 				if(dRDistSq < cutoffSq)
@@ -97,27 +113,43 @@ bool OrthoCellDistanceCalculator::getVecsBetween(
   const ::arma::vec3 r12 = getVecMinImg(r1, r2);
   const double (&params)[6] = cell.getLatticeParams();
 
+  const ::arma::vec3 A = cell.getAVec();
+  const ::arma::vec3 B = cell.getBVec();
+  const ::arma::vec3 C = cell.getCVec();
+
   // Maximum multiples of cell vectors we need to go to
   const int maxA = (int)ceil(cutoff / params[0]);
-  const int maxB = (int)ceil(cutoff / params[1]);
-  const int maxC = (int)ceil(cutoff / params[2]);
+  int maxB = (int)ceil(cutoff / params[1]);
+  int maxC = (int)ceil(cutoff / params[2]);
 
   const double cutoffSq = cutoff * cutoff;
-  ::arma::vec3 dFrac, dRImg;
-  const ::arma::mat33 & orthoMtx = cell.getOrthoMtx();
   double dRDistSq;
   size_t numVectors = 0;
+
+  ::arma::vec3
+    nA,
+    nAPlusNB,
+    dRImg;
+
+  double rCutMinNA, tmpASq, tmpBSq;  // TEMPORARY
 	for(int a = -maxA; a <= maxA; ++a)
 	{
-		dFrac[0] = a;
+    nA = a * A;
+
+    tmpASq = (abs(a) - 1.0) * params[0];
+    tmpASq *= tmpASq;
+    rCutMinNA = cutoffSq - tmpASq;
+    maxB = (int)ceil(sqrt(rCutMinNA) / params[1]);
 		for(int b = -maxB; b <= maxB; ++b)
 		{
-		  dFrac[1] = b;
+      nAPlusNB = nA + b * B;
+
+      tmpBSq = (abs(b) - 1.0) * params[1];
+      tmpBSq *= tmpBSq;
+      maxC = (int)ceil(sqrt(rCutMinNA - tmpBSq) / params[2]);
 			for(int c = -maxC; c <= maxC; ++c)
 			{
-				dFrac[2] = c;
-
-        dRImg = orthoMtx * dFrac + r12;
+        dRImg = c * C + nAPlusNB + r12;
         dRDistSq = ::arma::dot(dRImg, dRImg);
 
 				if(dRDistSq < cutoffSq)

@@ -17,7 +17,7 @@
 namespace sstbx {
 namespace build_cell {
 
-const size_t AtomExtruder::DEFAULT_MAX_ITERATIONS = 10000;
+const size_t AtomExtruder::DEFAULT_MAX_ITERATIONS = 7000;
 const double AtomExtruder::DEFAULT_TOLERANCE = 0.001;
 
 bool AtomExtruder::extrudeAtoms(
