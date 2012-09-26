@@ -84,14 +84,14 @@ size_t Structure::getNumAtoms() const
 
 Atom & Structure::getAtom(const size_t idx)
 {
-  SSE_ASSERT(idx < getNumAtoms());
+  SSLIB_ASSERT(idx < getNumAtoms());
 
   return myAtoms[idx];
 }
 
 const Atom & Structure::getAtom(const size_t idx) const
 {
-  SSE_ASSERT(idx < getNumAtoms());
+  SSLIB_ASSERT(idx < getNumAtoms());
 
   return myAtoms[idx];
 }
@@ -205,7 +205,7 @@ const ::sstbx::utility::HeterogeneousMap & Structure::getProperties() const
 
 bool Structure::makePrimitive()
 {
-  if(myCell)
+  if(myNumAtoms > 0 && myCell)
   {
     double lattice[3][3];
     const::arma::mat33 & orthoMtx = myCell->getOrthoMtx();
@@ -281,7 +281,7 @@ UniquePtr<Structure>::Type Structure::getPrimitiveCopy() const
 {
   UniquePtr<Structure>::Type structure;
 
-  if(myCell)
+  if(myNumAtoms > 0 && myCell)
   {
     // Get the lattice
     double lattice[3][3];

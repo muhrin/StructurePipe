@@ -26,6 +26,8 @@ namespace utility {
 
 typedef ::std::pair<size_t, double> IndexDoublePair;
 
+const double DistanceMatrixComparator::STRUCTURES_INCOMPARABLE = ::std::numeric_limits<double>::max();
+
 bool indexDoubleLessThan(const IndexDoublePair & p1, const IndexDoublePair & p2)
 { return p1.second < p2.second; }
 
@@ -148,9 +150,12 @@ double DistanceMatrixComparator::compareStructures(
   const common::Structure & str1, const DataTyp & str1Data,
   const common::Structure & str2, const DataTyp & str2Data) const
 {
-  const size_t numAtoms = str1Data.distancesMtx.n_cols;
+  if(!areComparable(str1, str1Data, str2, str2Data))
+    return STRUCTURES_INCOMPARABLE;
 
-  if(numAtoms < myFastComparisonAtomsLimit)
+  const size_t maxAtoms = ::std::max(str1Data.distancesMtx.n_cols, str2Data.distancesMtx.n_cols);
+
+  if(maxAtoms < myFastComparisonAtomsLimit)
   {
     // Use more expensive, but more accurate method
     return compareStructuresFull(str1, str1Data, str2, str2Data);
@@ -160,6 +165,30 @@ double DistanceMatrixComparator::compareStructures(
     // Use cheaper method
     return compareStructuresFast(str1, str1Data, str2, str2Data);
   }
+}
+
+bool DistanceMatrixComparator::areComparable(
+  const common::Structure & str1, const DataTyp & str1Data,
+  const common::Structure & str2, const DataTyp & str2Data) const
+{
+  size_t minAtoms, maxAtoms;
+
+  if(str1Data.distancesMtx.n_cols > str2Data.distancesMtx.n_cols)
+  {
+    minAtoms = str2Data.distancesMtx.n_cols;
+    maxAtoms = str1Data.distancesMtx.n_cols;
+  }
+  else
+  {
+    minAtoms = str1Data.distancesMtx.n_cols;
+    maxAtoms = str2Data.distancesMtx.n_cols;
+  }
+
+  if(minAtoms == 0)
+    return false;
+
+  return true;
+
 }
 
 
@@ -236,7 +265,6 @@ double DistanceMatrixComparator::compareStructuresFast(
   size_t i, j, iRem1, iRem2;
   double r_ij1, r_ij2, distDiff;
   double sqSum = 0.0;
-
   for(i = 0; i < leastCommonMultiple; ++i)
   {
     iRem1 = i % numAtoms1;
@@ -255,7 +283,6 @@ double DistanceMatrixComparator::compareStructuresFast(
   }
   return sqrt(sqSum);
 }
-  
 
 }
 }
