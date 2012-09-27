@@ -54,6 +54,8 @@ private:
 
   void updateBufferedValues();
 
+  bool worthDoingAccurately(const int dA, const int dB, const int dC) const;
+
   ::arma::vec3 myA;
   ::arma::vec3 myB;
   ::arma::vec3 myC;
@@ -61,6 +63,10 @@ private:
   ::arma::vec3 myANorm;
   ::arma::vec3 myBNorm;
   ::arma::vec3 myCNorm;
+
+  double myARecip;
+  double myBRecip;
+  double myCRecip;
 
 };
 

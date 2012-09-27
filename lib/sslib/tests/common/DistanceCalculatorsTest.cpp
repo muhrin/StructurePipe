@@ -30,19 +30,21 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
 {
   // SETTINGS ////////////////
   const size_t numAtoms = 50;
-  const double cellDim = 10;
-  const double tolerance = cellDim / 1e10;
-  const double maxCutoff = 4;
-  const size_t numAttempts = 500;
+  const double cellDim = 1;
+  const double tolerance = 1e-13;
+  const double maxCutoff = 5;
+  const size_t numAttempts = 100;
 
   // Timers
   time_t t0, t1, tOrtho = 0, tUniv = 0;
   double cutoff;
   ::std::vector<double> orthoDist, univDist;
+  ::std::vector< ::arma::vec3> orthoVecs, univVecs;
+  ::arma::vec3 orthoSum, univSum;
   for(size_t attempt = 0; attempt < numAttempts; ++attempt)
   {
-    orthoDist.clear();
-    univDist.clear();
+    orthoDist.clear(); orthoVecs.clear();
+    univDist.clear(); univVecs.clear();
 
     ssc::Structure structure;
     ssc::UnitCellPtr cell(new ssc::UnitCell(
@@ -72,6 +74,7 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
       {
         const ssc::Atom atom2 = structure.getAtom(j);
         univCalc.getDistsBetween(atom1, atom2, cutoff, univDist);
+        univCalc.getVecsBetween(atom1, atom2, cutoff, univVecs);
       }
     }
 
@@ -88,6 +91,7 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
       {
         const ssc::Atom atom2 = structure.getAtom(j);
         orthoCalc.getDistsBetween(atom1, atom2, cutoff, orthoDist);
+        orthoCalc.getVecsBetween(atom1, atom2, cutoff, orthoVecs);
       }
     }
 
@@ -95,16 +99,31 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
 
     tOrtho += t1 - t0;
 
+    if(orthoVecs.size() != univVecs.size())
+      ::std::cout << "SOMETHING BAD HAPPENED\n";
+
     BOOST_REQUIRE(orthoDist.size() == univDist.size());
+    BOOST_REQUIRE(orthoVecs.size() == univVecs.size());
 
     ::std::sort(orthoDist.begin(), orthoDist.end());
     ::std::sort(univDist.begin(), univDist.end());
 
     const size_t numElements = ::std::min(orthoDist.size(), univDist.size());
 
+    univSum.fill(0.0);
+    orthoSum.fill(0.0);
     for(size_t i = 0; i < numElements; ++i)
     {
+      orthoSum += orthoVecs[i];
+      univSum += univVecs[i];
       BOOST_REQUIRE(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance));
+    }
+    // Check that the components of the sum of the vectors match
+    for(size_t i = 0; i < 3; ++i)
+    {
+      BOOST_REQUIRE(ssu::StableComp::eq(orthoSum(0), univSum(0), 3e-9));
+      //if(!ssu::StableComp::eq(orthoSum(0), univSum(0), 3e-9))
+      //  ::std::cout << "diff: " << orthoSum(i) - univSum(i) << ::std::endl;
     }
   }
 
@@ -118,7 +137,7 @@ BOOST_AUTO_TEST_CASE(DistanceComparisonPathological)
   // SETTINGS ////////////////
   const size_t numAtoms = 4;
   const double cellDim = 3.1032302270780758;
-  const double tolerance = cellDim / 1e16;
+  const double tolerance = cellDim / 1e12;
   const double cutoffDist = 5.00;
 
   ssc::Structure structure;
