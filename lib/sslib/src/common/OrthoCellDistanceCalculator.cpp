@@ -19,69 +19,60 @@ const double OrthoCellDistanceCalculator::VALID_ANGLE_TOLERANCE = 1e-5;
 
 OrthoCellDistanceCalculator::OrthoCellDistanceCalculator(const sstbx::common::Structure &structure):
 DistanceCalculator(structure)
-{}
+{
+  updateBufferedValues();
+}
 
 bool OrthoCellDistanceCalculator::getDistsBetween(
   const arma::vec3 & r1,
   const arma::vec3 & r2,
-  const double cutoff,
+  double cutoff,
   std::vector<double> &outDistances,
   const size_t maxDistances) const
 {
+  // The cutoff has to be positive
+  cutoff = abs(cutoff);
   const UnitCell & cell = *myStructure.getUnitCell();
 
-  //const ::arma::vec3 r12 = getVecMinImg(r1, r2);
   const ::arma::vec3 r12 = cell.wrapVec(r2) - cell.wrapVec(r1);
   const double (&params)[6] = cell.getLatticeParams();
 
-  const ::arma::vec3 A = cell.getAVec();
-  const ::arma::vec3 B = cell.getBVec();
-  const ::arma::vec3 C = cell.getCVec();
-
-  const ::arma::vec3 ANorm = A / params[0];
-  const ::arma::vec3 BNorm = B / params[1];
-  const ::arma::vec3 CNorm = C / params[2];
-
   const double cutoffSq = cutoff * cutoff;
 
-  const double safeCutoffA = cutoff + abs(::arma::dot(r12, ANorm));
-  const double safeCutoffASq = safeCutoffA * safeCutoffA;
-
-  //const double safeCutoffB = cutoff + abs(::arma::dot(r12, BNorm));
-  const double safeCutoffB = cutoff + sqrt(::arma::dot(r12, r12));
-  const double safeCutoffBSq = safeCutoffB * safeCutoffB;
-
-  //const double safeCutoffC = cutoff + abs(::arma::dot(r12, CNorm));
-  const double safeCutoffC = safeCutoffB;
-  const double safeCutoffCSq = safeCutoffC * safeCutoffC;
+  const double rDotA =  ::arma::dot(r12, myANorm);
+  const double rDotB = ::arma::dot(r12, myBNorm);
+  const double rDotC = ::arma::dot(r12, myCNorm);
 
   // Maximum multiples of cell vectors we need to go to
-  const int maxA = (int)floor(safeCutoffA / params[0]);
-  int maxB, maxC; // These will be worked out as we go
+  const int A_max = (int)floor((cutoff - rDotA)/ params[0]);
+  const int A_min = -(int)floor((cutoff + rDotA)/ params[0]);
+  int B_min, B_max, C_min, C_max; // These will be worked out as we go
 
   // Loop variables
   size_t numDistances = 0;
   double dRDistSq;
   ::arma::vec3 nA, nAPlusNB, dRImg;
-  double rCutMinNA, aSq, bSq;
-	for(int a = -maxA; a <= maxA; ++a)
+  double aSq, bSq;
+
+	for(int a = A_min; a <= A_max; ++a)
 	{
-    nA = a * A;
+    nA = a * myA;
 
-    aSq = abs(a) * params[0];
+    aSq = a * params[0] + rDotA;
     aSq *= aSq;
-    rCutMinNA = safeCutoffBSq - aSq;
-    maxB = (int)floor(sqrt(rCutMinNA) / params[1]);
-		for(int b = -maxB; b <= maxB; ++b)
+    B_min = -(int)floor((sqrt(cutoffSq + aSq) + rDotB) / params[1]);
+    B_max = (int)floor((sqrt(cutoffSq - aSq) - rDotB) / params[1]);
+		for(int b = B_min; b <= B_max; ++b)
 		{
-      nAPlusNB = nA + b * B;
+      nAPlusNB = nA + b * myB;
 
-      bSq = abs(b) * params[1];
+      bSq = b * params[1] + rDotB;
       bSq *= bSq;
-      maxC = (int)floor(sqrt(safeCutoffCSq - aSq - bSq) / params[2]);
-			for(int c = -maxC; c <= maxC; ++c)
+      C_min = -(int)floor((sqrt(cutoffSq + aSq + bSq) + rDotC) / params[2]);
+      C_max = (int)floor((sqrt(cutoffSq - aSq - bSq) - rDotC) / params[2]);
+			for(int c = C_min; c <= C_max; ++c)
 			{
-        dRImg = c * C + nAPlusNB + r12;
+        dRImg = c * myC + nAPlusNB + r12;
         dRDistSq = ::arma::dot(dRImg, dRImg);
 
 				if(dRDistSq < cutoffSq)
@@ -128,40 +119,40 @@ bool OrthoCellDistanceCalculator::getVecsBetween(
   const double (&params)[6] = cell.getLatticeParams();
 
   const double cutoffSq = cutoff * cutoff;
-  const double safeCutoff = cutoff + sqrt(::arma::dot(r12, r12));
-  const double safeCutoffSq = safeCutoff * safeCutoff;
 
-  const ::arma::vec3 A = cell.getAVec();
-  const ::arma::vec3 B = cell.getBVec();
-  const ::arma::vec3 C = cell.getCVec();
+  const double rDotA =  ::arma::dot(r12, myANorm);
+  const double rDotB = ::arma::dot(r12, myBNorm);
+  const double rDotC = ::arma::dot(r12, myCNorm);
 
   // Maximum multiples of cell vectors we need to go to
-  const int maxA = (int)floor(safeCutoff / params[0]);
-  int maxB, maxC; // These will be worked out as we go
+  const int A_max = (int)floor((cutoff - rDotA)/ params[0]);
+  const int A_min = -(int)floor((cutoff + rDotA)/ params[0]);
+  int B_min, B_max, C_min, C_max; // These will be worked out as we go
 
   // Loop variables
   size_t numVectors = 0;
   double dRDistSq;
   ::arma::vec3 nA, nAPlusNB, dRImg;
-  double rCutMinNA, aSq, bSq;
-	for(int a = -maxA; a <= maxA; ++a)
+  double aSq, bSq;
+	for(int a = A_min; a <= A_max; ++a)
 	{
-    nA = a * A;
+    nA = a * myA;
 
-    aSq = abs(a) * params[0];
+    aSq = a * params[0] + rDotA;
     aSq *= aSq;
-    rCutMinNA = safeCutoffSq - aSq;
-    maxB = (int)floor(sqrt(rCutMinNA) / params[1]);
-		for(int b = -maxB; b <= maxB; ++b)
+    B_min = -(int)floor((sqrt(cutoffSq + aSq) + rDotB) / params[1]);
+    B_max = (int)floor((sqrt(cutoffSq - aSq) - rDotB) / params[1]);
+		for(int b = B_min; b <= B_max; ++b)
 		{
-      nAPlusNB = nA + b * B;
+      nAPlusNB = nA + b * myB;
 
-      bSq = abs(b) * params[1];
+      bSq = b * params[1] + rDotB;
       bSq *= bSq;
-      maxC = (int)floor(sqrt(rCutMinNA - bSq) / params[2]);
-			for(int c = -maxC; c <= maxC; ++c)
+      C_min = -(int)floor((sqrt(cutoffSq + aSq + bSq) + rDotC) / params[2]);
+      C_max = (int)floor((sqrt(cutoffSq - aSq - bSq) - rDotC) / params[2]);
+			for(int c = C_min; c <= C_max; ++c)
 			{
-        dRImg = c * C + nAPlusNB + r12;
+        dRImg = c * myC + nAPlusNB + r12;
         dRDistSq = ::arma::dot(dRImg, dRImg);
 
 				if(dRDistSq < cutoffSq)
@@ -188,6 +179,25 @@ bool OrthoCellDistanceCalculator::isValid() const
     utility::StableComp::eq(params[3], 90.0, VALID_ANGLE_TOLERANCE) &&
     utility::StableComp::eq(params[4], 90.0, VALID_ANGLE_TOLERANCE) &&
     utility::StableComp::eq(params[5], 90.0, VALID_ANGLE_TOLERANCE);
+}
+
+void OrthoCellDistanceCalculator::unitCellChanged()
+{
+  updateBufferedValues();
+}
+
+void OrthoCellDistanceCalculator::updateBufferedValues()
+{
+  const UnitCell & cell = *myStructure.getUnitCell();
+  const double (&params)[6] = cell.getLatticeParams();
+
+  myA = cell.getAVec();
+  myB = cell.getBVec();
+  myC = cell.getCVec();
+
+  myANorm = myA / params[0];
+  myBNorm = myB / params[1];
+  myCNorm = myC / params[2];
 }
 
 }

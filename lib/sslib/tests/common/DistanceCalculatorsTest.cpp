@@ -20,6 +20,7 @@
 #include <common/Types.h>
 #include <common/UniversalCrystalDistanceCalculator.h>
 #include <common/UnitCell.h>
+#include <common/Utils.h>
 #include <utility/StableComparison.h>
 
 namespace ssc = ::sstbx::common;
@@ -31,70 +32,84 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
   const size_t numAtoms = 50;
   const double cellDim = 10;
   const double tolerance = cellDim / 1e10;
-  const double cutoffDist = 3.11 * cellDim;
-
-  ssc::Structure structure;
-  ssc::UnitCellPtr cell(new ssc::UnitCell(0.25 * cellDim, cellDim, 1.75 * cellDim, 90.0, 90.0, 90.0));
-
-  structure.setUnitCell(cell);
-
-  for(size_t i = 0; i < numAtoms; ++i)
-    structure.newAtom(ssc::AtomSpeciesId::CUSTOM_1).setPosition(::arma::randu< ::arma::vec>(3));
-
-  ssc::OrthoCellDistanceCalculator orthoCalc(structure);
-  ssc::UniversalCrystalDistanceCalculator univCalc(structure);
-
-  BOOST_REQUIRE(orthoCalc.isValid());
-  BOOST_REQUIRE(univCalc.isValid());
-
-  ::std::vector<double> orthoDist, univDist;
+  const double maxCutoff = 4;
+  const size_t numAttempts = 500;
 
   // Timers
-  time_t t0, t1;
-
-  t0 = time(NULL);
-
-  for(size_t i = 0; i < numAtoms; ++i)
+  time_t t0, t1, tOrtho = 0, tUniv = 0;
+  double cutoff;
+  ::std::vector<double> orthoDist, univDist;
+  for(size_t attempt = 0; attempt < numAttempts; ++attempt)
   {
-    const ssc::Atom atom1 = structure.getAtom(i);
-    for(size_t j = i; j < numAtoms; ++j)
+    orthoDist.clear();
+    univDist.clear();
+
+    ssc::Structure structure;
+    ssc::UnitCellPtr cell(new ssc::UnitCell(
+      ssc::randDouble(0.1, 5) * cellDim,
+      ssc::randDouble(0.1, 5) * cellDim, 
+      ssc::randDouble(0.1, 5) * cellDim, 90.0, 90.0, 90.0));
+
+    structure.setUnitCell(cell);
+
+    for(size_t i = 0; i < numAtoms; ++i)
+      structure.newAtom(ssc::AtomSpeciesId::CUSTOM_1).setPosition(::arma::randu< ::arma::vec>(3));
+
+    ssc::OrthoCellDistanceCalculator orthoCalc(structure);
+    ssc::UniversalCrystalDistanceCalculator univCalc(structure);
+
+    BOOST_REQUIRE(orthoCalc.isValid());
+    BOOST_REQUIRE(univCalc.isValid());
+
+    cutoff = ssc::randDouble() * maxCutoff;
+
+    t0 = time(NULL);
+
+    for(size_t i = 0; i < numAtoms; ++i)
     {
-      const ssc::Atom atom2 = structure.getAtom(j);
-      univCalc.getDistsBetween(atom1, atom2, cutoffDist, univDist);
+      const ssc::Atom atom1 = structure.getAtom(i);
+      for(size_t j = i; j < numAtoms; ++j)
+      {
+        const ssc::Atom atom2 = structure.getAtom(j);
+        univCalc.getDistsBetween(atom1, atom2, cutoff, univDist);
+      }
+    }
+
+    t1 = time(NULL);
+
+    tUniv += t1 - t0;
+
+    t0 = time(NULL);
+
+    for(size_t i = 0; i < numAtoms; ++i)
+    {
+      const ssc::Atom atom1 = structure.getAtom(i);
+      for(size_t j = i; j < numAtoms; ++j)
+      {
+        const ssc::Atom atom2 = structure.getAtom(j);
+        orthoCalc.getDistsBetween(atom1, atom2, cutoff, orthoDist);
+      }
+    }
+
+    t1 = time(NULL);
+
+    tOrtho += t1 - t0;
+
+    BOOST_REQUIRE(orthoDist.size() == univDist.size());
+
+    ::std::sort(orthoDist.begin(), orthoDist.end());
+    ::std::sort(univDist.begin(), univDist.end());
+
+    const size_t numElements = ::std::min(orthoDist.size(), univDist.size());
+
+    for(size_t i = 0; i < numElements; ++i)
+    {
+      BOOST_REQUIRE(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance));
     }
   }
 
-  t1 = time(NULL);
-
-  ::std::cout << "Univ. took: " << t1 - t0 << ::std::endl;
-
-  t0 = time(NULL);
-
-  for(size_t i = 0; i < numAtoms; ++i)
-  {
-    const ssc::Atom atom1 = structure.getAtom(i);
-    for(size_t j = i; j < numAtoms; ++j)
-    {
-      const ssc::Atom atom2 = structure.getAtom(j);
-      orthoCalc.getDistsBetween(atom1, atom2, cutoffDist, orthoDist);
-    }
-  }
-
-  t1 = time(NULL);
-
-  ::std::cout << "Ortho took: " << t1 - t0 << ::std::endl;
-
-  BOOST_REQUIRE(orthoDist.size() == univDist.size());
-
-  ::std::sort(orthoDist.begin(), orthoDist.end());
-  ::std::sort(univDist.begin(), univDist.end());
-
-  const size_t numElements = ::std::min(orthoDist.size(), univDist.size());
-
-  for(size_t i = 0; i < numElements; ++i)
-  {
-    BOOST_REQUIRE(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance));
-  }
+  ::std::cout << "Univ. took: " << tUniv << ::std::endl;
+  ::std::cout << "Ortho took: " << tOrtho << ::std::endl;
 }
 
 
@@ -107,8 +122,7 @@ BOOST_AUTO_TEST_CASE(DistanceComparisonPathological)
   const double cutoffDist = 5.00;
 
   ssc::Structure structure;
-  //ssc::UnitCellPtr cell(new ssc::UnitCell(cellDim, cellDim, 3.1032310973902493, 89.999998840060258, 90.000001159939757, 89.999999999947718));
-  ssc::UnitCellPtr cell(new ssc::UnitCell(cellDim, cellDim, 3.1032310973902493, 90.0, 90.0, 90.0));
+  ssc::UnitCellPtr cell(new ssc::UnitCell(cellDim, cellDim, 3.1032310973902493, 89.999998840060258, 90.000001159939757, 89.999999999947718));
 
   structure.setUnitCell(cell);
 
