@@ -55,9 +55,9 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
 
   // Loop variables
   size_t numDistances = 0;
-  double dRDistSq;
+  //double dRDistSq;
   ::arma::vec3 nA, nAPlusNB, dRImg;
-  double aSq, bSq;
+  double r_x, r_y, r_z, aSq, bSq, testDistSq;
 
   //if(doFullDistanceCheck)
   //{
@@ -94,36 +94,33 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
   //}
   //else
   {
-    double distA = A_min * params[0] + rDotA, distB, distC, testDistSq;
-	  for(int a = A_min; a <= A_max; ++a)
-	  {
-      aSq = distA * distA; /* aSq = a * params[0] + rDotA; aSq *= aSq; */
-      distB = B_min * params[1] + rDotB;
-		  for(int b = B_min; b <= B_max; ++b)
+    for(int a = A_min; a <= A_max; ++a)
+    {
+      r_x = a * params[0] + rDotA;
+      aSq = r_x * r_x;
+	    for(int b = B_min; b <= B_max; ++b)
       {
-        bSq = distB * distB; /* bSq = b * params[1] + rDotB; bSq *= bSq;*/
+        r_y = b * params[1] + rDotB;
+        bSq = r_y * r_y;
         if(aSq + bSq < cutoffSq)
         {
-          distC = C_min * params[2] + rDotC;
-			    for(int c = C_min; c <= C_max; ++c)
-			    {
-            testDistSq = distC * distC; /* testDistSq = c * params[2] + rDotC; testDistSq *= testDistSq; */
-            testDistSq += aSq + bSq;
+		      for(int c = C_min; c <= C_max; ++c)
+		      {
+            r_z = c * params[2] + rDotC;
+            testDistSq = aSq + bSq + r_z * r_z;
 
             if(testDistSq < cutoffSq)
-				    {
+			      {
               outDistances.push_back(sqrt(testDistSq));
               if(++numDistances >= maxDistances)
                 return false;
-				    }
-            distC += params[2];
+			      }
           }
         }
-        distB += params[1];
       }
-      distA += params[0];
-	  }
+    }
   }
+
   return true;
 }
 
@@ -176,42 +173,39 @@ bool OrthoCellDistanceCalculator::getVecsBetween(
   // Loop variables
   size_t numVectors = 0;
   ::arma::vec3 dR, outVec;
-  double dRDistSq;
-  double aSq, bSq;
-  double distA = A_min * params[0] + rDotA, distB, distC, testDistSq;
+  double r_x, r_y, r_z, aSq, bSq, testDistSq;
   for(int a = A_min; a <= A_max; ++a)
   {
-    aSq = distA * distA; /* aSq = a * params[0] + rDotA; aSq *= aSq; */
-    distB = B_min * params[1] + rDotB;
+    r_x = a * params[0] + rDotA;
+    aSq = r_x * r_x;
 	  for(int b = B_min; b <= B_max; ++b)
     {
-      bSq = distB * distB; /* bSq = b * params[1] + rDotB; bSq *= bSq;*/
+      r_y = b * params[1] + rDotB;
+      bSq = r_y * r_y;
       if(aSq + bSq < cutoffSq)
       {
-        distC = C_min * params[2] + rDotC;
 		    for(int c = C_min; c <= C_max; ++c)
 		    {
-          testDistSq = distC * distC; /* testDistSq = c * params[2] + rDotC; testDistSq *= testDistSq; */
-          testDistSq += aSq + bSq;
+          r_z = c * params[2] + rDotC;
+          testDistSq = aSq + bSq + r_z * r_z;
 
           if(testDistSq < cutoffSq)
 			    {
-            outVec(0) = distA;
-            outVec(1) = distB;
-            outVec(2) = distC;
+            outVec[0] = r_x;
+            outVec[1] = r_y;
+            outVec[2] = r_z;
             outVectors.push_back(outVec);
             if(++numVectors >= maxValues)
               return false;
 			    }
-          distC += params[2];
         }
       }
-      distB += params[1];
     }
-    distA += params[0];
   }
 
   return true;
+
+  //double dRDistSq;
 	//for(int a = A_min; a <= A_max; ++a)
 	//{
  //   nA = a * myA;

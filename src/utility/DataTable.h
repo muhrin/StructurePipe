@@ -19,10 +19,8 @@
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
-namespace spipe
-{
-namespace utility
-{
+namespace spipe {
+namespace utility {
 
 class IDataTableChangeListener;
 

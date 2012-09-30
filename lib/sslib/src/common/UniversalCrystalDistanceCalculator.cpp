@@ -101,18 +101,15 @@ bool UniversalCrystalDistanceCalculator::getDistsBetween(
   const double cutoffSq = cutoff * cutoff;
   size_t numFound = 0;
   double aSq, bSq, testDistSq;
-  double distA = -maxA * params[0] + rDotA, distB, distC;
 	for(int a = -maxA; a <= maxA; ++a)
 	{
-    aSq = distA * distA; /* aSq = a * params[0] + rDotA; aSq *= aSq; */
-    distB = -maxB * params[1] + rDotB;
+    aSq = a * params[0] + rDotA; aSq *= aSq;
 		for(int b = -maxB; b <= maxB; ++b)
 		{
-      bSq = distB * distB; /* bSq = b * params[1] + rDotB; bSq *= bSq;*/
-      distC = -maxC * params[2] + rDotC;
+      bSq = b * params[1] + rDotB; bSq *= bSq;
 			for(int c = -maxC; c <= maxC; ++c)
 			{
-        testDistSq = distC * distC; /* testDistSq = c * params[2] + rDotC; testDistSq *= testDistSq; */
+        testDistSq = c * params[2] + rDotC; testDistSq *= testDistSq;
         testDistSq += aSq + bSq;
 
 				if(testDistSq < cutoffSq)
@@ -121,11 +118,8 @@ bool UniversalCrystalDistanceCalculator::getDistsBetween(
           if(++numFound >= maxValues)
             return false;
 				}
-        distC += params[2];
       }
-      distB += params[1];
 		}
-    distA += params[0];
 	}
 
   // Completed successfully
@@ -157,42 +151,38 @@ bool UniversalCrystalDistanceCalculator::getVecsBetween(
   const double rDotC = ::arma::dot(dR, C / params[2]);
 
 	// Maximum multiple of cell vectors we need to go to
-	const int maxA = (int)floor(getNumPlaneRepetitionsToBoundSphere(A, B, C, cutoff + abs(rDotA)));
-	const int maxB = (int)floor(getNumPlaneRepetitionsToBoundSphere(B, A, C, cutoff + abs(rDotB)));
-	const int maxC = (int)floor(getNumPlaneRepetitionsToBoundSphere(C, A, B, cutoff + abs(rDotC)));
+	const int A_max = (int)floor(getNumPlaneRepetitionsToBoundSphere(A, B, C, cutoff + abs(rDotA)));
+	const int B_max = (int)floor(getNumPlaneRepetitionsToBoundSphere(B, A, C, cutoff + abs(rDotB)));
+	const int C_max = (int)floor(getNumPlaneRepetitionsToBoundSphere(C, A, B, cutoff + abs(rDotC)));
 
   const double cutoffSq = cutoff * cutoff;
   ::arma::vec3 outVec;
   size_t numFound = 0;
-  double aSq, bSq, testDistSq;
-  double distA = -maxA * params[0] + rDotA, distB, distC;
-	for(int a = -maxA; a <= maxA; ++a)
+  double aSq, bSq, r_x, r_y, r_z, testDistSq;
+	for(int a = -A_max; a <= A_max; ++a)
 	{
-    aSq = distA * distA; /* aSq = a * params[0] + rDotA; aSq *= aSq; */
-    distB = -maxB * params[1] + rDotB;
-		for(int b = -maxB; b <= maxB; ++b)
+    r_x = a * params[0] + rDotA;
+    aSq = r_x * r_x;
+		for(int b = -B_max; b <= B_max; ++b)
 		{
-      bSq = distB * distB; /* bSq = b * params[1] + rDotB; bSq *= bSq;*/
-      distC = -maxC * params[2] + rDotC;
-			for(int c = -maxC; c <= maxC; ++c)
+      r_y = b * params[1] + rDotB;
+      bSq = r_y * r_y;
+			for(int c = -C_max; c <= C_max; ++c)
 			{
-        testDistSq = distC * distC; /* testDistSq = c * params[2] + rDotC; testDistSq *= testDistSq; */
-        testDistSq += aSq + bSq;
+        r_z = c * params[2] + rDotC;
+        testDistSq = aSq + bSq + r_z * r_z;
 
 				if(testDistSq < cutoffSq)
 				{
-          outVec(0) = distA;
-          outVec(1) = distB;
-          outVec(2) = distC;
+          outVec[0] = r_x;
+          outVec[1] = r_y;
+          outVec[2] = r_z;
           outValues.push_back(outVec);
           if(++numFound >= maxValues)
             return false;
 				}
-        distC += params[2];
       }
-      distB += params[1];
 		}
-    distA += params[0];
 	}
 
   // Completed successfully

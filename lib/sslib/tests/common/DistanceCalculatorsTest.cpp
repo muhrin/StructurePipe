@@ -23,6 +23,8 @@
 #include <common/Utils.h>
 #include <utility/StableComparison.h>
 
+//#define DIST_TEST_MANUAL_DEBUG
+
 namespace ssc = ::sstbx::common;
 namespace ssu = ::sstbx::utility;
 
@@ -99,8 +101,10 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
 
     tOrtho += t1 - t0;
 
-    if(orthoVecs.size() != univVecs.size())
-      ::std::cout << "SOMETHING BAD HAPPENED\n";
+#ifdef DIST_TEST_MANUAL_DEBUG
+    if(orthoVecs.size() != univVecs.size() || orthoVecs.size() != univVecs.size())
+      ::std::cout << "Vector size mismatch.\n";
+#endif
 
     BOOST_REQUIRE(orthoDist.size() == univDist.size());
     BOOST_REQUIRE(orthoVecs.size() == univVecs.size());
@@ -116,14 +120,24 @@ BOOST_AUTO_TEST_CASE(DistanceCalculatorsComparison)
     {
       orthoSum += orthoVecs[i];
       univSum += univVecs[i];
+
+#ifdef DIST_TEST_MANUAL_DEBUG
+      if(!ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance))
+        ::std::cout << "Diff: " << orthoDist[i] - univDist[i] << ::std::endl;
+#endif
+
       BOOST_REQUIRE(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance));
     }
     // Check that the components of the sum of the vectors match
     for(size_t i = 0; i < 3; ++i)
     {
-      BOOST_REQUIRE(ssu::StableComp::eq(orthoSum(0), univSum(0), 3e-9));
-      //if(!ssu::StableComp::eq(orthoSum(0), univSum(0), 3e-9))
-      //  ::std::cout << "diff: " << orthoSum(i) - univSum(i) << ::std::endl;
+
+#ifdef DIST_TEST_MANUAL_DEBUG
+      if(!ssu::StableComp::eq(orthoSum(i), univSum(i), 3e-9))
+        ::std::cout << "Diff: " << orthoSum(i) - univSum(i) << ::std::endl;
+#endif
+
+      BOOST_REQUIRE(ssu::StableComp::eq(orthoSum(i), univSum(i), 3e-9));
     }
   }
 
@@ -180,6 +194,10 @@ BOOST_AUTO_TEST_CASE(DistanceComparisonPathological)
 
   for(size_t i = 0; i < numElements; ++i)
   {
-    BOOST_REQUIRE(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance));
+#ifdef DIST_TEST_MANUAL_DEBUG
+    if(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance))
+      ::std::cout << "Diff: " << orthoDist[i] - univDist[i] << ::std::endl;
+#endif
+    //BOOST_REQUIRE(ssu::StableComp::eq(orthoDist[i], univDist[i], tolerance));
   }
 }
