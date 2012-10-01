@@ -8,14 +8,18 @@
 // INCLUDES /////////////////////////////////////
 #include "common/OrthoCellDistanceCalculator.h"
 
+#include <iostream> // tmp
+
 #include "common/Structure.h"
 #include "common/UnitCell.h"
 #include "utility/StableComparison.h"
 
+#define SSLIB_ORTHO_DIST_CALC_DEBUG (SSLIB_DEBUG && 0)
+
 namespace sstbx {
 namespace common {
 
-const double OrthoCellDistanceCalculator::VALID_ANGLE_TOLERANCE = 1e-5;
+const double OrthoCellDistanceCalculator::VALID_ANGLE_TOLERANCE = 1e-10;
 
 OrthoCellDistanceCalculator::OrthoCellDistanceCalculator(const sstbx::common::Structure &structure):
 DistanceCalculator(structure)
@@ -34,6 +38,11 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
   cutoff = abs(cutoff);
   const UnitCell & cell = *myStructure.getUnitCell();
 
+	// Get the lattice vectors
+  const ::arma::vec3 A(cell.getAVec());
+  const ::arma::vec3 B(cell.getBVec());
+  const ::arma::vec3 C(cell.getCVec());
+
   const ::arma::vec3 r12 = cell.wrapVec(r2) - cell.wrapVec(r1);
   const double (&params)[6] = cell.getLatticeParams();
 
@@ -51,7 +60,7 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
   int C_min = -(int)floor((cutoff + rDotC) * myCRecip);
   int C_max = (int)floor((cutoff - rDotC) * myCRecip);
 
-  const bool doFullDistanceCheck = worthDoingAccurately(A_max - A_min, B_max - B_min, C_max - C_min);
+  //const bool doFullDistanceCheck = worthDoingAccurately(A_max - A_min, B_max - B_min, C_max - C_min);
 
   // Loop variables
   size_t numDistances = 0;
@@ -108,6 +117,13 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
 		      {
             r_z = c * params[2] + rDotC;
             testDistSq = aSq + bSq + r_z * r_z;
+
+#if SSLIB_ORTHO_DIST_CALC_DEBUG
+            ::arma::vec3 testVec = a * A + b * B + c * C + r12;
+            const double vecLengthSq = ::arma::dot(testVec, testVec);
+            if(vecLengthSq != testDistSq)
+              ::std::cout << "Error: Distance vectors do not match\n";
+#endif
 
             if(testDistSq < cutoffSq)
 			      {

@@ -24,8 +24,9 @@ const size_t TpsdGeomOptimiser::DEFAULT_MAX_STEPS = 50000;
 const double TpsdGeomOptimiser::DEFAULT_TOLERANCE = 1e-13;
 const double TpsdGeomOptimiser::DEFAULT_MIN_NORM_VOLUME = 0.05;
 const unsigned int TpsdGeomOptimiser::CHECK_CELL_EVERY_N_STEPS = 20;
-const double TpsdGeomOptimiser::CELL_MIN_NORM_VOLUME = 0.01;
+const double TpsdGeomOptimiser::CELL_MIN_NORM_VOLUME = 0.02;
 const double TpsdGeomOptimiser::CELL_MAX_ANGLE_SUM = 355.0;
+const double TpsdGeomOptimiser::MAX_STEPSIZE = 0.2;
 
 // IMPLEMENTATION //////////////////////////////////////////////////////////
 
@@ -196,7 +197,7 @@ bool TpsdGeomOptimiser::optimise(
 
 
 		if(fabs(xg) > 0.0)
-			step = fabs(xg / gg);
+      step = ::std::min(fabs(xg / gg), MAX_STEPSIZE);
 
 		// Move the particles on by a step, saving the old positions
 		deltaPos		= step * data.forces;
@@ -255,8 +256,8 @@ bool TpsdGeomOptimiser::optimise(
 	latticeCar = unitCell.getOrthoMtx();
 
 	// Initialisation of variables
-	dH	= std::numeric_limits<double>::max();
-	h	= 1.0;
+	dH	= std::numeric_limits<double>::max(); // Change in enthalpy between steps
+	h	= 1.0;  // Enthalpy = U + pV
 	s.fill(1.0);
 
 	const size_t numIonsSq	= data.numParticles * data.numParticles;
@@ -302,8 +303,9 @@ bool TpsdGeomOptimiser::optimise(
 		//gammaNumIonsOVolume = gamma * numIonsSq / volumeSq;
 		//data.stressMtx.diag() += gammaNumIonsOVolume;
 
+    // Calculate the strain matrix
 		s = data.stressMtx * latticeCar;
-
+    // Calculate the enthalpy
 		h = data.internalEnergy + pressureMean * volume;
 
 		deltaF	= data.forces - f0;

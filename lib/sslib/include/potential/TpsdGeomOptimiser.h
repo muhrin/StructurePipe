@@ -81,6 +81,7 @@ private:
   static const unsigned int CHECK_CELL_EVERY_N_STEPS;
   static const double CELL_MIN_NORM_VOLUME;
   static const double CELL_MAX_ANGLE_SUM;
+  static const double MAX_STEPSIZE;
 
   bool cellReasonable(const common::UnitCell & unitCell) const;
 
