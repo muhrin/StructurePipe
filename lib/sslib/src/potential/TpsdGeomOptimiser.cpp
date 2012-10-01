@@ -20,7 +20,7 @@ namespace potential {
 // CONSTANTS ////////////////////////////////////////////////
 
 
-const size_t TpsdGeomOptimiser::DEFAULT_MAX_STEPS = 50000;
+const const unsigned int TpsdGeomOptimiser::DEFAULT_MAX_STEPS = 50000;
 const double TpsdGeomOptimiser::DEFAULT_TOLERANCE = 1e-13;
 const double TpsdGeomOptimiser::DEFAULT_MIN_NORM_VOLUME = 0.05;
 const unsigned int TpsdGeomOptimiser::CHECK_CELL_EVERY_N_STEPS = 20;

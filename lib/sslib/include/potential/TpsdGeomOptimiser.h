@@ -37,6 +37,11 @@ namespace potential {
 class TpsdGeomOptimiser : public IGeomOptimiser
 {
 public:
+
+	static const unsigned int DEFAULT_MAX_STEPS;
+	static const double	DEFAULT_TOLERANCE;
+  static const double DEFAULT_MIN_NORM_VOLUME;
+
 	TpsdGeomOptimiser(
 		const IPotential & potential,
 		const size_t maxSteps = DEFAULT_MAX_STEPS,
@@ -71,10 +76,6 @@ public:
 		const size_t          maxSteps,
 		const double          eTol,
     const common::OptionalConstMat33 externalPressure = common::OptionalConstMat33()) const;
-
-	static const unsigned int DEFAULT_MAX_STEPS;
-	static const double	DEFAULT_TOLERANCE;
-  static const double DEFAULT_MIN_NORM_VOLUME;
 
 private:
 
