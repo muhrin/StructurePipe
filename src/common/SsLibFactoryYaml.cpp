@@ -100,7 +100,7 @@ SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
     cell->setMaxAngles(dValue);
   }
 
-  return cell;
+  return (ssbc::UnitCellBlueprintPtr)cell;
 }
 
 ssbc::StructureDescriptionPtr
