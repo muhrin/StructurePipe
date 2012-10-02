@@ -14,6 +14,7 @@
 #include <map>
 
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/utility.hpp>
 
 #include <armadillo>
 
@@ -23,6 +24,7 @@
 #include "SSLibTypes.h"
 #include "build_cell/IStructureGenerator.h"
 #include "build_cell/StructureDescription.h"
+#include "build_cell/Types.h"
 #include "common/SsLibYamlKeywords.h"
 #include "io/IStructureWriter.h"
 #include "potential/IGeomOptimiser.h"
@@ -47,11 +49,9 @@ class AtomsDescription;
 namespace spipe {
 namespace common {
 
-class SsLibFactoryYaml
+class SsLibFactoryYaml : ::boost::noncopyable
 {
 public:
-
-  typedef ::sstbx::UniquePtr< ::sstbx::build_cell::StructureDescription>::Type StructureDescriptionPtr;
 
   enum ErrorCode
   {
@@ -62,11 +62,8 @@ public:
     MALFORMED_VALUE
   };
 
-  SsLibFactoryYaml();
-
-  //::sstbx::build_cell::RandomCellDescription *            createCellDescription(const YAML::Node & desc);
-  StructureDescriptionPtr                                 createStructureDescription(const YAML::Node & desc);
-  ::sstbx::build_cell::IStructureGenerator *       createCrystalStructureGenerator(const YAML::Node & desc);
+  ::sstbx::build_cell::UnitCellBlueprintPtr               createCellDescription(const YAML::Node & desc);
+  ::sstbx::build_cell::StructureDescriptionPtr            createStructureGenerator(const YAML::Node & desc);
   ::sstbx::potential::IPotential *                        createPotential(const YAML::Node & desc);
   ::sstbx::potential::IGeomOptimiser *                    createGeometryOptimiser(const YAML::Node & desc);
   ::sstbx::utility::IStructureComparator *                createStructureComparator(const YAML::Node & node);
@@ -83,13 +80,6 @@ private:
   void checkKeyword(const ::spipe::common::sslib_yaml_keywords::KwTyp & kw, const YAML::Node & node) const;
 
 
-  /**
-  /* Containers to hold the pipelines and blocks created by the factory.
-  /* The factory retains ownership and will cleanly release these under the
-  /* RAII idiom when the factory is destroyed.
-  /**/
-  //::boost::ptr_vector< ::sstbx::build_cell::RandomCellDescription>             myCellDescriptions;
-  ::boost::ptr_vector< ::sstbx::build_cell::IStructureGenerator>        myCrystalStructureGenerators;
   ::boost::ptr_vector< ::sstbx::io::IStructureWriter>                          myStructureWriters;
   ::boost::ptr_vector< ::sstbx::potential::IGeomOptimiser>                     myOptimisers;
   ::boost::ptr_vector< ::sstbx::potential::IPotential>                         myPotentials;

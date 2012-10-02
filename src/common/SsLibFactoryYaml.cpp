@@ -17,6 +17,7 @@
 #include "build_cell/AtomsDescription.h"
 #include "build_cell/AtomConstraintDescription.h"
 #include "build_cell/DefaultCrystalGenerator.h"
+#include "build_cell/RandomUnitCell.h"
 #include "build_cell/StructureConstraintDescription.h"
 #include "common/AtomSpeciesDatabase.h"
 #include "common/AtomSpeciesId.h"
@@ -31,7 +32,8 @@
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe { namespace common {
+namespace spipe {
+namespace common {
 
 // TYPEDEFS /////////////////
 typedef ::boost::error_info<struct TagErrorType, SsLibFactoryYaml::ErrorCode>    ErrorType;
@@ -48,66 +50,61 @@ namespace ssu   = ::sstbx::utility;
 
 namespace kw = ::spipe::common::sslib_yaml_keywords;
 
-SsLibFactoryYaml::SsLibFactoryYaml()
+ssbc::UnitCellBlueprintPtr
+SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
 {
+  //// Make sure we have a cell description node
+  //if(node.Scalar() != kw::CELL_DESC)
+  //{
+  //  throw FactoryError() << ErrorType(BAD_TAG) << NodeName(node.Scalar()) << Keyword(kw::CELL_DESC);
+  //}
+
+  ssbc::RandomUnitCellPtr cell(new ssbc::RandomUnitCell());
+
+  double dValue;
+
+  if(node[kw::CELL_DESC__PARAMS])
+  {
+    const YAML::Node & paramsNode = node[kw::CELL_DESC__PARAMS];
+
+    if(paramsNode.IsSequence() && paramsNode.size() == 6)
+    {
+      double params[6];
+      for(size_t i = 0; i < 6; ++i)
+      {
+        params[i] = paramsNode[i].as<double>();
+        // TODO: Set cell params
+      }
+    }
+    else
+    {
+      throw FactoryError() << ErrorType(MALFORMED_VALUE);
+    }
+  }
+
+  if(node[kw::CELL_DESC__VOL])
+  {
+    dValue = node[kw::CELL_DESC__VOL].as<double>();
+    cell->setTargetVolume(dValue);
+  }
+
+  if(node[kw::CELL_DESC__MIN_ANGLE])
+  {
+    dValue = node[kw::CELL_DESC__MIN_ANGLE].as<double>();
+    cell->setMinAngles(dValue);
+  }
+
+  if(node[kw::CELL_DESC__MAX_ANGLE])
+  {
+    dValue = node[kw::CELL_DESC__MAX_ANGLE].as<double>();
+    cell->setMaxAngles(dValue);
+  }
+
+  return cell;
 }
 
-//::sstbx::build_cell::RandomCellDescription *
-//SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
-//{
-//  //// Make sure we have a cell description node
-//  //if(node.Scalar() != kw::CELL_DESC)
-//  //{
-//  //  throw FactoryError() << ErrorType(BAD_TAG) << NodeName(node.Scalar()) << Keyword(kw::CELL_DESC);
-//  //}
-//
-//  ssbc::RandomCellDescription * const desc = new ssbc::RandomCellDescription();
-//  myCellDescriptions.push_back(desc);
-//
-//  double dValue;
-//
-//  if(node[kw::CELL_DESC__PARAMS])
-//  {
-//    const YAML::Node & paramsNode = node[kw::CELL_DESC__PARAMS];
-//
-//    if(paramsNode.IsSequence() && paramsNode.size() == 6)
-//    {
-//      double params[6];
-//      for(size_t i = 0; i < 6; ++i)
-//      {
-//        params[i] = paramsNode[i].as<double>();
-//      }
-//      desc->setLatticeParams(params);
-//    }
-//    else
-//    {
-//      throw FactoryError() << ErrorType(MALFORMED_VALUE);
-//    }
-//  }
-//
-//  if(node[kw::CELL_DESC__VOL])
-//  {
-//    dValue = node[kw::CELL_DESC__VOL].as<double>();
-//    desc->myVolume.reset(dValue);
-//  }
-//
-//  if(node[kw::CELL_DESC__MIN_ANGLE])
-//  {
-//    dValue = node[kw::CELL_DESC__MIN_ANGLE].as<double>();
-//    desc->myMinAngle.reset(dValue);
-//  }
-//
-//  if(node[kw::CELL_DESC__MAX_ANGLE])
-//  {
-//    dValue = node[kw::CELL_DESC__MAX_ANGLE].as<double>();
-//    desc->myMaxAngle.reset(dValue);
-//  }
-//
-//  return desc;
-//}
-
-
-SsLibFactoryYaml::StructureDescriptionPtr SsLibFactoryYaml::createStructureDescription(const YAML::Node & node)
+ssbc::StructureDescriptionPtr
+SsLibFactoryYaml::createStructureGenerator(const YAML::Node & node)
 {
   //// Make sure we have a structure description node
   //if(node.Scalar() != kw::STR_DESC)
@@ -115,7 +112,7 @@ SsLibFactoryYaml::StructureDescriptionPtr SsLibFactoryYaml::createStructureDescr
   //  throw FactoryError() << ErrorType(BAD_TAG) << NodeName(node.Scalar());
   //}
 
-  StructureDescriptionPtr strDesc(new ssbc::StructureDescription());
+  ssbc::StructureDescriptionPtr strDesc(new ssbc::StructureDescription());
 
   // Atoms //
   if(node[kw::STR_DESC__ATOMS])
@@ -197,36 +194,6 @@ SsLibFactoryYaml::StructureDescriptionPtr SsLibFactoryYaml::createStructureDescr
 
   // Assign the pointer so the caller gets the object
   return strDesc;
-}
-
-ssbc::IStructureGenerator *
-SsLibFactoryYaml::createCrystalStructureGenerator(const YAML::Node & node)
-{
-  //// Make sure we have a structure generator node
-  //if(node.Scalar() != kw::STR_GENERATOR)
-  //{
-  //  throw FactoryError() << ErrorType(BAD_TAG) << NodeName(node.Scalar());
-  //}
-
-  ssbc::IStructureGenerator * generator = NULL;
-
-  if(node[kw::TYPE])
-  {
-    const ::std::string generatorType = node[kw::TYPE].as< ::std::string>();
-
-    if(generatorType == kw::STR_GENERATOR__TYPE___DEFAULT)
-    {
-      generator = new ssbc::DefaultCrystalGenerator();
-      myCrystalStructureGenerators.push_back(generator);
-    }
-  }
-  else
-  {
-    throw FactoryError() << ErrorType(REQUIRED_KEYWORD_MISSING) << Keyword(kw::TYPE);
-  }
-
-
-  return generator;
 }
 
 ssp::IPotential * SsLibFactoryYaml::createPotential(const YAML::Node & node)

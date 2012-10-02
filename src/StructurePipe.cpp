@@ -53,33 +53,33 @@ int main(const int argc, const char * const argv[])
   }// END -- TEMPORARY /////////////////////
 */
 
-  namespace sp = ::spipe;
-  namespace spcom = ::spipe::common;
+  //namespace sp = ::spipe;
+  //namespace spcom = ::spipe::common;
 
-  if(argc != 2)
-  {
-    ::std::cout << "Usage: " << argv[0] << " [yaml pipline in file]";
-    return 1;
-  }
+  //if(argc != 2)
+  //{
+  //  ::std::cout << "Usage: " << argv[0] << " [yaml pipline in file]";
+  //  return 1;
+  //}
 
-  try
-  {
-    YAML::Node config = YAML::LoadFile(argv[1]);
+  //try
+  //{
+  //  YAML::Node config = YAML::LoadFile(argv[1]);
 
-    spcom::PipeBuilder builder;
+  //  spcom::PipeBuilder builder;
 
-    sp::SpPipelineTyp * pipe = builder.buildPipeFromYaml(config);
+  //  sp::SpPipelineTyp * pipe = builder.buildPipeFromYaml(config);
 
-    if(pipe)
-    {
-      pipe->initialise();
-      pipe->start();
-    }
-  }
-  catch(const YAML::Exception & e)
-  {
-    ::std::cerr << "Error parsing YAML file\n" << e.what();
-  }
+  //  if(pipe)
+  //  {
+  //    pipe->initialise();
+  //    pipe->start();
+  //  }
+  //}
+  //catch(const YAML::Exception & e)
+  //{
+  //  ::std::cerr << "Error parsing YAML file\n" << e.what();
+  //}
 
 	return 0;
 }
