@@ -61,6 +61,10 @@ bool OrthoCellDistanceCalculator::getDistsBetween(
   int C_min = -(int)floor((cutoff + rDotC) * myCRecip);
   int C_max = (int)floor((cutoff - rDotC) * myCRecip);
 
+  // Check if there are any vectors that will be within the cutoff
+  if(A_min > A_max || B_min > B_max || C_min > C_max)
+    return true;
+
   bool problemDuringCalculation = false;
   problemDuringCalculation &= capMultiples(A_min, A_max, maxCellMultiples);
   problemDuringCalculation &= capMultiples(B_min, B_max, maxCellMultiples);
@@ -190,6 +194,10 @@ bool OrthoCellDistanceCalculator::getVecsBetween(
   int B_max = (int)floor((cutoff - rDotB) * myBRecip);
   int C_min = -(int)floor((cutoff + rDotC) * myCRecip);
   int C_max = (int)floor((cutoff - rDotC) * myCRecip);
+
+  // Check if there are any vectors that will be within the cutoff
+  if(A_min > A_max || B_min > B_max || C_min > C_max)
+    return true;
 
   bool problemDuringCalculation = false;
   problemDuringCalculation &= capMultiples(A_min, A_max, maxCellMultiples);

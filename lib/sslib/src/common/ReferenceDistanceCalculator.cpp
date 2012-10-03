@@ -139,7 +139,6 @@ bool ReferenceDistanceCalculator::getVecsBetween(
   const unsigned int maxCellMultiples) const
 {
   const UnitCell & cell = *myStructure.getUnitCell();
-  const double (&params)[6] = cell.getLatticeParams();
 
 	// Make sure a and b are in the unit cell at the origin
   const ::arma::vec3		dR		= cell.wrapVec(b) - cell.wrapVec(a);

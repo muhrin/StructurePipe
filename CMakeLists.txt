@@ -64,10 +64,12 @@ endif()
 
 add_subdirectory(lib/pipelib)    # Pipeline library
 add_subdirectory(lib/spglib)     # Space group library (https://sourceforge.net/projects/spglib/)
-add_subdirectory(lib/sslib)      # Structure searching library
 if(SP_USE_YAML)
   add_subdirectory(lib/yaml-cpp) # YAML library (http://code.google.com/p/yaml-cpp/)
+  set(YAML_INCLUDE_DIRS "lib/yaml-cpp/include" CACHE FILEPATH INTERNAL FORCE)
 endif(SP_USE_YAML)
+add_subdirectory(lib/sslib)      # Structure searching library
+
 
 ## Now StructurePipe ####################################
 

@@ -15,16 +15,19 @@ namespace sstbx {
 namespace build_cell {
 
 // FORWARD DECLARES ////////////
+class AtomsDescription;
 class IUnitCellBlueprint;
 class RandomUnitCell;
 class StructureDescription;
 
-typedef ::sstbx::UniquePtr<StructureDescription>::Type StructureDescriptionPtr;
+typedef UniquePtr<AtomsDescription>::Type AtomsDescriptionPtr;
 
-typedef ::sstbx::UniquePtr<IUnitCellBlueprint>::Type UnitCellBlueprintPtr;
-typedef ::sstbx::UniquePtr<const IUnitCellBlueprint>::Type ConstUnitCellBlueprintPtr;
+typedef UniquePtr<StructureDescription>::Type StructureDescriptionPtr;
 
-typedef ::sstbx::UniquePtr<RandomUnitCell>::Type RandomUnitCellPtr;
+typedef UniquePtr<IUnitCellBlueprint>::Type UnitCellBlueprintPtr;
+typedef UniquePtr<const IUnitCellBlueprint>::Type ConstUnitCellBlueprintPtr;
+
+typedef UniquePtr<RandomUnitCell>::Type RandomUnitCellPtr;
 
 }
 }

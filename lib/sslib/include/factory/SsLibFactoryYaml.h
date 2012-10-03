@@ -10,22 +10,24 @@
 #define SS_LIB_FACTORY_YAML_H
 
 // INCLUDES /////////////////////////////////////////////
+#include "SSLib.h"
+
+#ifdef SSLIB_USE_YAML
 
 #include <map>
 
+#include <boost/optional.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/utility.hpp>
 
-#include <armadillo>
-
 #include <yaml-cpp/yaml.h>
 
-// From SSTbx
-#include "SSLibTypes.h"
+// Local includes
 #include "build_cell/IStructureGenerator.h"
 #include "build_cell/StructureDescription.h"
 #include "build_cell/Types.h"
-#include "common/SsLibYamlKeywords.h"
+#include "factory/SsLibYamlKeywords.h"
+#include "factory/YamlCommon.h"
 #include "io/IStructureWriter.h"
 #include "potential/IGeomOptimiser.h"
 #include "potential/IPotential.h"
@@ -35,8 +37,6 @@
 #include "utility/IStructureSet.h"
 
 
-// Local includes
-#include "common/YamlCommon.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -46,8 +46,8 @@ class AtomsDescription;
 }
 }
 
-namespace spipe {
-namespace common {
+namespace sstbx {
+namespace factory {
 
 class SsLibFactoryYaml : ::boost::noncopyable
 {
@@ -62,22 +62,28 @@ public:
     MALFORMED_VALUE
   };
 
-  ::sstbx::build_cell::UnitCellBlueprintPtr               createCellDescription(const YAML::Node & desc);
-  ::sstbx::build_cell::StructureDescriptionPtr            createStructureGenerator(const YAML::Node & desc);
-  ::sstbx::potential::IPotential *                        createPotential(const YAML::Node & desc);
-  ::sstbx::potential::IGeomOptimiser *                    createGeometryOptimiser(const YAML::Node & desc);
-  ::sstbx::utility::IStructureComparator *                createStructureComparator(const YAML::Node & node);
-  ::sstbx::utility::IStructureSet *                       createStructureSet(const YAML::Node & desc);
-  ::sstbx::io::IStructureWriter *                         createStructureWriter(const YAML::Node & node);
+  build_cell::UnitCellBlueprintPtr               createCellGenerator(const YAML::Node & desc);
+  build_cell::StructureDescriptionPtr            createStructureDescription(const YAML::Node & desc);
+  potential::IPotential *                        createPotential(const YAML::Node & desc);
+  potential::IGeomOptimiser *                    createGeometryOptimiser(const YAML::Node & desc);
+  utility::IStructureComparator *                createStructureComparator(const YAML::Node & node);
+  utility::IStructureSet *                       createStructureSet(const YAML::Node & desc);
+  io::IStructureWriter *                         createStructureWriter(const YAML::Node & node);
 
 
 private:
 
-  ::sstbx::build_cell::AtomsDescription *                 createAtomsDescription(const YAML::Node & desc) const;
-  ::sstbx::build_cell::AtomConstraintDescription *        createAtomConstraintDescription(const YAML::Node & descNode) const;
-  ::sstbx::build_cell::StructureConstraintDescription *   createStructureConstraintDescription(const YAML::Node & descNode) const;
+  typedef ::boost::optional<double> OptionalDouble;
+  typedef ::std::pair<common::AtomSpeciesId::Value, unsigned int> AtomSpeciesCount;
+  typedef ::boost::optional<AtomSpeciesCount> OptionalAtomSpeciesCount;
 
-  void checkKeyword(const ::spipe::common::sslib_yaml_keywords::KwTyp & kw, const YAML::Node & node) const;
+  build_cell::AtomsDescriptionPtr                createAtomsDescription(const YAML::Node & desc, OptionalDouble atomsRadii = OptionalDouble()) const;
+  build_cell::AtomConstraintDescription *        createAtomConstraintDescription(const YAML::Node & descNode) const;
+  build_cell::StructureConstraintDescription *   createStructureConstraintDescription(const YAML::Node & descNode) const;
+
+  void checkKeyword(const sslib_yaml_keywords::KwTyp & kw, const YAML::Node & node) const;
+
+  OptionalAtomSpeciesCount parseAtomTypeString(const ::std::string & atomSpecString) const;
 
 
   ::boost::ptr_vector< ::sstbx::io::IStructureWriter>                          myStructureWriters;
@@ -94,5 +100,6 @@ private:
 }
 
 
-
+#endif /* SSLIB_USE_YAML */
 #endif /* SS_LIB_FACTORY_YAML_H */
+

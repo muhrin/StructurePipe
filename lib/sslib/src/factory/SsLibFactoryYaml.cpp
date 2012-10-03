@@ -6,14 +6,22 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "common/SsLibFactoryYaml.h"
+#include "SSLib.h"
+
+#ifdef SSLIB_USE_YAML
+
+#include "factory/SsLibFactoryYaml.h"
 
 #include <memory>
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/tokenizer.hpp>
 
-// From SSTbx
+#include <yaml-cpp/yaml.h>
+
+// Local includes
 #include "build_cell/AtomsDescription.h"
 #include "build_cell/AtomConstraintDescription.h"
 #include "build_cell/DefaultCrystalGenerator.h"
@@ -21,25 +29,23 @@
 #include "build_cell/StructureConstraintDescription.h"
 #include "common/AtomSpeciesDatabase.h"
 #include "common/AtomSpeciesId.h"
+#include "factory/FactoryError.h"
 #include "io/ResReaderWriter.h"
+#include "utility/CellParamsEnum.h"
 #include "utility/SortedDistanceComparator.h"
 #include "utility/UniqueStructureSet.h"
-
-// Local includes
-#include "common/FactoryError.h"
 
 
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe {
-namespace common {
+namespace sstbx {
+namespace factory {
 
 // TYPEDEFS /////////////////
 typedef ::boost::error_info<struct TagErrorType, SsLibFactoryYaml::ErrorCode>    ErrorType;
 typedef ::boost::error_info<struct TagNodeName, ::std::string>                   NodeName;
 typedef ::boost::error_info<struct TagKeyword, ::std::string>                    Keyword;
-
 
 // namespace aliases
 namespace ssbc  = ::sstbx::build_cell;
@@ -48,11 +54,16 @@ namespace ssio  = ::sstbx::io;
 namespace ssp   = ::sstbx::potential;
 namespace ssu   = ::sstbx::utility;
 
-namespace kw = ::spipe::common::sslib_yaml_keywords;
+namespace kw = sslib_yaml_keywords;
+
+// Boost Tokenizer stuff
+typedef boost::tokenizer<boost::char_separator<char> > Tok;
+const boost::char_separator<char> tokSep(" \t");
 
 ssbc::UnitCellBlueprintPtr
-SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
+SsLibFactoryYaml::createCellGenerator(const YAML::Node & node)
 {
+  using namespace utility::cell_params_enum;
   //// Make sure we have a cell description node
   //if(node.Scalar() != kw::CELL_DESC)
   //{
@@ -63,17 +74,18 @@ SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
 
   double dValue;
 
-  if(node[kw::CELL_DESC__PARAMS])
+  if(node[kw::CELL_RANDOM__PARAMS])
   {
-    const YAML::Node & paramsNode = node[kw::CELL_DESC__PARAMS];
+    const YAML::Node & paramsNode = node[kw::CELL_RANDOM__PARAMS];
 
     if(paramsNode.IsSequence() && paramsNode.size() == 6)
     {
       double params[6];
-      for(size_t i = 0; i < 6; ++i)
+      for(size_t i = A; i <= GAMMA; ++i)
       {
         params[i] = paramsNode[i].as<double>();
-        // TODO: Set cell params
+        cell->setMin(i, params[i]);
+        cell->setMax(i, params[i]);
       }
     }
     else
@@ -82,21 +94,21 @@ SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
     }
   }
 
-  if(node[kw::CELL_DESC__VOL])
+  if(node[kw::CELL_RANDOM__VOL])
   {
-    dValue = node[kw::CELL_DESC__VOL].as<double>();
+    dValue = node[kw::CELL_RANDOM__VOL].as<double>();
     cell->setTargetVolume(dValue);
   }
 
-  if(node[kw::CELL_DESC__MIN_ANGLE])
+  if(node[kw::CELL_RANDOM__MIN_ANGLE])
   {
-    dValue = node[kw::CELL_DESC__MIN_ANGLE].as<double>();
+    dValue = node[kw::CELL_RANDOM__MIN_ANGLE].as<double>();
     cell->setMinAngles(dValue);
   }
 
-  if(node[kw::CELL_DESC__MAX_ANGLE])
+  if(node[kw::CELL_RANDOM__MAX_ANGLE])
   {
-    dValue = node[kw::CELL_DESC__MAX_ANGLE].as<double>();
+    dValue = node[kw::CELL_RANDOM__MAX_ANGLE].as<double>();
     cell->setMaxAngles(dValue);
   }
 
@@ -104,7 +116,7 @@ SsLibFactoryYaml::createCellDescription(const YAML::Node & node)
 }
 
 ssbc::StructureDescriptionPtr
-SsLibFactoryYaml::createStructureGenerator(const YAML::Node & node)
+SsLibFactoryYaml::createStructureDescription(const YAML::Node & node)
 {
   //// Make sure we have a structure description node
   //if(node.Scalar() != kw::STR_DESC)
@@ -112,7 +124,18 @@ SsLibFactoryYaml::createStructureGenerator(const YAML::Node & node)
   //  throw FactoryError() << ErrorType(BAD_TAG) << NodeName(node.Scalar());
   //}
 
-  ssbc::StructureDescriptionPtr strDesc(new ssbc::StructureDescription());
+  ssbc::StructureDescriptionPtr strDescription(new ssbc::StructureDescription());
+
+  ::boost::optional<double> atomsRadii;
+  if(node[kw::STRUCTURE__ATOMS_RADII])
+  {
+    const YAML::Node & atomsRadiiNode = node[kw::STRUCTURE__ATOMS_RADII];
+
+    if(atomsRadiiNode.IsScalar())
+    {
+      atomsRadii.reset(atomsRadiiNode.as<double>());
+    }
+  }
 
   // Atoms //
   if(node[kw::STR_DESC__ATOMS])
@@ -123,13 +146,8 @@ SsLibFactoryYaml::createStructureGenerator(const YAML::Node & node)
     {
       BOOST_FOREACH(const YAML::Node & atomNode, atomsNode)
       {
-        strDesc->addChild(createAtomsDescription(atomNode));
+        strDescription->addChild(createAtomsDescription(atomNode, atomsRadii));
       }
-    }
-    else if(atomsNode.IsMap())
-    {
-      // Maybe it's a single atom
-      strDesc->addChild(createAtomsDescription(atomsNode));  
     }
     else
     {
@@ -137,63 +155,14 @@ SsLibFactoryYaml::createStructureGenerator(const YAML::Node & node)
     }
   }
 
-  // Constraints //
-  if(node[kw::STR_DESC__CONSTRAINTS])
+  // Unit cell
+  if(node[kw::CELL])
   {
-    const YAML::Node & consNode = node[kw::STR_DESC__CONSTRAINTS];
-
-    ssbc::AtomConstraintDescription * atomsConstraint = NULL;
-    ssbc::StructureConstraintDescription * structureConstraint = NULL;
-
-    if(consNode.IsSequence())
-    {
-      BOOST_FOREACH(const YAML::Node & constraint, consNode)
-      {
-
-        // Check if it is a structure constraint
-        structureConstraint = createStructureConstraintDescription(constraint);
-        if(structureConstraint)
-        {
-          strDesc->addStructureConstraint(structureConstraint);
-        }
-        else
-        {
-          // Check if it's an atom constraint
-          atomsConstraint = createAtomConstraintDescription(constraint);
-          if(atomsConstraint)
-          {
-            strDesc->addAtomConstraint(atomsConstraint);
-          }
-        }
-        
-      }
-    }
-    else if(consNode.IsMap())
-    {
-        // Check if it is a structure constraint
-        structureConstraint = createStructureConstraintDescription(consNode);
-        if(structureConstraint)
-        {
-          strDesc->addStructureConstraint(structureConstraint);
-        }
-        else
-        {
-          // Check if it's an atom constraint
-          atomsConstraint = createAtomConstraintDescription(consNode);
-          if(atomsConstraint)
-          {
-            strDesc->addAtomConstraint(atomsConstraint);
-          }
-        }
-    }
-    else
-    {
-      throw FactoryError() << ErrorType(MALFORMED_VALUE);
-    }
+    strDescription->setUnitCell(createCellGenerator(node[kw::CELL]));
   }
 
   // Assign the pointer so the caller gets the object
-  return strDesc;
+  return strDescription;
 }
 
 ssp::IPotential * SsLibFactoryYaml::createPotential(const YAML::Node & node)
@@ -370,52 +339,45 @@ SsLibFactoryYaml::createStructureWriter(const YAML::Node & node)
 }
 
 void SsLibFactoryYaml::checkKeyword(
-  const ::spipe::common::sslib_yaml_keywords::KwTyp & kw,
+  const kw::KwTyp & kw,
   const YAML::Node & node) const
 {
   if(!node[kw])
     throw FactoryError() << ErrorType(REQUIRED_KEYWORD_MISSING);
 }
 
-ssbc::AtomsDescription *
-SsLibFactoryYaml::createAtomsDescription(const YAML::Node & descNode) const
+build_cell::AtomsDescriptionPtr
+SsLibFactoryYaml::createAtomsDescription(const YAML::Node & descNode, OptionalDouble atomsRadii) const
 {
-  // namespace aliases
-  namespace ssbc  = ::sstbx::build_cell;
-  namespace ssc   = ::sstbx::common;
-
-  namespace kw = ::spipe::common::sslib_yaml_keywords;
-
   std::string sValue;
-  int nAtoms = 0;
+  unsigned int nAtoms = 1;
   ssc::AtomSpeciesId::Value  specId;
 
-  if(descNode[kw::STR_DESC__ATOMS__N])
+  if(descNode[kw::STRUCTURE__ATOMS__TYPE])
   {
-    nAtoms = descNode[kw::STR_DESC__ATOMS__N].as<int>();
-  }
-  else
-  {
-    throw FactoryError() << ErrorType(REQUIRED_KEYWORD_MISSING) << Keyword(kw::STR_DESC__ATOMS__N);
-  }
-
-  if(descNode[kw::STR_DESC__ATOMS__SPEC])
-  {
-    sValue = descNode[kw::STR_DESC__ATOMS__SPEC].as<std::string>();
-
-    specId = ssc::AtomSpeciesDatabase::inst().getIdFromSymbol(sValue);
-    if(specId == ssc::AtomSpeciesId::DUMMY)
+    sValue = descNode[kw::STRUCTURE__ATOMS__TYPE].as< ::std::string>();
+    OptionalAtomSpeciesCount atomSpeciesCount = parseAtomTypeString(sValue);
+    if(atomSpeciesCount)
     {
-      throw FactoryError() << ErrorType(MALFORMED_VALUE);
+      specId = atomSpeciesCount->first;
+      nAtoms = atomSpeciesCount->second;
     }
   }
-  else
+
+  build_cell::AtomsDescriptionPtr atomsDescription(new build_cell::AtomsDescription(specId, nAtoms));
+
+  // If there is a default atoms radii first set that and then try to see if there
+  // is a specific one for this atom
+  if(atomsRadii)
+    atomsDescription->setRadius(*atomsRadii);
+
+  if(descNode[kw::STRUCTURE__ATOMS__RADIUS])
   {
-    throw FactoryError() << ErrorType(REQUIRED_KEYWORD_MISSING) << Keyword(kw::STR_DESC__ATOMS__SPEC);
+    atomsDescription->setRadius(descNode[kw::STRUCTURE__ATOMS__RADIUS].as<double>());
   }
 
 
-  return new ssbc::AtomsDescription(specId, nAtoms);
+  return atomsDescription;
 }
 
 
@@ -427,8 +389,6 @@ SsLibFactoryYaml::createAtomConstraintDescription(
   // namespace aliases
   namespace ssbc  = ::sstbx::build_cell;
   namespace ssc   = ::sstbx::common;
-
-  namespace kw = ::spipe::common::sslib_yaml_keywords;
 
   ::std::auto_ptr<ssbc::AtomConstraintDescription> constraint(NULL);
 
@@ -467,7 +427,43 @@ SsLibFactoryYaml::createStructureConstraintDescription(const YAML::Node & descNo
   return NULL;
 }
 
+SsLibFactoryYaml::OptionalAtomSpeciesCount
+SsLibFactoryYaml::parseAtomTypeString(const ::std::string & atomSpecString) const
+{
+  OptionalAtomSpeciesCount atomSpeciesCount;
 
+  const Tok tok(atomSpecString, tokSep);
+
+  Tok::const_iterator it = tok.begin();
+
+  AtomSpeciesCount type;
+  bool successful = false;
+  if(it != tok.end())
+  {
+    try
+    {
+      type.second = ::boost::lexical_cast<unsigned int>(*it);
+      ++it;
+    }
+    catch(::boost::bad_lexical_cast)
+    {}
+
+    if(it != tok.end())
+    {
+      type.first = common::AtomSpeciesDatabase::inst().getIdFromSymbol(*it);
+      if(type.first != common::AtomSpeciesId::DUMMY)
+        successful = true;
+    }
+  }
+
+  if(successful)
+    atomSpeciesCount.reset(type);
+
+  return atomSpeciesCount;
+}
 
 }
 }
+
+
+#endif /* SSLIB_USE_YAML */
