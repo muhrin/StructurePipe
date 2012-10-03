@@ -158,7 +158,7 @@ SsLibFactoryYaml::createStructureDescription(const YAML::Node & node)
   // Unit cell
   if(node[kw::CELL])
   {
-    strDescription->setUnitCell(createCellGenerator(node[kw::CELL]));
+    strDescription->setUnitCell((ssbc::ConstUnitCellBlueprintPtr)createCellGenerator(node[kw::CELL]));
   }
 
   // Assign the pointer so the caller gets the object

@@ -21,7 +21,7 @@
 
 // TODO: TEMPORARY!!
 #include <factory/ISchemaElementInstance.h>
-#include <factory/SslibElements.h>
+#include <factory/SsLibElements.h>
 #include <factory/SchemaDoc.h>
 #include <factory/SchemaMap.h>
 #include <common/YamlInputObjectAdapter.h>

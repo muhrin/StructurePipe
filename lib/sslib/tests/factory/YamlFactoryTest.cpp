@@ -13,8 +13,8 @@
 #include <yaml-cpp/yaml.h>
 
 #include <build_cell/Types.h>
-#include <factory/SSLibFactoryYaml.h>
-#include <factory/SSLibYamlKeywords.h>
+#include <factory/SsLibFactoryYaml.h>
+#include <factory/SsLibYamlKeywords.h>
 
 namespace ssbc = ::sstbx::build_cell;
 namespace ssf = ::sstbx::factory;
@@ -31,9 +31,11 @@ BOOST_AUTO_TEST_CASE(StructureDescriptionTest)
   YAML::Node loadedNode = YAML::LoadFile(simpleStructure);
 
   YAML::Node * structureNode = &loadedNode;
+  YAML::Node strNode;
   if(loadedNode[kw::STRUCTURE])
   {
-    structureNode = &loadedNode[kw::STRUCTURE];
+    strNode = loadedNode[kw::STRUCTURE];
+    structureNode = &strNode;
   }
 
   ssbc::StructureDescriptionPtr strGen = factory.createStructureDescription(*structureNode);  

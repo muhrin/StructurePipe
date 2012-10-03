@@ -75,9 +75,9 @@ set(sslib_Header_Files__factory
   include/factory/SchemaScalarValue.h
   include/factory/SchemaScalarValueAny.h
   include/factory/SchemaScalarValueLiteral.h
-  include/factory/SslibElements.h
-  include/factory/SslibFactoryYaml.h
-  include/factory/SslibYamlKeywords.h
+  include/factory/SsLibElements.h
+  include/factory/SsLibFactoryYaml.h
+  include/factory/SsLibYamlKeywords.h
   include/factory/YamlCommon.h
 )
 source_group("Header Files\\factory" FILES ${sslib_Header_Files__factory})

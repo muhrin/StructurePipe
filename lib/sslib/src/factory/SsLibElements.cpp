@@ -1,12 +1,12 @@
 /*
- * SslibElements.cpp
+ * SsLibElements.cpp
  *
  *  Created on: May 29, 2012
  *      Author: Martin Uhrin
  */
 
 // INCLUDES //////////////////////////////////
-#include "factory/SslibElements.h"
+#include "factory/SsLibElements.h"
 
 
 #include "factory/SchemaAnon.h"
