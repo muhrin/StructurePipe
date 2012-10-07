@@ -38,16 +38,6 @@
 namespace sstbx {
 namespace io {
 
-namespace common = ::sstbx::common;
-
-void ResReaderWriter::writeStructure(
-	const sstbx::common::Structure &str,
-	const::boost::filesystem::path & filepath,
-	const AdditionalData *const data) const
-{
-	writeStructure(str, filepath, ::sstbx::common::AtomSpeciesDatabase::inst(), data);
-}
-
 void ResReaderWriter::writeStructure(
 	const ::sstbx::common::Structure & str,
 	const ::boost::filesystem::path & filepath,
@@ -72,6 +62,8 @@ void ResReaderWriter::writeStructure(
 	ofstream strFile;
 	strFile.open(filepath);
 
+  const common::UnitCell * const cell = str.getUnitCell();
+
 	//////////////////////////
 	// Start title
 	strFile << "TITL ";
@@ -90,7 +82,6 @@ void ResReaderWriter::writeStructure(
 
 	// Volume
 	strFile << " ";
-  const common::UnitCell * const cell = str.getUnitCell();
   if(cell)
     strFile << cell->getVolume();
   else
@@ -122,16 +113,18 @@ void ResReaderWriter::writeStructure(
 	
 	///////////////////////////////////
 	// Start lattice
-	const double (&latticeParams)[6] = str.getUnitCell()->getLatticeParams();
+  if(cell)
+  {
+	  const double (&latticeParams)[6] = cell->getLatticeParams();
 
-	// Do cell parameters
-	strFile << "CELL 1.0";
-	for(size_t i = A; i <= GAMMA; ++i)
-	{
-		strFile << " " << latticeParams[i];
-	}
-	strFile << endl;
-
+	  // Do cell parameters
+	  strFile << "CELL 1.0";
+	  for(size_t i = A; i <= GAMMA; ++i)
+	  {
+		  strFile << " " << latticeParams[i];
+	  }
+	  strFile << endl;
+  }
 	strFile << "LATT -1" << endl;
 
 	// End lattice
@@ -170,7 +163,10 @@ void ResReaderWriter::writeStructure(
 	for(size_t i = 0; i < positions.n_cols; ++i)
 	{
     const AtomSpeciesId::Value id = species[i];
-		fracPos = cell->cartToFrac(positions.col(i));
+    if(cell)
+		  fracPos = cell->cartToFrac(positions.col(i));
+    else
+      fracPos = positions.col(i);
 		strFile << endl << ::std::setprecision(32) << speciesSymbols[id] << " " << speciesOrder[id] << " " <<
 			fracPos[0] << " " << fracPos[1] << " " << fracPos[2] << " 1.0";
 	}
@@ -182,13 +178,6 @@ void ResReaderWriter::writeStructure(
 
  if(strFile.is_open())
     strFile.close();
-}
-
-UniquePtr<common::Structure>::Type ResReaderWriter::readStructure(
-	const boost::filesystem::path &   filepath,
-	AdditionalData * const            data) const
-{
-  return readStructure(filepath, ::sstbx::common::AtomSpeciesDatabase::inst(), data);
 }
 
 UniquePtr<common::Structure>::Type ResReaderWriter::readStructure(

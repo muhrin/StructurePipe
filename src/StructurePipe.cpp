@@ -38,7 +38,7 @@ int main(const int argc, const char * const argv[])
 
   namespace ssf = ::sstbx::factory;
 
-  ssf::SslibElements lib;
+  ssf::SsLibElements lib;
 
   ssf::SchemaMap root("root", false);
 

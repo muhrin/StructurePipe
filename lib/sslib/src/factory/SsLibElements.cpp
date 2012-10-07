@@ -18,12 +18,10 @@
 
 // NAMESPACES ////////////////////////////////
 
-namespace sstbx
-{
-namespace factory
-{
+namespace sstbx {
+namespace factory {
 
-SslibElements::SslibElements():
+SsLibElements::SsLibElements():
 // Num
 n(new SchemaMapSingle("n", true, "sslib.n")),
 

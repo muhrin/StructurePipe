@@ -46,6 +46,7 @@ myMaxAttempts(10000)
 
 common::StructurePtr DefaultCrystalGenerator::generateStructure(
   const StructureDescription &  structureDescription,
+  const common::AtomSpeciesDatabase & speciesDb,
   StructureGenerationOutcome::Value * outOutcome) const
 {
 	using ::sstbx::common::Structure;
@@ -53,7 +54,7 @@ common::StructurePtr DefaultCrystalGenerator::generateStructure(
   const bool hasUnitCell = structureDescription.getUnitCell() != NULL;
 
   // Create a builder that will populate the structure with the required atoms
-  StructureBuilder builder;
+  StructureBuilder builder(speciesDb);
   // and build
   StructureBuilder::DescriptionMapPtr descriptionMap;
   common::StructurePtr str = builder.buildStructure(structureDescription, descriptionMap);
@@ -62,12 +63,15 @@ common::StructurePtr DefaultCrystalGenerator::generateStructure(
   StructureGenerationOutcome::Value outcome = StructureGenerationOutcome::SUCCESS;
 	for(u32 i = 0; i < myMaxAttempts; ++i)
 	{
-    // Generate a unit cell for the structure
-    if(!generateUnitCell(structureDescription, *str.get(), builder))
+    if(structureDescription.getUnitCell())
     {
-      // That one failed, try again...
-      outcome = StructureGenerationOutcome::FAILED_CREATING_UNIT_CELL;
-      continue;
+      // Generate a unit cell for the structure
+      if(!generateUnitCell(structureDescription, *str.get(), builder))
+      {
+        // That one failed, try again...
+        outcome = StructureGenerationOutcome::FAILED_CREATING_UNIT_CELL;
+        continue;
+      }
     }
 
 		// Genetate atom positions

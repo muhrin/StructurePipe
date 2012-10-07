@@ -18,6 +18,7 @@
 #include <build_cell/AtomsDescription.h>
 #include <build_cell/StructureDescription.h>
 #include <build_cell/Types.h>
+#include <common/AtomSpeciesDatabase.h>
 #include <common/Structure.h>
 #include <utility/BoostFilesystem.h>
 #include <utility/MultiIdx.h>
@@ -25,6 +26,7 @@
 // Local includes
 #include "common/StructureData.h"
 #include "common/SharedData.h"
+#include "common/UtilityFunctions.h"
 #include "utility/DataTable.h"
 
 // NAMESPACES ////////////////////////////////
@@ -45,11 +47,10 @@ StoichiometrySearch::StoichiometrySearch(
   const ::sstbx::common::AtomSpeciesId::Value  species1,
   const ::sstbx::common::AtomSpeciesId::Value  species2,
   const size_t maxAtoms,
-  SpPipelineTyp &				subpipe):
+  SpPipelineTyp &	subpipe):
 pipelib::Block< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>("Sweep stoichiometry"),
 myMaxAtoms(maxAtoms),
-mySubpipe(subpipe),
-myAtomsDb(::sstbx::common::AtomSpeciesDatabase::inst())
+mySubpipe(subpipe)
 {
   mySpeciesParameters.push_back(SpeciesParameter(species1, maxAtoms));
   mySpeciesParameters.push_back(SpeciesParameter(species2, maxAtoms));
@@ -58,15 +59,14 @@ myAtomsDb(::sstbx::common::AtomSpeciesDatabase::inst())
 }
 
 StoichiometrySearch::StoichiometrySearch(
-    const SpeciesParamters & speciesParameters,
-    const size_t       maxAtoms,
-    const double       atomsRadius,
-    SpPipelineTyp &    sweepPipe):
+  const SpeciesParamters & speciesParameters,
+  const size_t       maxAtoms,
+  const double       atomsRadius,
+  SpPipelineTyp &    sweepPipe):
 pipelib::Block< ::spipe::StructureDataTyp, ::spipe::SharedDataTyp>("Sweep stoichiometry"),
 mySpeciesParameters(speciesParameters),
 myMaxAtoms(maxAtoms),
 mySubpipe(sweepPipe),
-myAtomsDb(::sstbx::common::AtomSpeciesDatabase::inst()),
 myTableSupport(fs::path("stoich.dat"))
 {
   init();
@@ -94,12 +94,13 @@ void StoichiometrySearch::start()
   using ::std::string;
 
   SharedDataTyp & sweepPipeData = mySubpipe.getSharedData();
+  const ssc::AtomSpeciesDatabase & atomsDb = myPipeline->getGlobalData().getSpeciesDatabase();
 
   // Start looping over the possible stoichiometries
   size_t totalAtoms = 0;
   ::std::string sweepPipeOutputPath;
 
-  ssu::MultiIdxRange<unsigned int> stoichRange = getStoichRange();
+  const ssu::MultiIdxRange<unsigned int> stoichRange = getStoichRange();
   BOOST_FOREACH(const ssu::MultiIdx<unsigned int> & currentIdx, stoichRange)
   {
     totalAtoms = currentIdx.sum();
@@ -119,7 +120,7 @@ void StoichiometrySearch::start()
     for(size_t i = 0; i < currentIdx.dims(); ++i)
     {
       species           = mySpeciesParameters[i].id;
-      speciesSymbol     = myAtomsDb.getSymbol(species);
+      speciesSymbol     = atomsDb.getSymbol(species);
       numAtomsOfSpecies = currentIdx[i];
   
       if(numAtomsOfSpecies > 0)
@@ -152,7 +153,7 @@ void StoichiometrySearch::start()
     mySubpipe.start();
 
     // Update the table
-    updateTable(sweepPipeOutputPath, currentIdx);
+    updateTable(sweepPipeOutputPath, currentIdx, atomsDb);
 
     // Send any finished structure data down my pipe, this will also
     // update the table with any information from the buffered structures
@@ -203,8 +204,7 @@ void StoichiometrySearch::releaseBufferedStructures(
       const size_t numAtoms = strData->getStructure()->getNumAtoms();
       if(numAtoms != 0)
       {
-        const double energyPerAtom = *strData->enthalpy / numAtoms;
-        table.insert(tableKey, "energy/atom", ::boost::lexical_cast< ::std::string>(energyPerAtom));
+        table.insert(tableKey, "energy/atom", common::getString(*strData->enthalpy / numAtoms));
       }
     }
     
@@ -236,11 +236,12 @@ ssu::MultiIdxRange<unsigned int> StoichiometrySearch::getStoichRange()
 
 void StoichiometrySearch::updateTable(
   const utility::DataTable::Key &             key,
-  const ::sstbx::utility::MultiIdx<unsigned int> & currentIdx)
+  const ssu::MultiIdx<unsigned int> & currentIdx,
+  const ssc::AtomSpeciesDatabase & atomsDb)
 {
   using ::boost::lexical_cast;
   using ::std::string;
-
+  
   utility::DataTable & table = myTableSupport.getTable();
 
   ssc::AtomSpeciesId::Value species;
@@ -250,7 +251,7 @@ void StoichiometrySearch::updateTable(
   for(size_t i = 0; i < currentIdx.dims(); ++i)
   {
     species           = mySpeciesParameters[i].id;
-    speciesSymbol     = myAtomsDb.getSymbol(species);
+    speciesSymbol     = atomsDb.getSymbol(species);
     numAtomsOfSpecies = currentIdx[i];
 
     if(speciesSymbol)
