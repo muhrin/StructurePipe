@@ -12,6 +12,13 @@ configure_file(
   "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
 )
 
+# tests/analysis
+
+set(tests_Source_Files__analysis
+  analysis/VoronoiMapTest.cpp
+)
+source_group("Source Files\\analysis" FILES ${tests_Source_Files__analysis})
+
 # tests/build_cell
 
 set(tests_Source_Files__build_cell
@@ -67,6 +74,7 @@ set(tests_Header_Files
 )
 
 set(tests_Source_Files
+  ${tests_Source_Files__analysis}
   ${tests_Source_Files__build_cell}
   ${tests_Source_Files__common}
   ${tests_Source_Files__factory}
@@ -112,9 +120,8 @@ add_dependencies(sslibtest sslib)
 
 # Libraries we need to link to
 target_link_libraries(sslibtest
-  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+#  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
   ${ARMADILLO_LIBRARIES}
   spglib
   sslib
 )
-

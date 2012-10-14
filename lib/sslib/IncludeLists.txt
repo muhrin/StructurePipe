@@ -1,4 +1,11 @@
 
+## analysis
+
+set(sslib_Header_Files__analysis
+  include/analysis/VoronoiMap.h
+)
+source_group("Header Files\\analysis" FILES ${sslib_Header_Files__analysis})
+
 ## build_cell
 
 set(sslib_Header_Files__build_cell
@@ -143,6 +150,7 @@ set(sslib_Header_Files__
 source_group("Header Files" FILES ${sslib_Header_Files__})
 
 set(sslib_Header_Files
+  ${sslib_Header_Files__analysis}
   ${sslib_Header_Files__build_cell}
   ${sslib_Header_Files__common}
   ${sslib_Header_Files__common__event}

@@ -167,7 +167,7 @@ void ResReaderWriter::writeStructure(
 		  fracPos = cell->cartToFrac(positions.col(i));
     else
       fracPos = positions.col(i);
-		strFile << endl << ::std::setprecision(32) << speciesSymbols[id] << " " << speciesOrder[id] << " " <<
+		strFile << endl << ::std::setprecision(16) << speciesSymbols[id] << " " << speciesOrder[id] << " " <<
 			fracPos[0] << " " << fracPos[1] << " " << fracPos[2] << " 1.0";
 	}
 

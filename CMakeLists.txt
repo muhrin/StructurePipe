@@ -38,9 +38,11 @@ set(CMAKE_PREFIX_PATH
 ## Boost ##
 # Tell Windows builds to look for static boost libraries
 if(WIN32)
-  set(Boost_USE_STATIC_LIBS ON)
+   # Disable auto-linking
+  add_definitions(-DBOOST_ALL_NO_LIB)
+#  set(Boost_USE_STATIC_LIBS ON)
 endif(WIN32)
-find_package(Boost 1.36.0 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem)
 
 ## Armadillo ##
 find_package(Armadillo)
