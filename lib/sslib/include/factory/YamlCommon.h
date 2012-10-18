@@ -15,6 +15,10 @@
 
 #include <string>
 
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+
 #include "potential/SimplePairPotential.h"
 
 // NAMESPACES ////////////////////////////////
@@ -183,14 +187,39 @@ namespace YAML {
 
     static bool decode(const Node& node, arma::vec & rhs)
     {
-      if(!node.IsSequence())
+      if(!(node.IsSequence() || node.IsScalar()))
         return false;
 
-      rhs.set_size(node.size());
-      for(size_t i = 0; i < node.size(); ++i)
+      if(node.IsSequence())
       {
-        rhs(i) = node[i].as<double>();
+        rhs.set_size(node.size());
+        for(size_t i = 0; i < node.size(); ++i)
+        {
+          rhs(i) = node[i].as<double>();
+        }
       }
+      else if(node.IsScalar())
+      {
+        // Maybe it is a string separated by spaces
+        typedef boost::tokenizer<boost::char_separator<char> > Tok;
+        const boost::char_separator<char> sep(" ");
+
+        Tok tok(node.as< ::std::string>(), sep);
+        ::std::vector<double> values;
+        BOOST_FOREACH(const ::std::string & value, tok)
+        {
+          try
+          {
+            values.push_back(::boost::lexical_cast<double>(value));
+          }
+          catch(const ::boost::bad_lexical_cast & /*exception*/)
+          {
+            return false;
+          }
+        }
+      }
+      else
+        return false;
 
       return true;
     }

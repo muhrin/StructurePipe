@@ -41,15 +41,13 @@ public:
 	virtual void writeStructure(
 		const ::sstbx::common::Structure & str,
 		const ::boost::filesystem::path & filepath,
-		const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
-		const AdditionalData * const data = NULL) const;
+		const ::sstbx::common::AtomSpeciesDatabase & speciesDb) const;
 
   // From IStructureReader //
 
   virtual UniquePtr<common::Structure>::Type readStructure(
 		const ::boost::filesystem::path &     filepath,
-		const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
-		AdditionalData * const                data = NULL) const;
+		const ::sstbx::common::AtomSpeciesDatabase & speciesDb) const;
 
 	virtual ::std::vector<std::string> getSupportedFileExtensions() const;
 

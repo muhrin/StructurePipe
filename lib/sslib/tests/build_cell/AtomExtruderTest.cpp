@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(ExtrusionTest)
   size_t numAtoms;
 
   bool extruded;
-
+  double volume;
   for(size_t i = 0; i < numStructures; ++i)
   {
     extruded = false;
@@ -57,9 +57,11 @@ BOOST_AUTO_TEST_CASE(ExtrusionTest)
 
     const ssc::UnitCellPtr cell = randomCell.generateCell();
     structure.setUnitCell(cell);
+    // WARNING: Can't use cell after this as ownership has been given to structure!
 
     // Check that the volume is not NaN
-    BOOST_CHECK(cell->getVolume() == cell->getVolume());
+    volume = structure.getUnitCell()->getVolume();
+    BOOST_CHECK(volume == volume);
 
     for(size_t j = 0; j < numAtoms; ++j)
     {

@@ -62,7 +62,7 @@ ObjectData<T> getObject(const ::sstbx::utility::Key<T> & key, ::spipe::Structure
 }
 
 template <typename T>
-ObjectData<T> getObject(const ::sstbx::utility::Key<T> & key, ::spipe::SpPipelineTyp & pipe)
+ObjectData<T> getObject(::sstbx::utility::Key<T> & key, ::spipe::SpPipelineTyp & pipe)
 {
   ObjectData<T> result;
 
@@ -82,7 +82,7 @@ ObjectData<T> getObject(const ::sstbx::utility::Key<T> & key, ::spipe::SpPipelin
 }
 
 template <typename T>
-const ObjectData<const T> getObjectConst(const ::sstbx::utility::Key<T> & key, const ::spipe::SpPipelineTyp & pipe)
+const ObjectData<const T> getObjectConst(::sstbx::utility::Key<T> & key, const ::spipe::SpPipelineTyp & pipe)
 {
   ObjectData<const T> result;
 
@@ -103,19 +103,19 @@ const ObjectData<const T> getObjectConst(const ::sstbx::utility::Key<T> & key, c
 
 template <typename T>
 bool setObject(
-  const ::sstbx::utility::Key<T> & key,
+  ::sstbx::utility::Key<T> & key,
   const DataLocation::Value location,
   const T & value,
   ::spipe::SpPipelineTyp & pipe)
 {
   if(location == DataLocation::SHARED)
   {
-    pipe.getSharedData().objectsStore.insert(key, value);
+    pipe.getSharedData().objectsStore[key] = value;
     return true;
   }
   else if(location == DataLocation::GLOBAL)
   {
-    pipe.getGlobalData().objectsStore.insert(key, value);
+    pipe.getGlobalData().objectsStore[key] = value;
     return true;
   }
 

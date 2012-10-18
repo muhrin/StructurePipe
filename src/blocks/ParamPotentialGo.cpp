@@ -82,7 +82,7 @@ void ParamPotentialGo::copyOptimisationResults(
   PotentialGo::copyOptimisationResults(optData, strData);
 
   // Add the potential parameters to its data
-  strData.objectsStore.insert(common::GlobalKeys::POTENTIAL_PARAMS, myCurrentParams);
+  strData.objectsStore[common::GlobalKeys::POTENTIAL_PARAMS] = myCurrentParams;
 }
 
 arma::vec ParamPotentialGo::setPotentialParams(const ::arma::vec & params)

@@ -8,13 +8,17 @@
 // INCLUDES //////////////////////////////////
 #include "utility/HeterogeneousMap.h"
 
+#include <boost/foreach.hpp>
 
 // NAMESPACES ////////////////////////////////
 
-namespace sstbx
+namespace sstbx {
+namespace utility {
+
+HeterogeneousMap::~HeterogeneousMap()
 {
-namespace utility
-{
+  clear();
+}
 
 bool HeterogeneousMap::empty() const
 {
@@ -33,7 +37,25 @@ size_t HeterogeneousMap::max_size() const
 
 void HeterogeneousMap::clear()
 {
+  // Tell all the keys that they are being removed from the map
+  BOOST_FOREACH(AnyMap::value_type & value, myAnyMap)
+  {
+    value.first->removedFromMap(*this);
+  }
+
   myAnyMap.clear();
+}
+
+size_t HeterogeneousMap::erase(KeyId & key)
+{
+  const AnyMap::iterator it = myAnyMap.find(&key);
+
+  if(it == myAnyMap.end())
+    return 0;
+
+  myAnyMap.erase(it);
+  key.removedFromMap(*this);
+  return 1;
 }
 
 }

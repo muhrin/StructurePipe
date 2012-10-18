@@ -17,19 +17,17 @@
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe
-{
-namespace common
-{
+namespace spipe {
+namespace common {
 namespace fs = ::boost::filesystem;
 namespace ssc = ::sstbx::common;
 namespace ssu = ::sstbx::utility;
 
 
-const ::sstbx::utility::Key< ::boost::filesystem::path> StructureObjectKeys::LAST_ABS_SAVE_PATH;
-const ::sstbx::utility::Key<unsigned int> StructureObjectKeys::SPACEGROUP_NUMBER;
-const ::sstbx::utility::Key< ::std::string> StructureObjectKeys::SPACEGROUP_SYMBOL;
-const ::sstbx::utility::Key< double > StructureObjectKeys::PRESSURE_INTERNAL;
+::sstbx::utility::Key< ::boost::filesystem::path> StructureObjectKeys::LAST_ABS_SAVE_PATH;
+::sstbx::utility::Key<unsigned int> StructureObjectKeys::SPACEGROUP_NUMBER;
+::sstbx::utility::Key< ::std::string> StructureObjectKeys::SPACEGROUP_SYMBOL;
+::sstbx::utility::Key< double > StructureObjectKeys::PRESSURE_INTERNAL;
 
 sstbx::common::Structure * StructureData::getStructure() const
 {

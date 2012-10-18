@@ -29,6 +29,7 @@ set(sslib_Source_Files__common
   src/common/OrthoCellDistanceCalculator.cpp
   src/common/ReferenceDistanceCalculator.cpp
   src/common/Structure.cpp
+  src/common/StructureProperties.cpp
   src/common/UnitCell.cpp
   src/common/UniversalCrystalDistanceCalculator.cpp
   src/common/Utils.cpp
@@ -57,7 +58,6 @@ set(sslib_Source_Files__factory
 source_group("Source Files\\factory" FILES ${sslib_Source_Files__factory})
 
 set(sslib_Source_Files__io
-  src/io/AdditionalData.cpp
   src/io/ResReaderWriter.cpp
   src/io/StructureWriterManager.cpp
 )
@@ -75,6 +75,7 @@ set(sslib_Source_Files__utility
   src/utility/BoostFilesystem.cpp
   src/utility/DistanceMatrixComparator.cpp
   src/utility/HeterogeneousMap.cpp
+  src/utility/HeterogeneousMapKey.cpp
   src/utility/SortedDistanceComparator.cpp
   src/utility/StableComparison.cpp
   src/utility/UniqueStructureSet.cpp

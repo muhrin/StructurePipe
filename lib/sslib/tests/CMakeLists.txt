@@ -44,6 +44,7 @@ set(tests_Header_Files__utility
 source_group("Header Files\\utility" FILES ${tests_Header_Files__utility})
 
 set(tests_Source_Files__utility
+  utility/HeterogeneousMapTest.cpp
   utility/MultiIdxTest.cpp
   utility/MultiIdxRangeTest.cpp
   utility/PermutationRangeTest.cpp

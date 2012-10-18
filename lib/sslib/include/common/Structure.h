@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include <boost/lexical_cast.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include <armadillo>
@@ -70,8 +71,20 @@ public:
 
   const DistanceCalculator & getDistanceCalculator() const;
 
-  utility::HeterogeneousMap & getProperties();
-  const utility::HeterogeneousMap & getProperties() const;
+  template <typename T>
+  T * getProperty(const utility::Key<T> & key);
+
+  template <typename T>
+  const T * getProperty(const utility::Key<T> & key) const;
+
+  template <typename T>
+  void setProperty(utility::Key<T> & key, const T & value);
+
+  template <typename T>
+  void setPropertyFromString(utility::Key<T> & key, const ::std::string & value);
+
+  template <typename T>
+  bool eraseProperty(utility::Key<T> & key);
 
   bool makePrimitive();
 
@@ -97,7 +110,7 @@ private:
 	/** The atoms contained in this group */
 	AtomsContainer  myAtoms;
 
-  utility::HeterogeneousMap  myProperties;
+  utility::HeterogeneousMap  myTypedProperties;
 
 	/**
 	/* Flag to indicate whether the structure has changed since
@@ -113,6 +126,37 @@ private:
   friend class UnitCell;
 };
 
-}}
+template <typename T>
+T * Structure::getProperty(const utility::Key<T> & key)
+{
+  return myTypedProperties.find(key);
+}
+
+template <typename T>
+const T * Structure::getProperty(const utility::Key<T> & key) const
+{
+  return myTypedProperties.find(key);
+}
+
+template <typename T>
+void Structure::setProperty(utility::Key<T> & key, const T & value)
+{
+  myTypedProperties[key] = value;
+}
+
+template <typename T>
+void Structure::setPropertyFromString(utility::Key<T> & key, const ::std::string & value)
+{
+  setProperty(key, ::boost::lexical_cast<T>(value));
+}
+
+template <typename T>
+bool Structure::eraseProperty(utility::Key<T> & key)
+{
+  myTypedProperties.erase(key);
+}
+
+}
+}
 
 #endif /* STRUCTURE_H */

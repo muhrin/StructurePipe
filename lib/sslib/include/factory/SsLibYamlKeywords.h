@@ -35,10 +35,15 @@ static const KwTyp MIN                   = "min";
 static const KwTyp MAX                   = "max";
 
 // Structure description ///
-static const KwTyp STRUCTURE               = "structure";
-static const KwTyp STRUCTURE__ATOMS        = "atoms";
-static const KwTyp STRUCTURE__ATOMS__TYPE  = "type";
-static const KwTyp STRUCTURE__ATOMS__POS   = "pos";
+static const KwTyp STRUCTURE                      = "structure";
+static const KwTyp STRUCTURE__ATOM_INFO_FORMAT    = "atomInfoFormat";
+static const KwTyp STRUCTURE__ATOM_DEFAULTS       = "atomDefaults";
+static const KwTyp STRUCTURE__ATOMS               = "atoms";
+static const KwTyp STRUCTURE__ATOMS__INFO         = "info";
+static const KwTyp STRUCTURE__ATOMS__SPEC         = "spec";
+static const KwTyp STRUCTURE__ATOMS__POS          = "pos";
+static const KwTyp STRUCTURE__CELL                = "cell";
+static const KwTyp STRUCTURE__CELL__ABC           = "abc";
 
 // Random structure ///////////////
 static const KwTyp RANDOM_STRUCTURE                       = "randomStructure";
@@ -47,7 +52,7 @@ static const KwTyp RANDOM_STRUCTURE__ATOMS__RADIUS        = "radius";
 static const KwTyp RANDOM_STRUCTURE__ATOMS__POS           = STRUCTURE__ATOMS__POS;
 
 static const KwTyp STR_DESC              = "strDesc";
-static const KwTyp STR_DESC__ATOMS       = "atoms";
+static const KwTyp STR_DESC__ATOMS       = STRUCTURE__ATOMS;
 static const KwTyp STR_DESC__ATOMS__SPEC = "spec";
 static const KwTyp STR_DESC__ATOMS__N    = "n";
 

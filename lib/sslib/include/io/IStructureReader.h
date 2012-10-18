@@ -20,9 +20,6 @@ namespace common {
 class AtomSpeciesDatabase;
 class Structure;
 }
-namespace io {
-struct AdditionalData;
-}
 }
 
 namespace sstbx {
@@ -42,8 +39,7 @@ public:
 	/**/
   virtual UniquePtr<common::Structure>::Type readStructure(
 		const ::boost::filesystem::path &     filepath,
-		const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
-		AdditionalData * const                data = NULL) const = 0;
+		const ::sstbx::common::AtomSpeciesDatabase & speciesDb) const = 0;
 
 	virtual ::std::vector<std::string> getSupportedFileExtensions() const = 0;
 };
