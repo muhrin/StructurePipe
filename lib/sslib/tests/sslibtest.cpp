@@ -14,8 +14,3 @@
 #define BOOST_TEST_MAIN
 
 #include "sslibtest.h"
-
-BOOST_AUTO_TEST_CASE(test)
-{
-
-}

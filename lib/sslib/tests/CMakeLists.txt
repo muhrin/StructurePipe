@@ -4,12 +4,10 @@
 ## CONFIGURATION SETTINGS ##############################
 
 # Build options ###
-set(SSLIB_TESTING_BOOST_DYN_LINK ON CACHE BOOL "Use dynamic linking for linking to boost unit test framework.")
-
-configure_file(
-  "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"
-  "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
-)
+if(Boost_USE_STATIC_LIBS)
+else()
+  add_definitions(-DBOOST_TEST_DYN_LINK)
+endif(Boost_USE_STATIC_LIBS)
 
 ## END CONFIGURATION SETTINGS ##########################
 
@@ -63,8 +61,7 @@ source_group("Source Files\\utility" FILES ${tests_Source_Files__utility})
 ## tests/
 
 set(tests_Header_Files__
-  "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"
-  "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
+  sslibtest.h
 )
 source_group("Header Files" FILES ${tests_Header_Files__})
 
