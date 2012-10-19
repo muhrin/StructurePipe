@@ -19,6 +19,11 @@ set(ARMADILLO_ROOT "" CACHE FILEPATH "Path to armadillo linear algebra library")
 # Build settings
 set(SP_USE_YAML TRUE CACHE BOOL "Build StructurePipe with YAML support.")
 
+configure_file (
+  "${PROJECT_SOURCE_DIR}/src/StructurePipeConfig.h.in"
+  "${PROJECT_BINARY_DIR}/src/StructurePipeConfig.h"
+)
+
 ## End configuration options ###########################
 
 # Tell CMake where to find modules
@@ -31,12 +36,7 @@ set(CMAKE_PREFIX_PATH
   "${ARMADILLO_ROOT}"
 )
 
-
 ## Boost ##
-# Tell Windows builds to look for static boost libraries
-if(WIN32)
-  set(Boost_USE_STATIC_LIBS ON)
-endif(WIN32)
 # Disable auto-linking
 add_definitions(-DBOOST_ALL_NO_LIB)
 find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem)
@@ -62,11 +62,6 @@ add_subdirectory(lib/sslib)      # Structure searching library
 
 
 ## Now StructurePipe ####################################
-
-configure_file (
-  "${PROJECT_SOURCE_DIR}/src/StructurePipeConfig.h.in"
-  "${PROJECT_BINARY_DIR}/src/StructurePipeConfig.h"
-)
 
 set(SPIPE_INCLUDE_DIRS
   ${PROJECT_BINARY_DIR}/src  # So that we find StructurePipeConfig.h

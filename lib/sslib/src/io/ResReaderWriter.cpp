@@ -230,7 +230,7 @@ UniquePtr<common::Structure>::Type ResReaderWriter::readStructure(
         if(++tokIt != toker.end())
           str->setName(*tokIt);
         else
-          str->setName(utility::stemString(filepath));
+          str->setName(utility::fs::stemString(filepath));
 
         // Does the user want additional data?
         if(data)
