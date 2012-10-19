@@ -19,4 +19,4 @@ BOOST_AUTO_TEST_CASE(VoronoiMapTest)
   ::sstbx::analysis::VoronoiMap map;
 }
 
-#endif SSLIB_USE_CGAL
+#endif /* SSLIB_USE_CGAL */

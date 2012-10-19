@@ -1,17 +1,19 @@
 
 ## Configure the tests header file
 
-# Figure out if we are using dynamic or static boost libraries
-#if(Boost_USE_STATIC_LIBS)
-#else()
-#  set(SSLIB_BOOST_DYN_LINK ON)
-#endif()
-find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem unit_test_framework)
+## CONFIGURATION SETTINGS ##############################
+
+# Build options ###
+set(SSLIB_BIIST_DYN_LINK ON CACHE BOOL "Use dynamic linking for linking to boost unit test framework.")
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"
   "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
 )
+
+## END CONFIGURATION SETTINGS ##########################
+
+find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem unit_test_framework)
 
 # tests/analysis
 
