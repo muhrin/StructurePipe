@@ -2,10 +2,11 @@
 ## Configure the tests header file
 
 # Figure out if we are using dynamic or static boost libraries
-if(Boost_USE_STATIC_LIBS)
-else()
-  set(SSLIB_BOOST_DYN_LINK ON)
-endif()
+#if(Boost_USE_STATIC_LIBS)
+#else()
+#  set(SSLIB_BOOST_DYN_LINK ON)
+#endif()
+find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem unit_test_framework)
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"
@@ -120,7 +121,7 @@ add_dependencies(sslibtest sslib)
 
 # Libraries we need to link to
 target_link_libraries(sslibtest
-#  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+  ${Boost_LIBRARIES}
   ${ARMADILLO_LIBRARIES}
   spglib
   sslib

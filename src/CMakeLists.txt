@@ -143,13 +143,6 @@ target_link_libraries(spipe
   sslib
 )
 
-# Qhull
-if(SP_USE_QHULL)
-  target_link_libraries(spipe
-    ${QHULL_LIBRARIES}
-  )
-endif(SP_USE_QHULL)
-
 ###################
 ## StructurePipe ##
 ###################
