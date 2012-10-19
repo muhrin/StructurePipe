@@ -4,7 +4,7 @@
 ## CONFIGURATION SETTINGS ##############################
 
 # Build options ###
-set(SSLIB_BIIST_DYN_LINK ON CACHE BOOL "Use dynamic linking for linking to boost unit test framework.")
+set(SSLIB_TESTING_BOOST_DYN_LINK ON CACHE BOOL "Use dynamic linking for linking to boost unit test framework.")
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"

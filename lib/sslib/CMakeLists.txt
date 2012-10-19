@@ -49,12 +49,7 @@ endif(WIN32)
 
 # Disable auto-linking
 add_definitions(-DBOOST_ALL_NO_LIB)
-  find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem)
-if(SSLIB_ENABLE_TESTING)
-  
-else()
-
-endif(SSLIB_ENABLE_TESTING)
+find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem)
 
 # Armadillo #
 find_package(Armadillo)
