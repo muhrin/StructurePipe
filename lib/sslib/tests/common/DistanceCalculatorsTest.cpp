@@ -6,11 +6,12 @@
  */
 
 // INCLUDES //////////////////////////////////
+#include "sslibtest.h"
+
 #include <iostream>
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/test/unit_test.hpp>
 
 #include <armadillo>
 

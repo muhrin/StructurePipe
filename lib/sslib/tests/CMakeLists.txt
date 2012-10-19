@@ -61,6 +61,7 @@ source_group("Source Files\\utility" FILES ${tests_Source_Files__utility})
 ## tests/
 
 set(tests_Header_Files__
+  "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"
   "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
 )
 source_group("Header Files" FILES ${tests_Header_Files__})

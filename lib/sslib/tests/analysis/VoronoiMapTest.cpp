@@ -6,13 +6,13 @@
  */
 
 // INCLUDES //////////////////////////////////
+#include "sslibtest.h"
+
 #include "analysis/VoronoiMap.h"
 
 #include <SSLib.h>
 
 #ifdef SSLIB_USE_CGAL
-
-#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(VoronoiMapTest)
 {
