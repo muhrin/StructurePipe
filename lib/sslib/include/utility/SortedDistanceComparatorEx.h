@@ -17,6 +17,7 @@
 
 #include "common/AtomSpeciesId.h"
 #include "utility/IStructureComparator.h"
+#include "utility/MapEx.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx {
@@ -28,32 +29,16 @@ class Structure;
 namespace sstbx {
 namespace utility {
 
-struct SortedDistanceComparisonData
+class SortedDistanceComparisonDataEx
 {
+public:
   typedef ::std::vector<double> DistancesVec;;
   typedef ::boost::shared_ptr<DistancesVec> DistancesVecPtr;
 
-  template <typename Key, typename Type>
-  class MapEx : public ::std::map<Key, Type>
-  {
-  public:
+  typedef utility::MapEx<common::AtomSpeciesId::Value, DistancesVecPtr> DistancesMap;
+  typedef utility::MapEx<common::AtomSpeciesId::Value, DistancesMap> SpeciesDistancesMap;
 
-    const Type & operator ()(const Key & key) const
-    {
-      const_iterator it = find(key);
-
-      if(it == end())
-      {
-        throw ::std::runtime_error("Attempting to access value with key that does not exist");
-      }
-      return it->second;
-    }
-  };
-
-  typedef MapEx<common::AtomSpeciesId::Value, DistancesVecPtr> DistancesMap;
-  typedef MapEx<common::AtomSpeciesId::Value, DistancesMap> SpeciesDistancesMap;
-
-  SortedDistanceComparisonData(const common::Structure & structure, const double _maxDist);
+  SortedDistanceComparisonDataEx(const common::Structure & structure, const double _cutoff);
 
   ::std::vector<common::AtomSpeciesId::Value> species;
   DistancesVec              latticeDistances;
@@ -63,8 +48,6 @@ struct SortedDistanceComparisonData
 private:
 
   void initSpeciesDistancesMap();
-
-	void initDistance(const ::sstbx::common::Structure & str) const;
 };
 
 class SortedDistanceComparatorEx : public IStructureComparator
@@ -72,7 +55,7 @@ class SortedDistanceComparatorEx : public IStructureComparator
   typedef ::std::vector<double> DistancesVec;
 public:
 
-	typedef SortedDistanceComparisonData DataTyp;
+	typedef SortedDistanceComparisonDataEx DataTyp;
   typedef IBufferedComparator   BufferedTyp;
 
 	SortedDistanceComparatorEx(double tolerance = DEFAULT_TOLERANCE);
@@ -94,17 +77,17 @@ public:
   // Methods needed to conform to expectations laid out by GenericBufferedComparator ///
 	double compareStructures(
     const common::Structure & str1,
-		const SortedDistanceComparisonData & dist1,
+		const SortedDistanceComparisonDataEx & dist1,
     const common::Structure & str2,
-		const SortedDistanceComparisonData & dist2) const;
+		const SortedDistanceComparisonDataEx & dist2) const;
 
 	bool areSimilar(
     const common::Structure & str1,
-		const SortedDistanceComparisonData & dist1,
+		const SortedDistanceComparisonDataEx & dist1,
     const common::Structure & str2,
-		const SortedDistanceComparisonData & dist2) const;
+		const SortedDistanceComparisonDataEx & dist2) const;
 
-  ::std::auto_ptr<SortedDistanceComparisonData>
+  ::std::auto_ptr<SortedDistanceComparisonDataEx>
     generateComparisonData(const ::sstbx::common::Structure & str) const;
   // End conformation methods //////////////
 	

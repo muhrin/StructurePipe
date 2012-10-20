@@ -126,6 +126,7 @@ set(sslib_Header_Files__utility
   include/utility/IndexRemappingView.h
   include/utility/IStructureComparator.h
   include/utility/IStructureSet.h
+  include/utility/MapEx.h
   include/utility/Math.h
   include/utility/MetaProgramming.h
   include/utility/MinMax.h
