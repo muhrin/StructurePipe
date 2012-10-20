@@ -128,6 +128,7 @@ set(sslib_Header_Files__utility
   include/utility/PermutationRange.h
   include/utility/PromotableType.h
   include/utility/SortedDistanceComparator.h
+  include/utility/SortedDistanceComparatorEx.h
   include/utility/StableComparison.h
   include/utility/UniqueStructureSet.h
 )
