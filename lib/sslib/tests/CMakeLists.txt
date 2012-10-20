@@ -7,11 +7,6 @@ else()
   set(SSLIB_BOOST_DYN_LINK ON)
 endif()
 
-configure_file(
-  "${PROJECT_SOURCE_DIR}/tests/sslibtest.h.in"
-  "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
-)
-
 # tests/build_cell
 
 set(tests_Source_Files__build_cell
@@ -47,13 +42,17 @@ set(tests_Source_Files__utility
   utility/MultiIdxTest.cpp
   utility/MultiIdxRangeTest.cpp
   utility/PermutationRangeTest.cpp
+  utility/StructureComparatorsTest.cpp
 )
 source_group("Source Files\\utility" FILES ${tests_Source_Files__utility})
+set(tests_Input_Files__utility
+  utility/similarStructures
+)
 
 ## tests/
 
 set(tests_Header_Files__
-  "${PROJECT_BINARY_DIR}/tests/sslibtest.h"
+  "sslibtest.h"
 )
 source_group("Header Files" FILES ${tests_Header_Files__})
 
@@ -85,6 +84,10 @@ file(COPY
   ${tests_Input_Files__factory}
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
 )
+file(COPY
+  ${tests_Input_Files__utility}
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
+)
 
 message(STATUS "Copied ${tests_Input_Files__factory} to ${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -95,7 +98,6 @@ message(STATUS "Copied ${tests_Input_Files__factory} to ${CMAKE_CURRENT_BINARY_D
 
 include_directories(
   ${SSLIB_INCLUDE_DIRS}
-  ${PROJECT_BINARY_DIR}/tests # To make sure we can find sslibtest.h (generated from .in)
   ${PROJECT_SOURCE_DIR}/tests
 )
 
