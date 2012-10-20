@@ -14,7 +14,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "common/AtomSpeciesId.h"
 #include "utility/IStructureComparator.h"
+#include "utility/MapEx.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx {
@@ -26,17 +28,29 @@ class Structure;
 namespace sstbx {
 namespace utility {
 
-struct SortedDistanceComparisonData
+class SortedDistanceComparisonData
 {
-	SortedDistanceComparisonData(const double _maxDist):
-		maxDist(_maxDist) {}
+public:
+  typedef ::std::vector<double> DistancesVec;;
+  typedef ::boost::shared_ptr<DistancesVec> DistancesVecPtr;
 
-	::std::vector<double>						            sortedDistances;
-  const double                                maxDist;
+  typedef utility::MapEx<common::AtomSpeciesId::Value, DistancesVecPtr> DistancesMap;
+  typedef utility::MapEx<common::AtomSpeciesId::Value, DistancesMap> SpeciesDistancesMap;
+
+  SortedDistanceComparisonData(const common::Structure & structure, const double _cutoff);
+
+  ::std::vector<common::AtomSpeciesId::Value> species;
+  SpeciesDistancesMap       speciesDistancesMap;
+  const double              cutoff;
+
+private:
+
+  void initSpeciesDistancesMap();
 };
 
 class SortedDistanceComparator : public IStructureComparator
 {
+  typedef ::std::vector<double> DistancesVec;
 public:
 
 	typedef SortedDistanceComparisonData DataTyp;
@@ -82,10 +96,12 @@ private:
 
 	static const size_t MAX_CELL_MULTIPLES;
 
-	void populateDistanceVector(
-		const ::sstbx::common::Structure & str,
-		::std::vector<double> & distVec,
-		const double cutoff) const;
+  void calcProperties(
+    const DistancesVec & dist1,
+    const DistancesVec & dist2,
+    double & sqSum,
+    double & max,
+    unsigned int & runningComparedTotal) const;
 
 	double myTolerance;
 
