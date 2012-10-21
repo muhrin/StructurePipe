@@ -18,7 +18,6 @@
 #include <SSLib.h>
 #include <common/Structure.h>
 #include <common/Types.h>
-#include <io/AdditionalData.h>
 #include <io/ResReaderWriter.h>
 #include <potential/IParameterisable.h>
 
@@ -94,7 +93,7 @@ void LoadPotStructures::start()
             {
               StructureDataTyp * const strDat = structures[i];
 
-              strDat->objectsStore.insert(GlobalKeys::POTENTIAL_PARAMS, result.first);
+              strDat->objectsStore[GlobalKeys::POTENTIAL_PARAMS] = result.first;
 
               // Send the structure down the pipe
               myPipeline->registerNewData(strDat);
@@ -133,15 +132,12 @@ size_t LoadPotStructures::loadStructures(
     if(dirEntry.extension() == ".res")
     {
       StructureDataTyp * const strDat = new StructureDataTyp();
-      sstbx::io::AdditionalData data;
 
       //std::cout << "Got res file: " << dirEntry.string() << std::endl;
 
       // Try loading
-      sstbx::UniquePtr<ssc::Structure>::Type str = resReader.readStructure(dirEntry, myPipeline->getGlobalData().getSpeciesDatabase(), &data);
+      sstbx::UniquePtr<ssc::Structure>::Type str = resReader.readStructure(dirEntry, myPipeline->getGlobalData().getSpeciesDatabase());
       strDat->setStructure(str);
-
-      generateStructureDataFromIo(data, *strDat);
 
       if(myLowestEOnly)
       {

@@ -13,14 +13,13 @@
 
 #include "SSLibAssert.h"
 #include "common/DistanceCalculator.h"
-#include "utility/CellParamsEnum.h"
 
 namespace sstbx {
 namespace common {
 
 class Structure;
 
-class OrthoCellDistanceCalculator : public DistanceCalculator, private utility::CellParamsEnum
+class OrthoCellDistanceCalculator : public DistanceCalculator
 {
 public:
 

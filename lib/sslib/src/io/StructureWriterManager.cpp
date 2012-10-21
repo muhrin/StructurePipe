@@ -15,7 +15,8 @@
 // NAMESPACES ////////////////////////////////
 
 
-namespace sstbx { namespace io {
+namespace sstbx {
+namespace io {
 
 void StructureWriterManager::registerWriter(sstbx::io::IStructureWriter &writer)
 {
@@ -48,8 +49,7 @@ void StructureWriterManager::deregisterWriter(sstbx::io::IStructureWriter &write
 bool StructureWriterManager::writeStructure(
 	const ::sstbx::common::Structure & str,
 	const ::boost::filesystem::path & path,
-  const common::AtomSpeciesDatabase & atomSpeciesDb,
-	const AdditionalData * const data) const
+  const common::AtomSpeciesDatabase & atomSpeciesDb) const
 {
 	// TODO: Add status return value to this method
 	using ::std::string;
@@ -78,7 +78,7 @@ bool StructureWriterManager::writeStructure(
 	}
 
 	// Finally pass it on the the correct writer
-	it->second->writeStructure(str, path, atomSpeciesDb, data);
+	it->second->writeStructure(str, path, atomSpeciesDb);
 
   // TODO: The write may have failed so provide better and accurate feedback!
   return true;

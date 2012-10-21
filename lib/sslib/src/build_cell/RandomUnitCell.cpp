@@ -179,6 +179,8 @@ RandomUnitCell::ParamValue RandomUnitCell::getMaxLengthRatio() const
     }
   }
 
+  // TODO: Deal with possible runtime exception as a result of
+  // ortho matrix being singular
   ::boost::shared_ptr<common::UnitCell> cell(new common::UnitCell(params));
 
   if(!myTargetVolume && structureInfo)

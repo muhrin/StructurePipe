@@ -14,17 +14,11 @@
 #include <boost/filesystem.hpp>
 
 // FORWARD DECLARATIONS ////////////////////////////////////
-namespace sstbx
-{
-	namespace common
-	{
-		class AtomSpeciesDatabase;
-		class Structure;
-	}
-	namespace io
-	{
-		struct AdditionalData;
-	}
+namespace sstbx {
+namespace common {
+class AtomSpeciesDatabase;
+class Structure;
+}
 }
 
 namespace sstbx {
@@ -45,8 +39,7 @@ public:
 	virtual void writeStructure(
 		const ::sstbx::common::Structure & str,
 		const ::boost::filesystem::path & filepath,
-		const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
-		const AdditionalData * const data = NULL) const = 0;
+		const ::sstbx::common::AtomSpeciesDatabase & speciesDb) const = 0;
 
 	virtual ::std::vector<std::string> getSupportedFileExtensions() const = 0;
 };

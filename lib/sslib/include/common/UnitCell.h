@@ -11,8 +11,9 @@
 // INCLUDES ///////////////////////////////////
 #include <armadillo>
 
+#include <boost/noncopyable.hpp>
+
 #include "SSLibAssert.h"
-#include "utility/CellParamsEnum.h"
 #include "utility/StableComparison.h"
 
 namespace sstbx {
@@ -21,7 +22,7 @@ namespace common {
 // FORWARD DECLARES ///////////////////////////
 class Structure;
 
-class UnitCell : private utility::CellParamsEnum
+class UnitCell : private ::boost::noncopyable
 {
 public:
 
@@ -50,17 +51,17 @@ public:
 
   inline ::arma::vec3 getAVec() const
   {
-    return myOrthoMtx.col(X);
+    return myOrthoMtx.col(0);
   }
 
   inline ::arma::vec3 getBVec() const
   {
-    return myOrthoMtx.col(Y);
+    return myOrthoMtx.col(1);
   }
 
   inline ::arma::vec3 getCVec() const
   {
-    return myOrthoMtx.col(Z);
+    return myOrthoMtx.col(2);
   }
 
   double getLongestCellVectorLength() const;
@@ -145,11 +146,7 @@ public:
 
   bool niggliReduce();
 
-  void setStructure(const Structure * const structure);
-
 private:
-
-  enum Coord {X, Y, Z};
 
   /** Initialise the unit cell from lattice parameters */
 	void init(
@@ -162,6 +159,8 @@ private:
 	void initLatticeParams();
 	void initRest();
 
+  void setStructure(const Structure * const structure);
+
   const Structure * myStructure;
 
 	/** The unit cell matrix where columns represent basis vectors */
@@ -173,6 +172,8 @@ private:
 	double	myLatticeParams[6];
 
 	double	myVolume;
+
+  friend Structure;
 };
 
 }

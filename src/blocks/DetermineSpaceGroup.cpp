@@ -93,9 +93,7 @@ void DetermineSpaceGroup::in(StructureDataTyp & data)
     ::std::string spacegroupSymbol(spgData->international_symbol);
     ::boost::algorithm::trim(spacegroupSymbol);
 
-    data.objectsStore.insert(
-      common::StructureObjectKeys::SPACEGROUP_SYMBOL,
-      spacegroupSymbol);
+    data.objectsStore[common::StructureObjectKeys::SPACEGROUP_SYMBOL] = spacegroupSymbol;
 
     // Clean up
     spg_free_dataset(spgData);

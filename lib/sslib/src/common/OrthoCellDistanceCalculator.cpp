@@ -10,6 +10,7 @@
 
 #include "common/Structure.h"
 #include "common/UnitCell.h"
+#include "utility/IndexingEnums.h"
 #include "utility/StableComparison.h"
 
 #define SSLIB_ORTHO_DIST_CALC_DEBUG (SSLIB_DEBUG && 0)
@@ -276,6 +277,8 @@ bool OrthoCellDistanceCalculator::getVecsBetween(
 
 bool OrthoCellDistanceCalculator::isValid() const
 {
+  using namespace utility::cell_params_enum;
+
   if(!myStructure.getUnitCell())
     return false;
 
@@ -295,6 +298,8 @@ void OrthoCellDistanceCalculator::unitCellChanged()
 
 void OrthoCellDistanceCalculator::updateBufferedValues()
 {
+  using namespace utility::cell_params_enum;
+
   const UnitCell & cell = *myStructure.getUnitCell();
   const double (&params)[6] = cell.getLatticeParams();
 

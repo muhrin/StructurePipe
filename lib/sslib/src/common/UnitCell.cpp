@@ -13,6 +13,7 @@
 #include "SSLibAssert.h"
 #include "common/Constants.h"
 #include "common/Structure.h"
+#include "utility/IndexingEnums.h"
 
 namespace sstbx {
 namespace common {
@@ -29,6 +30,8 @@ UnitCell::UnitCell(const ::arma::mat33 & orthoMatrix)
 
 UnitCell::UnitCell(const double (&latticeParams)[6])
 {
+  using namespace utility::cell_params_enum;
+
   init(latticeParams[A], latticeParams[B], latticeParams[C],
     latticeParams[ALPHA], latticeParams[BETA], latticeParams[GAMMA]);
 }
@@ -40,6 +43,8 @@ const double (&UnitCell::getLatticeParams() const)[6]
 
 double UnitCell::getLongestCellVectorLength() const
 {
+  using namespace utility::cell_params_enum;
+
   return ::std::max(myLatticeParams[A], ::std::max(myLatticeParams[B], myLatticeParams[C]));
 }
 
@@ -77,12 +82,12 @@ double UnitCell::setVolume(const double volume)
 
 double UnitCell::getNormVolume() const
 {
-  using std::sqrt;
+  using namespace utility::cell_params_enum;
 
   // First normalise the lattice vectors
-  ::arma::vec3 a(myOrthoMtx.col(0));
-  ::arma::vec3 b(myOrthoMtx.col(1));
-  ::arma::vec3 c(myOrthoMtx.col(2));
+  ::arma::vec3 a(myOrthoMtx.col(A));
+  ::arma::vec3 b(myOrthoMtx.col(B));
+  ::arma::vec3 c(myOrthoMtx.col(C));
 
   a /= myLatticeParams[A];
   b /= myLatticeParams[B];
@@ -141,6 +146,7 @@ double UnitCell::getNormVolume() const
 
 UnitCell::LatticeSystem::Value UnitCell::getLatticeSystem(const double tolerance) const
 {
+  using namespace utility::cell_params_enum;
   namespace comp = utility::StableComp;
 
   if(comp::eq(myLatticeParams[ALPHA], myLatticeParams[BETA], tolerance) &&
@@ -237,6 +243,8 @@ UnitCell::LatticeSystem::Value UnitCell::getLatticeSystem(const double tolerance
 
 ::arma::vec3 & UnitCell::wrapVecFracInplace(::arma::vec3 & frac) const
 {
+  using namespace utility::cart_coords_enum;
+
   frac[X] -= floor(frac[X]);
   frac[Y] -= floor(frac[Y]);
   frac[Z] -= floor(frac[Z]);
@@ -262,6 +270,7 @@ bool UnitCell::niggliReduce()
 // Crystallographica Section A Foundations of
 // Crystallography. 2003;60(1):1-6.
 
+  using namespace utility::cell_params_enum;
   using namespace sstbx::utility;
   using std::fabs;
 
@@ -602,18 +611,20 @@ void UnitCell::init(
 	const double a, const double b, const double c,
 	const double alpha, const double beta, const double gamma)
 {
+  using namespace utility::cell_params_enum;
+
   // Sanity checks on parameters
   SSLIB_ASSERT_MSG(alpha+beta+gamma <= 360.0, "Non-physical lattice parameters supplied - required that alpha+beta+gamma <= 360.0");
   SSLIB_ASSERT_MSG(abs(alpha-beta) <= gamma, "Non-physical lattice parameters supplied - require that abs(alpha-beta) < gamma");
   SSLIB_ASSERT_MSG(abs(beta-gamma) <= alpha, "Non-physical lattice parameters supplied - require that abs(beta-gamma) < alpha");
   SSLIB_ASSERT_MSG(abs(gamma-alpha) <= beta, "Non-physical lattice parameters supplied - require that abs(gamma-alpha) < beta");
 
-	myLatticeParams[0] = a;
-	myLatticeParams[1] = b;
-	myLatticeParams[2] = c;
-	myLatticeParams[3] = alpha;
-	myLatticeParams[4] = beta;
-	myLatticeParams[5] = gamma;
+	myLatticeParams[A] = a;
+	myLatticeParams[B] = b;
+	myLatticeParams[C] = c;
+	myLatticeParams[ALPHA] = alpha;
+	myLatticeParams[BETA]  = beta;
+	myLatticeParams[GAMMA] = gamma;
 	
 	initOrthoAndFracMatrices();
 	initRest();
@@ -632,23 +643,26 @@ void UnitCell::init(const ::arma::mat33 & orthoMtx)
 
 void UnitCell::initOrthoAndFracMatrices()
 {
-  const double alphaRad = Constants::DEG_TO_RAD * myLatticeParams[3];
-  const double betaRad = Constants::DEG_TO_RAD * myLatticeParams[4];
-  const double gammaRad = Constants::DEG_TO_RAD * myLatticeParams[5];
+  using namespace utility::cell_params_enum;
+  using namespace utility::cart_coords_enum;
+
+  const double alphaRad = Constants::DEG_TO_RAD * myLatticeParams[ALPHA];
+  const double betaRad = Constants::DEG_TO_RAD * myLatticeParams[BETA];
+  const double gammaRad = Constants::DEG_TO_RAD * myLatticeParams[GAMMA];
 
 	myOrthoMtx.zeros();
 	// A - col 0
-	myOrthoMtx.at(0, 0) = myLatticeParams[0];
+	myOrthoMtx.at(X, A) = myLatticeParams[A];
 	// B - col 1
-	myOrthoMtx.at(0, 1) = myLatticeParams[1] * cos(gammaRad);
-	myOrthoMtx.at(1, 1) = myLatticeParams[1] * sin(gammaRad);
+	myOrthoMtx.at(X, B) = myLatticeParams[B] * cos(gammaRad);
+	myOrthoMtx.at(Y, B) = myLatticeParams[B] * sin(gammaRad);
 	// C - col 2
-	myOrthoMtx.at(0, 2) = myLatticeParams[2] * cos(betaRad);
-	myOrthoMtx.at(1, 2) = myLatticeParams[2] * (cos(alphaRad) - cos(betaRad) * cos(gammaRad)) / sin(gammaRad);
-	myOrthoMtx.at(2, 2) = sqrt(
-    myLatticeParams[2] * myLatticeParams[2] -
-		myOrthoMtx(0, 2) * myOrthoMtx(0, 2) -
-		myOrthoMtx(1, 2) * myOrthoMtx(1, 2)
+	myOrthoMtx.at(X, C) = myLatticeParams[C] * cos(betaRad);
+	myOrthoMtx.at(Y, C) = myLatticeParams[C] * (cos(alphaRad) - cos(betaRad) * cos(gammaRad)) / sin(gammaRad);
+	myOrthoMtx.at(Z, C) = sqrt(
+    myLatticeParams[C] * myLatticeParams[C] -
+		myOrthoMtx(X, C) * myOrthoMtx(X, C) -
+		myOrthoMtx(Y, C) * myOrthoMtx(Y, C)
   );
 
 	myFracMtx = inv(myOrthoMtx);
@@ -657,27 +671,30 @@ void UnitCell::initOrthoAndFracMatrices()
 
 void UnitCell::initLatticeParams()
 {
+  using namespace utility::cell_params_enum;
 	using namespace arma;
 
 	// Get the lattice vectors
-  const ::arma::vec3 a = myOrthoMtx.col(0);
-	const ::arma::vec3 b = myOrthoMtx.col(1);
-	const ::arma::vec3 c = myOrthoMtx.col(2);
+  const ::arma::vec3 a = myOrthoMtx.col(A);
+	const ::arma::vec3 b = myOrthoMtx.col(B);
+	const ::arma::vec3 c = myOrthoMtx.col(C);
 
-	myLatticeParams[0] = std::sqrt(dot(a, a));
-	myLatticeParams[1] = std::sqrt(dot(b, b));
-	myLatticeParams[2] = std::sqrt(dot(c, c));
-	myLatticeParams[3] = acos(dot(b, c) / (myLatticeParams[1] * myLatticeParams[2])) * Constants::RAD_TO_DEG;
-	myLatticeParams[4] = acos(dot(a, c) / (myLatticeParams[0] * myLatticeParams[2])) * Constants::RAD_TO_DEG;
-	myLatticeParams[5] = acos(dot(a, b) / (myLatticeParams[0] * myLatticeParams[1])) * Constants::RAD_TO_DEG;
+	myLatticeParams[A] = std::sqrt(dot(a, a));
+	myLatticeParams[B] = std::sqrt(dot(b, b));
+	myLatticeParams[C] = std::sqrt(dot(c, c));
+	myLatticeParams[ALPHA] = acos(dot(b, c) / (myLatticeParams[B] * myLatticeParams[C])) * Constants::RAD_TO_DEG;
+	myLatticeParams[BETA] = acos(dot(a, c) / (myLatticeParams[A] * myLatticeParams[C])) * Constants::RAD_TO_DEG;
+	myLatticeParams[GAMMA] = acos(dot(a, b) / (myLatticeParams[A] * myLatticeParams[B])) * Constants::RAD_TO_DEG;
 }
 
 
 void UnitCell::initRest()
 {
+  using namespace utility::cell_params_enum;
+
 	myVolume = std::fabs(
-		dot(myOrthoMtx.col(0),
-		cross(myOrthoMtx.col(1), myOrthoMtx.col(2))));
+		dot(myOrthoMtx.col(A),
+		cross(myOrthoMtx.col(B), myOrthoMtx.col(C))));
 }
 
 }
