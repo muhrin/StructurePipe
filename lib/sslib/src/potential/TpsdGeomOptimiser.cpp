@@ -321,7 +321,7 @@ bool TpsdGeomOptimiser::optimise(
 
 
 		if(fabs(xg) > 0.0)
-			step = fabs(xg / gg);
+      step = ::std::min(fabs(xg / gg), MAX_STEPSIZE);
 
 		// Move the particles on by a step, saving the old positions
 		deltaPos		= step * data.forces;
@@ -334,7 +334,16 @@ bool TpsdGeomOptimiser::optimise(
 		// Move on cell vectors to relax strain
 		deltaLatticeCar = step * (s - pressureMtx * latticeCar);
 		latticeCar += deltaLatticeCar;
-		unitCell.setOrthoMtx(latticeCar);
+    try
+    {
+		  unitCell.setOrthoMtx(latticeCar);
+    }
+    catch(const std::runtime_error & /*exception*/)
+    {
+      // The unit cell matrix has become singular
+      converged = false;
+      break;
+    }
 
 		// Finally re-orthogonalise the ion positions
     unitCell.fracsToCartInplace(data.pos);

@@ -22,7 +22,6 @@ class AtomSpeciesDatabase;
 class Structure;
 }
 namespace io {
-struct AdditionalData;
 class IStructureWriter;
 }
 }
@@ -42,8 +41,7 @@ public:
 	bool writeStructure(
 		const common::Structure & str,
 		const ::boost::filesystem::path & path,
-    const common::AtomSpeciesDatabase & atomSpeciesDb,
-		const AdditionalData * const data = NULL) const;
+    const common::AtomSpeciesDatabase & atomSpeciesDb) const;
 
 
 protected:

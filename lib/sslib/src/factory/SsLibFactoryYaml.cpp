@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
@@ -56,8 +57,107 @@ typedef boost::tokenizer<boost::char_separator<char> > Tok;
 const boost::char_separator<char> tokSep(" \t");
 
 SsLibFactoryYaml::SsLibFactoryYaml(common::AtomSpeciesDatabase & atomSpeciesDb):
-  myAtomSpeciesDb(atomSpeciesDb)
-{}
+myAtomSpeciesDb(atomSpeciesDb)
+{
+  // All the possible options that can go in a structure atom info node
+  myStructureAtomInfoSet.insert(kw::STRUCTURE__ATOMS__SPEC);
+  myStructureAtomInfoSet.insert(kw::STRUCTURE__ATOMS__POS);
+
+  myDefaultStructureAtomsInfoFormat.push_back(AtomsInfoEntry(kw::STRUCTURE__ATOMS__SPEC, OptionalString()));
+  myDefaultStructureAtomsInfoFormat.push_back(AtomsInfoEntry(kw::STRUCTURE__ATOMS__POS, OptionalString()));
+}
+
+common::StructurePtr
+SsLibFactoryYaml::createStructure(const YAML::Node & structureNode) const
+{
+  ::std::string sValue;
+
+  common::StructurePtr structure(new common::Structure());
+
+  // Unit cell //////////////////////////
+  if(structureNode[kw::STRUCTURE__CELL])
+  {
+    structure->setUnitCell(createUnitCell(structureNode[kw::STRUCTURE__CELL]));
+  }
+
+  // Atoms ////////////////////////////
+
+  // First get any atom defaults if they exist
+  YAML::Node atomDefaults;
+  if(structureNode[kw::STRUCTURE__ATOM_DEFAULTS])
+  {
+    atomDefaults = structureNode[kw::STRUCTURE__ATOM_DEFAULTS];
+  }
+
+  AtomsInfoFormat atomInfoFormat;
+  if(structureNode[kw::STRUCTURE__ATOM_INFO_FORMAT])
+  {
+    const YAML::Node & formatNode = structureNode[kw::STRUCTURE__ATOM_INFO_FORMAT];
+
+    parseAtomsInfoFormat(formatNode, myStructureAtomInfoSet, atomInfoFormat);
+  }
+  else
+  {
+    atomInfoFormat = myDefaultStructureAtomsInfoFormat;
+  }
+
+  if(structureNode[kw::STRUCTURE__ATOMS])
+  {
+    const YAML::Node & atomsNode = structureNode[kw::STRUCTURE__ATOMS];
+
+    if(atomsNode.IsSequence())
+    {
+      common::AtomSpeciesId::Value species;
+      ::arma::vec3 pos;
+
+      BOOST_FOREACH(const YAML::Node & atomNode, atomsNode)
+      {
+        if(atomNode.IsSequence())
+        {
+          //for(size_t i = 0; i < atomInfoFormat; ++i)
+          //{
+          //  
+          //}
+        }
+
+
+        // Get the species
+        if(!atomNode[kw::STRUCTURE__ATOMS__SPEC])
+        {
+          BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(REQUIRED_KEYWORD_MISSING) << NodeName(kw::STRUCTURE__ATOMS__SPEC));
+        }
+        const YAML::Node & type = atomNode[kw::STRUCTURE__ATOMS__SPEC];
+
+        species = myAtomSpeciesDb.getIdFromSymbol(type.as< ::std::string>());
+
+        // TODO: Get the position
+
+        structure->newAtom(species);
+      }
+    }
+    else
+    {
+      BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(MALFORMED_VALUE));
+    }
+  }
+
+  return structure;
+}
+
+common::UnitCellPtr
+SsLibFactoryYaml::createUnitCell(const YAML::Node & cellNode) const
+{
+  common::UnitCellPtr cell;
+
+  if(cellNode[kw::STRUCTURE__CELL__ABC])
+  {
+    const YAML::Node & abcNode = cellNode[kw::STRUCTURE__CELL__ABC];
+
+
+  }
+
+  return cell;
+}
 
 ssbc::UnitCellBlueprintPtr
 SsLibFactoryYaml::createRandomCellGenerator(const YAML::Node & node)
@@ -371,9 +471,9 @@ SsLibFactoryYaml::createAtomsDescription(const YAML::Node & descNode, OptionalDo
   unsigned int nAtoms = 1;
   ssc::AtomSpeciesId::Value  specId;
 
-  if(descNode[kw::STRUCTURE__ATOMS__TYPE])
+  if(descNode[kw::STRUCTURE__ATOMS__SPEC])
   {
-    sValue = descNode[kw::STRUCTURE__ATOMS__TYPE].as< ::std::string>();
+    sValue = descNode[kw::STRUCTURE__ATOMS__SPEC].as< ::std::string>();
     OptionalAtomSpeciesCount atomSpeciesCount = parseAtomTypeString(sValue);
     if(atomSpeciesCount)
     {
@@ -398,45 +498,6 @@ SsLibFactoryYaml::createAtomsDescription(const YAML::Node & descNode, OptionalDo
   return atomsDescription;
 }
 
-
-
-::sstbx::build_cell::AtomConstraintDescription *
-SsLibFactoryYaml::createAtomConstraintDescription(
-  const YAML::Node & descNode) const
-{
-  // namespace aliases
-  namespace ssbc  = ::sstbx::build_cell;
-  namespace ssc   = ::sstbx::common;
-
-  ::std::auto_ptr<ssbc::AtomConstraintDescription> constraint(NULL);
-
-  if(descNode[kw::TYPE])
-  {
-    ::std::string sValue;
-    double dValue;
-    const ::std::string type = descNode[kw::TYPE].as< ::std::string>();
-
-    //if(type == kw::STR_DESC__CONSTRAINTS__TYPE___MINSEP)
-    //{
-    //  if(descNode[kw::VALUE])
-    //  {
-    //    dValue = descNode[kw::VALUE].as<double>();
-    //    constraint.reset(new ssbc::Minsep(dValue));
-    //  }
-    //}
-    //else
-    //{
-      throw FactoryError() << ErrorType(UNRECOGNISED_KEYWORD);
-    //}
-  
-  }
-  else
-  {
-    throw FactoryError() << ErrorType(REQUIRED_KEYWORD_MISSING) << ProblemValue(kw::TYPE);
-  }
-
-  return constraint.release();
-}
 
 ssbc::StructureConstraintDescription *
 SsLibFactoryYaml::createStructureConstraintDescription(const YAML::Node & descNode) const
@@ -491,6 +552,78 @@ SsLibFactoryYaml::parseAtomTypeString(const ::std::string & atomSpecString) cons
     atomSpeciesCount.reset(type);
 
   return atomSpeciesCount;
+}
+
+void SsLibFactoryYaml::parseAtomsInfoFormat(
+  const YAML::Node & infoNode,
+  const AtomsInfoSet & allowedValues,
+  AtomsInfoFormat & formatOut) const
+{
+  if(infoNode.IsSequence())
+  {
+    BOOST_FOREACH(const YAML::Node & entryNode, infoNode)
+    {
+      formatOut.push_back(parseAtomsInfoFormatEntry(entryNode, allowedValues));
+    }
+  }
+  else
+  {
+    BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(MALFORMED_VALUE));
+  }
+}
+
+SsLibFactoryYaml::AtomsInfoEntry
+SsLibFactoryYaml::parseAtomsInfoFormatEntry(
+  const YAML::Node & entryNode,
+  const AtomsInfoSet & allowedValues) const
+{
+  AtomsInfoEntry entry;
+  ::std::string entryName;
+  ::std::string defaultValue;
+
+  if(entryNode.IsScalar())
+  {
+    entryName = ::boost::trim_copy(entryNode.as< ::std::string>());
+
+    // Check that the entry is one of the allowed values
+    if(allowedValues.find(entryName) == allowedValues.end())
+    {
+      BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(MALFORMED_VALUE));
+    }
+
+    entry.first = entryName;
+  }
+  else if(entryNode.IsMap())
+  {
+    if(entryNode.size() == 1)
+    {
+      const YAML::const_iterator it = entryNode.begin();
+
+      entryName = ::boost::trim_copy(it->first.as< ::std::string>());
+
+      // Check that the entry is one of the allowed values
+      if(allowedValues.find(entryName) == allowedValues.end())
+      {
+        BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(MALFORMED_VALUE));
+      }
+
+      defaultValue = ::boost::trim_copy(it->second.as< ::std::string>());
+
+      // Add it into the format info with no default value
+      entry.first = entryName;
+      entry.second = defaultValue;
+    }
+    else
+    {
+      BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(MALFORMED_VALUE));
+    }
+  }
+  else
+  {
+    BOOST_THROW_EXCEPTION(FactoryError() << ErrorType(MALFORMED_VALUE));
+  }
+
+  return entry;
 }
 
 }

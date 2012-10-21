@@ -18,12 +18,12 @@
 
 #include <armadillo>
 
-#include "io/AdditionalData.h"
 #include "common/Atom.h"
 #include "common/AtomSpeciesDatabase.h"
 #include "common/AtomSpeciesId.h"
 #include "common/AtomSpeciesInfo.h"
 #include "common/Structure.h"
+#include "common/StructureProperties.h"
 #include "common/Types.h"
 #include "common/UnitCell.h"
 #include "utility/BoostFilesystem.h"
@@ -38,28 +38,33 @@
 namespace sstbx {
 namespace io {
 
+namespace fs = ::boost::filesystem;
+namespace ssc = ::sstbx::common;
+namespace properties = ssc::structure_properties;
+
 void ResReaderWriter::writeStructure(
 	const ::sstbx::common::Structure & str,
 	const ::boost::filesystem::path & filepath,
-	const ::sstbx::common::AtomSpeciesDatabase & speciesDb,
-	const AdditionalData * const data) const
+	const ::sstbx::common::AtomSpeciesDatabase & speciesDb) const
 {
-	using namespace ::boost::filesystem;
   using namespace utility::cell_params_enum;
 	using ::sstbx::common::AtomSpeciesId;
 	using ::std::endl;
-	using ::boost::filesystem::ofstream;
+
+  const double * dValue;
+  const ::std::string * sValue;
+  const unsigned int * uiValue;
 
 	if(!filepath.has_filename())
 		throw "Cannot write out structure without filepath";
 
-	const path dir = filepath.parent_path();
+  const fs::path dir = filepath.parent_path();
 	if(!dir.empty() && !exists(dir))
 	{
 		create_directories(dir);
 	}
 
-	ofstream strFile;
+  fs::ofstream strFile;
 	strFile.open(filepath);
 
   const common::UnitCell * const cell = str.getUnitCell();
@@ -68,15 +73,16 @@ void ResReaderWriter::writeStructure(
 	// Start title
 	strFile << "TITL ";
 	
-	if(data && data->name)
-		strFile << *data->name;
+	if(!str.getName().empty())
+		strFile << str.getName();
 	else
 		strFile << filepath.stem();
 	
 	// Presssure
-	strFile << " ";
-	if(data && data->pressure)
-		strFile << *data->pressure;
+  strFile << " ";
+  dValue = str.getProperty(properties::general::PRESSURE_INTERNAL);
+	if(dValue)
+		strFile << *dValue;
 	else
 		strFile << "n/a";
 
@@ -89,22 +95,25 @@ void ResReaderWriter::writeStructure(
 
 	// Enthalpy
 	strFile << " ";
-	if(data && data->enthalpy)
-		strFile << *data->enthalpy;
+  dValue = str.getProperty(properties::general::ENERGY_INTERNAL);
+	if(dValue)
+		strFile << *dValue;
 	else
 		strFile << "n/a";
 
 	// Space group
 	strFile << " 0 0 (";
-	if(data && data->spaceGroup)
-		strFile << *data->spaceGroup;
+  sValue = str.getProperty(properties::general::SPACEGROUP_SYMBOL);
+	if(sValue)
+		strFile << *sValue;
 	else
 		strFile << "n/a";
 
 	// Times found
 	strFile << ") n - ";
-	if(data && data->timesFound)
-		strFile << *data->timesFound;
+  uiValue = str.getProperty(properties::searching::TIMES_FOUND);
+	if(uiValue)
+		strFile << *uiValue;
 	else
 		strFile << "n/a";
 
@@ -182,8 +191,7 @@ void ResReaderWriter::writeStructure(
 
 UniquePtr<common::Structure>::Type ResReaderWriter::readStructure(
 	const boost::filesystem::path &     filepath,
-	const sstbx::common::AtomSpeciesDatabase & speciesDb,
-	AdditionalData * const              data) const
+	const sstbx::common::AtomSpeciesDatabase & speciesDb) const
 {
   namespace utility = ::sstbx::utility;
   using sstbx::common::Atom;
@@ -232,75 +240,66 @@ UniquePtr<common::Structure>::Type ResReaderWriter::readStructure(
         else
           str->setName(utility::fs::stemString(filepath));
 
-        // Does the user want additional data?
-        if(data)
+        bool hasMore = true;
+        // Parse the rest of the tokens
+        // Pressure
+        if(hasMore && ++tokIt != toker.end())
         {
-          // First set the name
-          data->name.reset(str->getName());
-
-          bool hasMore = true;
-          // Parse the rest of the tokens
-          // Pressure
-          if(hasMore && ++tokIt != toker.end())
+          try
           {
-            try
-            {
-              data->pressure.reset(lexical_cast<double>(*tokIt));
-            }
-            catch(const bad_lexical_cast &)
-            {}
+            str->setPropertyFromString(properties::general::PRESSURE_INTERNAL, *tokIt);
           }
-          else
-            hasMore = false;
+          catch(const bad_lexical_cast &)
+          {}
+        }
+        else
+          hasMore = false;
 
-          // Volume
-          if(hasMore && ++tokIt == toker.end())
-            hasMore = false;
+        // Volume
+        if(hasMore && ++tokIt == toker.end())
+          hasMore = false;
 
-          // Free energy
-          if(hasMore && ++tokIt != toker.end())
+        // Free energy
+        if(hasMore && ++tokIt != toker.end())
+        {
+          try
           {
-            try
-            {
-              data->enthalpy.reset(lexical_cast<double>(*tokIt));
-            }
-            catch(const bad_lexical_cast &)
-            {}
+            str->setPropertyFromString(properties::general::ENERGY_INTERNAL, *tokIt);
           }
-          else 
-            hasMore = false;
+          catch(const bad_lexical_cast &)
+          {}
+        }
+        else 
+          hasMore = false;
 
-          if(hasMore && ++tokIt == toker.end())
-            hasMore = false;
-          if(hasMore && ++tokIt == toker.end())
-            hasMore = false;
+        if(hasMore && ++tokIt == toker.end())
+          hasMore = false;
+        if(hasMore && ++tokIt == toker.end())
+          hasMore = false;
 
-          // Space group
-          if(hasMore && ++tokIt != toker.end())
-            data->spaceGroup.reset(*tokIt);
-          else
-            hasMore = false;
+        // Space group
+        if(hasMore && ++tokIt != toker.end())
+          str->setProperty(properties::general::SPACEGROUP_SYMBOL, *tokIt);
+        else
+          hasMore = false;
 
-          if(hasMore && ++tokIt == toker.end())
-            hasMore = false;
-          if(hasMore && ++tokIt == toker.end())
-            hasMore = false;
+        if(hasMore && ++tokIt == toker.end())
+          hasMore = false;
+        if(hasMore && ++tokIt == toker.end())
+          hasMore = false;
 
-          // Times found
-          if(hasMore && ++tokIt != toker.end())
+        // Times found
+        if(hasMore && ++tokIt != toker.end())
+        {
+          try
           {
-            try
-            {
-              data->timesFound.reset(lexical_cast<size_t>(*tokIt));
-            }
-            catch(const bad_lexical_cast &)
-            {}
+            str->setPropertyFromString(properties::searching::TIMES_FOUND, *tokIt);
           }
-          else
-            hasMore = false;
-
-
-        } // end if(data)
+          catch(const bad_lexical_cast &)
+          {}
+        }
+        else
+          hasMore = false;
       } // end if(*tokIt == "TITL")
     } // end for
 

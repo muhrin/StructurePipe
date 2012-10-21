@@ -14,10 +14,12 @@
 namespace sstbx {
 namespace utility {
 
-struct CellParamsEnum { enum { A = 0, B, C, ALPHA, BETA, GAMMA }; };
-
 namespace cell_params_enum {
   enum { A = 0, B, C, ALPHA, BETA, GAMMA };
+}
+
+namespace cart_coords_enum {
+  enum { X = 0, Y, Z };
 }
 }
 }

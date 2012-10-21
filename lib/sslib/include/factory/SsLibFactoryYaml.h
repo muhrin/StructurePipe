@@ -68,6 +68,8 @@ public:
 
   SsLibFactoryYaml(common::AtomSpeciesDatabase & atomSpeciesDb);
 
+  common::StructurePtr                           createStructure(const YAML::Node & structureNode) const;
+  common::UnitCellPtr                            createUnitCell(const YAML::Node & cellNode) const;
   build_cell::UnitCellBlueprintPtr               createRandomCellGenerator(const YAML::Node & desc);
   build_cell::StructureDescriptionPtr            createStructureDescription(const YAML::Node & desc);
   potential::IPotential *                        createPotential(const YAML::Node & desc);
@@ -84,6 +86,10 @@ private:
   typedef ::boost::optional<AtomSpeciesCount> OptionalAtomSpeciesCount;
   typedef ::boost::optional<YAML::Node> OptionalNode;
   typedef ::boost::optional<const YAML::Node> OptionalConstNode;
+  typedef ::boost::optional< ::std::string> OptionalString;
+  typedef ::std::set< ::std::string> AtomsInfoSet;
+  typedef ::std::pair< ::std::string, OptionalString> AtomsInfoEntry;
+  typedef ::std::vector<AtomsInfoEntry> AtomsInfoFormat;
 
   template <typename T>
   struct OptionalMinMax : private ::boost::noncopyable
@@ -105,7 +111,6 @@ private:
   };
 
   build_cell::AtomsDescriptionPtr                createAtomsDescription(const YAML::Node & desc, OptionalDouble atomsRadii = OptionalDouble()) const;
-  build_cell::AtomConstraintDescription *        createAtomConstraintDescription(const YAML::Node & descNode) const;
   build_cell::StructureConstraintDescription *   createStructureConstraintDescription(const YAML::Node & descNode) const;
 
   void checkKeyword(const sslib_yaml_keywords::KwTyp & kw, const YAML::Node & node) const;
@@ -114,6 +119,11 @@ private:
 
   OptionalAtomSpeciesCount parseAtomTypeString(const ::std::string & atomSpecString) const;
 
+  // AtomsInfoFormat parsing ////////////////////
+  void parseAtomsInfoFormat(const YAML::Node & infoNode, const AtomsInfoSet & allowedValues, AtomsInfoFormat & formatOut) const;
+  AtomsInfoEntry parseAtomsInfoFormatEntry(const YAML::Node & entryNode, const AtomsInfoSet & allowedValues) const;
+  // End AtomsInfoFormat parsing ////////////////
+
   template <typename T>
   ::boost::optional<T> getNodeChildValueAs(const YAML::Node & node, const ::std::string & childName, const bool required = false) const;
 
@@ -121,6 +131,9 @@ private:
   typename OptionalMinMax<T>::Type getMinMax(const YAML::Node & parentNode, const MinMaxRequire::Value requiredFlag = MinMaxRequire::NEITHER) const;
 
   common::AtomSpeciesDatabase &   myAtomSpeciesDb;
+
+  AtomsInfoFormat myDefaultStructureAtomsInfoFormat;
+  AtomsInfoSet myStructureAtomInfoSet;
 
   ::boost::ptr_vector< ::sstbx::io::IStructureWriter>                          myStructureWriters;
   ::boost::ptr_vector< ::sstbx::potential::IGeomOptimiser>                     myOptimisers;

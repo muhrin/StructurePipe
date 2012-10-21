@@ -42,15 +42,13 @@ class StructureDescription;
 }
 }
 
-namespace spipe
-{
-namespace common
-{
+namespace spipe {
+namespace common {
 
 struct GlobalKeys
 {
   // The current parameterised potential parameters
-  static const ::sstbx::utility::Key< ::arma::vec>  POTENTIAL_PARAMS;
+  static ::sstbx::utility::Key< ::arma::vec>  POTENTIAL_PARAMS;
 
 
 };

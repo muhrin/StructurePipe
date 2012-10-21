@@ -55,14 +55,6 @@ ProcessId getProcessId();
 
 std::string generateUniqueName();
 
-void generateIoDataFromStructure(
-  const ::spipe::common::StructureData & strData,
-  sstbx::io::AdditionalData & ioData);
-
-void generateStructureDataFromIo(
-  const sstbx::io::AdditionalData & ioData,
-  spipe::common::StructureData & strData);
-
 void parseParamString(
   const std::string & str,
   double &            from,

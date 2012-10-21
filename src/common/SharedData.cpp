@@ -16,16 +16,14 @@
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe
-{
-namespace common
-{
+namespace spipe {
+namespace common {
 
 namespace ssbc = ::sstbx::build_cell;
 namespace ssc = ::sstbx::common;
 
 // Objects keys ////////////////
-const ::sstbx::utility::Key< ::arma::vec> GlobalKeys::POTENTIAL_PARAMS;
+::sstbx::utility::Key< ::arma::vec> GlobalKeys::POTENTIAL_PARAMS;
 
 const char SharedData::DIR_SUBSTRING_DELIMITER[] = "_";
 

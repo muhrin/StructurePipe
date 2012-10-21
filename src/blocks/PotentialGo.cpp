@@ -105,7 +105,7 @@ void PotentialGo::copyOptimisationResults(
   // Pressure
   const double pressure = ::arma::trace(optData.stressMtx) / 3.0;
   strData.pressure.reset(pressure);
-  strData.objectsStore.insert(common::StructureObjectKeys::PRESSURE_INTERNAL, pressure); 
+  strData.objectsStore[common::StructureObjectKeys::PRESSURE_INTERNAL] = pressure; 
 }
 
 void PotentialGo::updateTable(const ::spipe::StructureDataTyp & strData)

@@ -89,7 +89,7 @@ void PotentialParamSweep::start()
 			params(i) = myFrom(i) + (double)stepsIdx[i] * myStep(i);
 		}
 		// Store the potential parameters in global memory
-    myPipeline->getGlobalData().objectsStore.insert(::spipe::common::GlobalKeys::POTENTIAL_PARAMS, params);
+    myPipeline->getGlobalData().objectsStore[::spipe::common::GlobalKeys::POTENTIAL_PARAMS] = params;
 
     // Set a directory for this set of parameters
     sweepPipeSharedData.appendToOutputDirName(common::generateUniqueName());
@@ -117,7 +117,7 @@ void  PotentialParamSweep::in(StructureDataTyp * const data)
 
   if(result.first != ::spipe::common::DataLocation::NONE)
   {
-    data->objectsStore.insert(::spipe::common::GlobalKeys::POTENTIAL_PARAMS, *result.second);
+    data->objectsStore[::spipe::common::GlobalKeys::POTENTIAL_PARAMS] = *result.second;
   }
 
 	// Register the data with our pipeline to transfer ownership

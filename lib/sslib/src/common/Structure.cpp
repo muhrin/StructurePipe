@@ -69,6 +69,9 @@ const UnitCell * Structure::getUnitCell() const
 
 void Structure::setUnitCell(const UnitCellPtr cell)
 {
+  if(myCell.get() == cell.get())
+    return;
+
   if(myCell)
     myCell->setStructure(NULL);
 
@@ -191,16 +194,6 @@ size_t Structure::getNumAtomsOfSpecies(const AtomSpeciesId::Value species) const
 const DistanceCalculator & Structure::getDistanceCalculator() const
 {
   return myDistanceCalculator;
-}
-
-::sstbx::utility::HeterogeneousMap & Structure::getProperties()
-{
-  return myProperties;
-}
-
-const ::sstbx::utility::HeterogeneousMap & Structure::getProperties() const
-{
-  return myProperties;
 }
 
 bool Structure::makePrimitive()

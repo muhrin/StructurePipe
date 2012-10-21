@@ -50,6 +50,7 @@ set(sslib_Header_Files__common
   include/common/OrthoCellDistanceCalculator.h
   include/common/ReferenceDistanceCalculator.h
   include/common/Structure.h
+  include/common/StructureProperties.h
   include/common/Types.h
   include/common/UnitCell.h
   include/common/UniversalCrystalDistanceCalculator.h
@@ -90,7 +91,6 @@ set(sslib_Header_Files__factory
 source_group("Header Files\\factory" FILES ${sslib_Header_Files__factory})
 
 set(sslib_Header_Files__io
-  include/io/AdditionalData.h
   include/io/IStructureReader.h
   include/io/IStructureWriter.h
   include/io/ResReaderWriter.h
@@ -122,6 +122,7 @@ set(sslib_Header_Files__utility
   include/utility/FloatRange.h
   include/utility/GenericBufferedComparator.h
   include/utility/HeterogeneousMap.h
+  include/utility/HeterogeneousMapKey.h
   include/utility/IBufferedComparator.h
   include/utility/IndexRemappingView.h
   include/utility/IStructureComparator.h
