@@ -173,7 +173,7 @@ private:
 
 	double	myVolume;
 
-  friend Structure;
+  friend class Structure;
 };
 
 }
