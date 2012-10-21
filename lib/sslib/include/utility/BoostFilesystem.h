@@ -35,6 +35,8 @@ namespace fs {
 
 ::std::string stemString(const ::boost::filesystem::path & path);
 
+::std::string leafString(const ::boost::filesystem::path & path);
+
 ::boost::filesystem::path
 append(
   ::boost::filesystem::path appendTo,

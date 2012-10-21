@@ -38,7 +38,7 @@ boostfs::path make_relative(
   }
   // Now navigate down the directory branch
 #ifdef SSLIB_USE_BOOSTFS_V2
-  ret = append(ret, itrTo, a_To.end());
+  append(ret, itrTo, a_To.end());
 #else
   fs::append(ret, itrTo, a_To.end());
 #endif
@@ -54,6 +54,14 @@ boostfs::path make_relative(
 #endif
 }
 
+::std::string leafString(const ::boost::filesystem::path & path)
+{
+#ifdef SSLIB_USE_BOOSTFS_V2
+  return path.filename();
+#else
+  return path.filename().string();
+#endif
+}
 
 boostfs::path append(
   boostfs::path appendTo,

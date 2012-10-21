@@ -13,24 +13,24 @@ randomStructure:
       min:      2
       max:      4
       maxRatio: 2
-	  
+      
 structure:
 
   atomDefaults:
     spec: Na
-	radius: 10
+    radius: 10
   atomInfoFormat: [spec, pos]
   atoms:
     - info: [Na, [0 0 0]]
-	  radius: 
-	- [Cl, [0.5, 0.5, 0.5]]
+      radius: 
     - [Cl, [0.5, 0.5, 0.5]]
-	- [Cl, [0.5, 0.5, 0.5]]
-	- [Cl, [0.5, 0.5, 0.5]]
-	- [Cl, [0.5, 0.5, 0.5]]
-	- [Cl, [0.5, 0.5, 0.5]]
-	
+    - [Cl, [0.5, 0.5, 0.5]]
+    - [Cl, [0.5, 0.5, 0.5]]
+    - [Cl, [0.5, 0.5, 0.5]]
+    - [Cl, [0.5, 0.5, 0.5]]
+    - [Cl, [0.5, 0.5, 0.5]]
+    
   cell:
     abc: [2, 2, 2, 60, 120, 90]
-	
-	
+    
+    

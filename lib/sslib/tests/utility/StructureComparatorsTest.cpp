@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(StructureComparatorsTest)
   //comparators.push_back(new ssu::SortedDistanceComparatorEx());
   //comparators.push_back(new ssu::DistanceMatrixComparator());
   const size_t NUM_COMPARATORS = comparators.size();
-  const size_t MAX_STRUCTURES = 1000;
+  const size_t MAX_STRUCTURES = 10;
 
 
   ::std::vector<Result> results(NUM_COMPARATORS);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(StructureComparatorsTest)
       boost::smatch what;
 
       // Skip if no match
-      if(!boost::regex_match(ssu::fs::stemString(*it), what, resFileFilter)) continue;
+      if(!boost::regex_match(ssu::fs::leafString(*it), what, resFileFilter)) continue;
 
       // File matches, store it
       inputFiles.push_back(it->path().string());
