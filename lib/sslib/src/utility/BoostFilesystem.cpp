@@ -38,7 +38,7 @@ boostfs::path make_relative(
   }
   // Now navigate down the directory branch
 #ifdef SSLIB_USE_BOOSTFS_V2
-  ret = ::sstbx::utility::append(ret, itrTo, a_To.end());
+  ret = append(ret, itrTo, a_To.end());
 #else
   fs::append(ret, itrTo, a_To.end());
 #endif

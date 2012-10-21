@@ -10,6 +10,7 @@
 #define MAP_EX_H
 
 // INCLUDES /////////////////////////////////////////////
+#include <stdexcept>
 #include <map>
 
 namespace sstbx {
@@ -46,7 +47,7 @@ const T & MapEx<Key, T>::operator ()(const Key & key) const
 {
   const_iterator it = find(key);
 
-  if(it == end())
+  if(it == base_t::end())
   {
     throw ::std::runtime_error("Attempting to access value with key that does not exist");
   }

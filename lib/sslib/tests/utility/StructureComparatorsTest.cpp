@@ -17,7 +17,6 @@
 #include <utility/SortedDistanceComparatorEx.h>
 
 namespace fs = ::boost::filesystem;
-//namespace ssbc = ::sstbx::build_cell;
 namespace ssc = ::sstbx::common;
 namespace ssu = ::sstbx::utility;
 
