@@ -32,6 +32,34 @@ namespace ssio = ::sstbx::io;
 namespace ssc = ::sstbx::common;
 namespace ssu = ::sstbx::utility;
 
+struct Result
+{
+  Result():
+  numWrong(0),
+  max(::std::numeric_limits<double>::min()),
+  total(0.0)
+  {}
+
+  void calcStats(const double numComparisons)
+  {
+    failureRate = (double)numWrong / numComparisons;
+    mean = total / numComparisons;
+  }
+
+  void printStats()
+  {
+    ::std::cout << "Average: " << mean << ::std::endl;
+    ::std::cout << "Max: " << max << ::std::endl;
+    ::std::cout << "Failure rate: " << failureRate * 100 << "%" << ::std::endl;
+  }
+
+  size_t numWrong;
+  double failureRate;
+  double max;
+  double total;
+  double mean;
+};
+
 
 BOOST_AUTO_TEST_CASE(StructureComparatorsTest)
 {
@@ -41,33 +69,6 @@ BOOST_AUTO_TEST_CASE(StructureComparatorsTest)
   typedef ::boost::shared_ptr<ssu::IBufferedComparator> BufferedComparatorPtr;
   typedef ::std::vector<BufferedComparatorPtr> BufferedComparators;
 
-  struct Result
-  {
-    Result():
-    numWrong(0),
-    max(::std::numeric_limits<double>::min()),
-    total(0.0)
-    {}
-
-    void calcStats(const double numComparisons)
-    {
-      failureRate = (double)numWrong / numComparisons;
-      mean = total / numComparisons;
-    }
-
-    void printStats()
-    {
-      ::std::cout << "Average: " << mean << ::std::endl;
-      ::std::cout << "Max: " << max << ::std::endl;
-      ::std::cout << "Failure rate: " << failureRate * 100 << "%" << ::std::endl;
-    }
-
-    size_t numWrong;
-    double failureRate;
-    double max;
-    double total;
-    double mean;
-  };
 
   // SETTINGS ////////////////
   const fs::path referenceStructuresPath("similarStructures");
@@ -105,7 +106,7 @@ BOOST_AUTO_TEST_CASE(StructureComparatorsTest)
       boost::smatch what;
 
       // Skip if no match
-      if(!boost::regex_match(it->path().filename().string(), what, resFileFilter)) continue;
+      if(!boost::regex_match(ssu::fs::stemString(*it), what, resFileFilter)) continue;
 
       // File matches, store it
       inputFiles.push_back(it->path().string());
