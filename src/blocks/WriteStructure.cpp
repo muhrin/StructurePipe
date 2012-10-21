@@ -51,7 +51,7 @@ void WriteStructure::in(::spipe::common::StructureData & data)
   if(myWriterManager.writeStructure(*data.getStructure(), p, myPipeline->getGlobalData().getSpeciesDatabase()))
   {
     // Save the location that the file was written
-    data.objectsStore[::spipe::common::StructureObjectKeys::LAST_ABS_SAVE_PATH] = ::sstbx::utility::absolute(p);
+    data.objectsStore[::spipe::common::StructureObjectKeys::LAST_ABS_SAVE_PATH] = ::sstbx::utility::fs::absolute(p);
   }
 
 	myOutput->in(data);

@@ -1,13 +1,13 @@
 /*
- * CellParamsEnum.h
+ * IndexingEnums.h
  *
  *  Created on: Aug 17, 2011
  *      Author: Martin Uhrin
  */
 
 
-#ifndef CELL_PARAMS_ENUM_H
-#define CELL_PARAMS_ENUM_H
+#ifndef INDEXING_ENUMS_H
+#define INDEXING_ENUMS_H
 
 // INCLUDES /////////////////////////////////////////////
 
@@ -24,4 +24,4 @@ namespace cart_coords_enum {
 }
 }
 
-#endif /* CELL_PARAMS_ENUM_H */
+#endif /* INDEXING_ENUMS_H */

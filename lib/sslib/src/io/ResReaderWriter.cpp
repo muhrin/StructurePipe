@@ -27,7 +27,7 @@
 #include "common/Types.h"
 #include "common/UnitCell.h"
 #include "utility/BoostFilesystem.h"
-#include "utility/CellParamsEnum.h"
+#include "utility/IndexingEnums.h"
 
 // DEFINES /////////////////////////////////
 

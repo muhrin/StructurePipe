@@ -11,6 +11,8 @@
 // INCLUDES ///////////////////////////////////
 #include <armadillo>
 
+#include <boost/noncopyable.hpp>
+
 #include "SSLibAssert.h"
 #include "utility/StableComparison.h"
 
@@ -20,7 +22,7 @@ namespace common {
 // FORWARD DECLARES ///////////////////////////
 class Structure;
 
-class UnitCell
+class UnitCell : private ::boost::noncopyable
 {
 public:
 

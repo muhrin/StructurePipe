@@ -115,7 +115,6 @@ source_group("Header Files\\potential" FILES ${sslib_Header_Files__potential})
 
 set(sslib_Header_Files__utility
   include/utility/BoostFilesystem.h
-  include/utility/CellParamsEnum.h
   include/utility/DistanceMatrixComparator.h
   include/utility/EdgeMap.h
   include/utility/Enum.h
@@ -124,6 +123,7 @@ set(sslib_Header_Files__utility
   include/utility/HeterogeneousMap.h
   include/utility/HeterogeneousMapKey.h
   include/utility/IBufferedComparator.h
+  include/utility/IndexingEnums.h
   include/utility/IndexRemappingView.h
   include/utility/IStructureComparator.h
   include/utility/IStructureSet.h

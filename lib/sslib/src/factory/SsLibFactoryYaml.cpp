@@ -32,7 +32,7 @@
 #include "common/AtomSpeciesId.h"
 #include "factory/FactoryError.h"
 #include "io/ResReaderWriter.h"
-#include "utility/CellParamsEnum.h"
+#include "utility/IndexingEnums.h"
 #include "utility/SortedDistanceComparator.h"
 #include "utility/UniqueStructureSet.h"
 

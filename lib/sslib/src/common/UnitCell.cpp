@@ -13,7 +13,7 @@
 #include "SSLibAssert.h"
 #include "common/Constants.h"
 #include "common/Structure.h"
-#include "utility/CellParamsEnum.h"
+#include "utility/IndexingEnums.h"
 
 namespace sstbx {
 namespace common {

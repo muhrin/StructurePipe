@@ -10,7 +10,7 @@
 
 #include "common/Structure.h"
 #include "common/UnitCell.h"
-#include "utility/CellParamsEnum.h"
+#include "utility/IndexingEnums.h"
 #include "utility/StableComparison.h"
 
 #define SSLIB_ORTHO_DIST_CALC_DEBUG (SSLIB_DEBUG && 0)
