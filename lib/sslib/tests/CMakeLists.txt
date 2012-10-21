@@ -11,7 +11,7 @@ endif(Boost_USE_STATIC_LIBS)
 
 ## END CONFIGURATION SETTINGS ##########################
 
-find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem unit_test_framework)
+find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem unit_test_framework regex)
 
 # tests/analysis
 
