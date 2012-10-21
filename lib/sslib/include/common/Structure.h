@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include <armadillo>
@@ -37,7 +38,7 @@ class Structure
 {
 public:
 
-	Structure(UnitCellPtr cell = UnitCellPtr());
+	explicit Structure(UnitCellPtr cell = UnitCellPtr());
 
 	const std::string & getName() const;
 	void setName(const std::string & name);
@@ -113,6 +114,7 @@ private:
   friend class UnitCell;
 };
 
-}}
+}
+}
 
 #endif /* STRUCTURE_H */
