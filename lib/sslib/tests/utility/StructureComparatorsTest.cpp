@@ -12,12 +12,11 @@
 
 #include <common/Structure.h>
 #include <io/ResReaderWriter.h>
-#include <utility/DistaceMatrixComparator.h>
+#include <utility/DistanceMatrixComparator.h>
 #include <utility/SortedDistanceComparator.h>
 #include <utility/SortedDistanceComparatorEx.h>
 
 namespace fs = ::boost::filesystem;
-namespace ssbc = ::sstbx::build_cell;
 namespace ssc = ::sstbx::common;
 namespace ssu = ::sstbx::utility;
 
