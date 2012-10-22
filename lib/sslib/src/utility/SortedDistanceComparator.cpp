@@ -25,7 +25,7 @@ namespace sstbx {
 namespace utility {
 
 const size_t SortedDistanceComparator::MAX_CELL_MULTIPLES   = 10;
-const double SortedDistanceComparator::DEFAULT_TOLERANCE    = 5e-3;
+const double SortedDistanceComparator::DEFAULT_TOLERANCE    = 1e-4;
 
 
 SortedDistanceComparisonData::SortedDistanceComparisonData(const common::Structure & structure, const double _cutoff):
@@ -162,8 +162,8 @@ double SortedDistanceComparator::compareStructures(
     }
   }
 
-  //return sqrt(sqSum / totalCompared);
-  return max;
+  return sqrt(sqSum / totalCompared);
+  //return max;
 }
 
 bool SortedDistanceComparator::areSimilar(
