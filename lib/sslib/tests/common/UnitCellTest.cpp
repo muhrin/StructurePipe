@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(LongestDiagonal)
   double lengthSq, maxLengthSq;
   for(size_t i = 0; i < numUnitCells; ++i)
   {
-    ::boost::shared_ptr<ssc::UnitCell> cell = cellGen.generateCell();
+    ssc::UnitCellPtr cell = cellGen.generateCell();
 
     // Get the longest cell vector
     A = cell->getAVec();

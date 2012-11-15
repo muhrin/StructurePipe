@@ -21,7 +21,7 @@ namespace math {
 /**
 /* Euclid's algorithm for computing the greatest common divisor.
 /**/
-unsigned int greatestCommonDivisor(const unsigned int a, const unsigned int b)
+inline unsigned int greatestCommonDivisor(const unsigned int a, const unsigned int b)
 {
   unsigned int larger;
   unsigned int smaller;
@@ -48,7 +48,7 @@ unsigned int greatestCommonDivisor(const unsigned int a, const unsigned int b)
   return larger;
 }
 
-unsigned int leastCommonMultiple(const unsigned a, const unsigned b)
+inline unsigned int leastCommonMultiple(const unsigned a, const unsigned b)
 {
   return a / greatestCommonDivisor(a, b) * b;
 }

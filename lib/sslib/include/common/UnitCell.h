@@ -14,6 +14,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "SSLibAssert.h"
+#include "common/Types.h"
 #include "utility/StableComparison.h"
 
 namespace sstbx {
@@ -43,9 +44,11 @@ public:
   UnitCell(
     const double a, const double b, const double c,
     const double alpha, const double beta, const double gamma);
-
   explicit UnitCell(const double (&latticeParams)[6]);
   explicit UnitCell(const ::arma::mat33 & orthoMatrix);
+  UnitCell(const UnitCell & toCopy);
+
+  UnitCellPtr clone() const;
 
   const double (&getLatticeParams() const)[6];
 

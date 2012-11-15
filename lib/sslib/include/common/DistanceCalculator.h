@@ -11,22 +11,25 @@
 // INCLUDES ///////////////////////////////////
 #include "SSLib.h"
 
+#include <boost/noncopyable.hpp>
+
 #include "SSLibAssert.h"
 #include "common/Atom.h"
+#include "common/Types.h"
 
 namespace sstbx {
 namespace common {
 
 class Structure;
 
-class DistanceCalculator
+class DistanceCalculator : private ::boost::noncopyable
 {
 public:
 
   static const size_t DEFAULT_MAX_OUTPUTS;
   static const unsigned int DEFAULT_MAX_CELL_MULTIPLES;
 
-  DistanceCalculator(const Structure & structure);
+  explicit DistanceCalculator(const Structure & structure);
   virtual ~DistanceCalculator() {}
 
   virtual inline double getDistMinImg(const ::arma::vec3 & a, const ::arma::vec3 & b, const unsigned int maxCellMultiples = DEFAULT_MAX_CELL_MULTIPLES) const

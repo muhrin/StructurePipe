@@ -18,7 +18,7 @@ class UniversalCrystalDistanceCalculator : public DistanceCalculator
 {
 public:
 
-  UniversalCrystalDistanceCalculator(const Structure & structure);
+  explicit UniversalCrystalDistanceCalculator(const Structure & structure);
 
   using DistanceCalculator::getDistsBetween;
   using DistanceCalculator::getVecsBetween;

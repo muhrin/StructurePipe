@@ -66,18 +66,18 @@ size_t Atom::getIndex() const
 }
 
 Atom::Atom(const AtomSpeciesId::Value species, Structure & structure, const size_t index):
-mySpecies(species),
 myStructure(structure),
 myIndex(index),
+mySpecies(species),
 myRadius(-1.0)
 {}
 
 Atom::Atom(const Atom & toCopy, Structure & structure, const size_t index):
-mySpecies(toCopy.getSpecies()),
-myRadius(toCopy.getRadius()),
-myPosition(toCopy.getPosition()),
 myStructure(structure),
-myIndex(index)
+myIndex(index),
+mySpecies(toCopy.getSpecies()),
+myPosition(toCopy.getPosition()),
+myRadius(toCopy.getRadius())
 {}
 
 void Atom::setIndex(const size_t index)

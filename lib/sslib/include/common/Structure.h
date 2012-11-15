@@ -22,6 +22,7 @@
 #include "common/AtomSpeciesId.h"
 #include "common/DistanceCalculatorDelegator.h"
 #include "common/Types.h"
+#include "common/UnitCell.h"
 #include "utility/HeterogeneousMap.h"
 
 namespace sstbx {
@@ -39,6 +40,7 @@ class Structure
 public:
 
 	explicit Structure(UnitCellPtr cell = UnitCellPtr());
+  Structure(const Structure & toCopy);
 
 	const std::string & getName() const;
 	void setName(const std::string & name);
@@ -49,7 +51,7 @@ public:
 	const UnitCell * getUnitCell() const;
 
 	/** Set the unit cell to be used by the structure. */
-	void setUnitCell(const UnitCellPtr cell);
+	void setUnitCell(UnitCellPtr cell);
 
 	// ATOMS ///////////////////////////////////////////////
 

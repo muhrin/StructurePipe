@@ -12,6 +12,8 @@
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "common/Types.h"
+
 namespace sstbx {
 // FORWARD DECLARATIONS ///////
 namespace common {
@@ -38,7 +40,7 @@ public:
 
   virtual ~IUnitCellBlueprint() {}
 
-  virtual ::boost::shared_ptr<common::UnitCell> generateCell(const OptionalStructureInfo = OptionalStructureInfo()) const = 0;
+  virtual common::UnitCellPtr generateCell(const OptionalStructureInfo = OptionalStructureInfo()) const = 0;
 };
 
 }

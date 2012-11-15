@@ -29,8 +29,6 @@ public:
 
   DistanceCalculatorDelegator(const Structure & structure);
 
-  DistanceCalculatorDelegator(const DistanceCalculatorDelegator & toCopy);
-
   // From DistanceCalculator /////////////////////
 
   virtual inline double getDistMinImg(const ::arma::vec3 & a, const ::arma::vec3 & b, const unsigned int maxCellMultiples = DEFAULT_MAX_CELL_MULTIPLES) const
@@ -106,8 +104,6 @@ private:
       ORTHO_CELL
     };
   };
-
-  typedef ::boost::scoped_ptr<DistanceCalculator> DistanceCalculatorPtr;
 
   void updateDelegate();
 

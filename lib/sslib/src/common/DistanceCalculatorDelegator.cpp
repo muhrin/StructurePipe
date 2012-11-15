@@ -24,13 +24,6 @@ myDelegateType(CalculatorType::CLUSTER)
   // WARNING: Don't use structure here as it won't be initialised!!
 }
 
-DistanceCalculatorDelegator::DistanceCalculatorDelegator(const DistanceCalculatorDelegator & toCopy):
-DistanceCalculator(toCopy.myStructure),
-myDelegateType(CalculatorType::NONE)
-{
-  setDelegate(toCopy.myDelegateType);
-}
-
 void DistanceCalculatorDelegator::unitCellChanged()
 {
   updateDelegate();

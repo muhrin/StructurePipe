@@ -36,6 +36,20 @@ UnitCell::UnitCell(const double (&latticeParams)[6])
     latticeParams[ALPHA], latticeParams[BETA], latticeParams[GAMMA]);
 }
 
+UnitCell::UnitCell(const UnitCell & toCopy):
+myStructure(toCopy.myStructure),
+myOrthoMtx(toCopy.myOrthoMtx),
+myFracMtx(toCopy.myFracMtx),
+myVolume(toCopy.myVolume)
+{
+  memcpy(myLatticeParams, toCopy.myLatticeParams, sizeof(double) * 6);
+}
+
+UnitCellPtr UnitCell::clone() const
+{
+  return UnitCellPtr(new UnitCell(*this));
+}
+
 const double (&UnitCell::getLatticeParams() const)[6]
 {
   return myLatticeParams;

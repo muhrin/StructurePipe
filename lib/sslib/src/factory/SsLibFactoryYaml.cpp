@@ -407,7 +407,8 @@ SsLibFactoryYaml::createStructureComparator(const YAML::Node & node)
   return comparator;
 }
 
-::sstbx::utility::IStructureSet * SsLibFactoryYaml::createStructureSet(const YAML::Node & node)
+SsLibFactoryYaml::UniqueStructureSetPtr
+SsLibFactoryYaml::createStructureSet(const YAML::Node & node)
 {
   //// Make sure we have a structure set node
   //if(node.Scalar() != kw::STR_SET)
@@ -420,11 +421,10 @@ SsLibFactoryYaml::createStructureComparator(const YAML::Node & node)
 
   ssu::IStructureComparator * const comparator = createStructureComparator(node[kw::STR_COMPARATOR]);
 
-  ssu::IStructureSet * strSet = NULL;
+  UniqueStructureSetPtr strSet;
   if(comparator)
   {
-    strSet = new ssu::UniqueStructureSet(*comparator);
-    myStructureSets.push_back(strSet);
+    strSet.reset(new ssu::UniqueStructureSet(*comparator));
   }
   
   return strSet;

@@ -20,7 +20,7 @@ class ClusterDistanceCalculator : public DistanceCalculator
 {
 public:
 
-  ClusterDistanceCalculator(const Structure & structure):
+  explicit ClusterDistanceCalculator(const Structure & structure):
     DistanceCalculator(structure)
     {}
 

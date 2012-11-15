@@ -24,16 +24,15 @@ namespace common {
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 class Atom;
+class DistanceCalculator;
 class Structure;
 class UnitCell;
 
-typedef ::boost::shared_ptr<Atom> AtomPtr;
-typedef ::boost::shared_ptr<const Atom> ConstAtomPtr;
-
 typedef UniquePtr<Structure>::Type StructurePtr;
 
-typedef ::boost::shared_ptr<UnitCell> UnitCellPtr;
-typedef ::boost::shared_ptr<const UnitCell> ConstUnitCellPtr;
+typedef UniquePtr<UnitCell>::Type UnitCellPtr;
+
+typedef UniquePtr<DistanceCalculator>::Type DistanceCalculatorPtr;
 
 typedef ::boost::optional<const ::arma::mat33> OptionalConstMat33;
 

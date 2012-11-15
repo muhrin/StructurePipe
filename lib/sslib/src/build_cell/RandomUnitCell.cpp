@@ -92,6 +92,8 @@ void RandomUnitCell::setMax(const size_t param, const OptionalDouble max)
 
 void RandomUnitCell::setMinLengths(const OptionalDouble length)
 {
+  using namespace utility::cell_params_enum;
+
   for(size_t i = A; i <= C; ++i)
   {
     myParameters[i].first = length;
@@ -100,6 +102,8 @@ void RandomUnitCell::setMinLengths(const OptionalDouble length)
 
 void RandomUnitCell::setMaxLengths(const OptionalDouble length)
 {
+  using namespace utility::cell_params_enum;
+
   for(size_t i = A; i <= C; ++i)
   {
     myParameters[i].second = length;
@@ -108,6 +112,8 @@ void RandomUnitCell::setMaxLengths(const OptionalDouble length)
 
 void RandomUnitCell::setMinAngles(const OptionalDouble angle)
 {
+  using namespace utility::cell_params_enum;
+
   for(size_t i = ALPHA; i <= GAMMA; ++i)
   {
     myParameters[i].first = angle;
@@ -116,6 +122,8 @@ void RandomUnitCell::setMinAngles(const OptionalDouble angle)
 
 void RandomUnitCell::setMaxAngles(const OptionalDouble angle)
 {
+  using namespace utility::cell_params_enum;
+  
   for(size_t i = ALPHA; i <= GAMMA; ++i)
   {
     myParameters[i].second = angle;
@@ -152,8 +160,10 @@ RandomUnitCell::ParamValue RandomUnitCell::getMaxLengthRatio() const
     return ParamValue(DEFAULT_MAX_LENGTH_RATIO, false);
 }
 
-::boost::shared_ptr<common::UnitCell> RandomUnitCell::generateCell(const RandomUnitCell::OptionalStructureInfo structureInfo) const
+common::UnitCellPtr RandomUnitCell::generateCell(const RandomUnitCell::OptionalStructureInfo structureInfo) const
 {
+  using namespace utility::cell_params_enum;
+
   double params[6];
 
   size_t i;
@@ -181,7 +191,7 @@ RandomUnitCell::ParamValue RandomUnitCell::getMaxLengthRatio() const
 
   // TODO: Deal with possible runtime exception as a result of
   // ortho matrix being singular
-  ::boost::shared_ptr<common::UnitCell> cell(new common::UnitCell(params));
+  common::UnitCellPtr cell(new common::UnitCell(params));
 
   if(!myTargetVolume && structureInfo)
   {
@@ -217,6 +227,8 @@ double RandomUnitCell::generateParameter(const size_t param) const
 
 void RandomUnitCell::generateLengths(double (&params)[6]) const
 {
+  using namespace utility::cell_params_enum;
+
   const size_t maxIters = 10;
 
   // Generate the lengths
@@ -303,6 +315,8 @@ double RandomUnitCell::generateVolume(const double overrideVolume) const
 
 RandomUnitCell::MinMaxIndex RandomUnitCell::getMinMaxLengths(const double (&params)[6]) const
 {
+  using namespace utility::cell_params_enum;
+
   MinMaxIndex minMax;
   if(params[A] > params[B])
   {
@@ -325,6 +339,8 @@ RandomUnitCell::MinMaxIndex RandomUnitCell::getMinMaxLengths(const double (&para
 
 bool RandomUnitCell::areParametersValid(const double (&params)[6]) const
 {
+  using namespace utility::cell_params_enum;
+
   const double anglesSum = params[ALPHA] + params[BETA] + params[GAMMA];
 
   if(anglesSum >= 360.0) return false;

@@ -13,6 +13,7 @@
 #include <boost/optional.hpp>
 
 #include "build_cell/IUnitCellBlueprint.h"
+#include "utility/IndexingEnums.h"
 
 // FORWARD DECLARATIONS ///////
 
@@ -56,7 +57,7 @@ public:
 
 
   // From IUnitCellBlueprint ////
-  virtual ::boost::shared_ptr<common::UnitCell> generateCell(const OptionalStructureInfo structureInfo = OptionalStructureInfo()) const;
+  virtual common::UnitCellPtr generateCell(const OptionalStructureInfo structureInfo = OptionalStructureInfo()) const;
   // End from IUnitCellBlueprint //////
 
 private:
@@ -64,9 +65,7 @@ private:
   typedef ::std::pair<OptionalDouble, OptionalDouble> MinMax;
   typedef ::std::pair<size_t, size_t> MinMaxIndex;
 
-  enum Param {A, B, C, ALPHA, BETA, GAMMA};
-
-  inline bool isLength(const size_t param) const { return param <= C; }
+  inline bool isLength(const size_t param) const { return param <= utility::cell_params_enum::C; }
 
   double generateParameter(const size_t param) const;
 

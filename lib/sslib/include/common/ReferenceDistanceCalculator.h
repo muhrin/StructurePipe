@@ -18,7 +18,7 @@ class ReferenceDistanceCalculator : public DistanceCalculator
 {
 public:
 
-  ReferenceDistanceCalculator(const Structure & structure);
+  explicit ReferenceDistanceCalculator(const Structure & structure);
 
   using DistanceCalculator::getDistsBetween;
   using DistanceCalculator::getVecsBetween;
@@ -44,7 +44,6 @@ public:
   virtual bool isValid() const;
 
   virtual void unitCellChanged() {}
-
 
 private:
 

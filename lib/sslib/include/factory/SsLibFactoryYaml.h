@@ -36,7 +36,6 @@
 #include "potential/SimplePairPotential.h"
 #include "potential/TpsdGeomOptimiser.h"
 #include "utility/IStructureComparator.h"
-#include "utility/IStructureSet.h"
 
 
 
@@ -49,12 +48,17 @@ class AtomsDescription;
 namespace common {
 class AtomSpeciesDatabase;
 }
+namespace utility {
+class UniqueStructureSet;
+}
 
 namespace factory {
 
 class SsLibFactoryYaml : ::boost::noncopyable
 {
 public:
+
+  typedef UniquePtr<utility::UniqueStructureSet>::Type UniqueStructureSetPtr;
 
   enum ErrorCode
   {
@@ -75,7 +79,7 @@ public:
   potential::IPotential *                        createPotential(const YAML::Node & desc);
   potential::IGeomOptimiser *                    createGeometryOptimiser(const YAML::Node & desc);
   utility::IStructureComparator *                createStructureComparator(const YAML::Node & node);
-  utility::IStructureSet *                       createStructureSet(const YAML::Node & desc);
+  UniqueStructureSetPtr                          createStructureSet(const YAML::Node & desc);
   io::IStructureWriter *                         createStructureWriter(const YAML::Node & node);
 
 
@@ -139,7 +143,6 @@ private:
   ::boost::ptr_vector< ::sstbx::potential::IGeomOptimiser>                     myOptimisers;
   ::boost::ptr_vector< ::sstbx::potential::IPotential>                         myPotentials;
   ::boost::ptr_vector< ::sstbx::utility::IStructureComparator >                myStructureComparators;
-  ::boost::ptr_vector< ::sstbx::utility::IStructureSet>                        myStructureSets;
   ::boost::ptr_vector< ::sstbx::build_cell::StructureDescription>              myStructureDescriptions;
 
 

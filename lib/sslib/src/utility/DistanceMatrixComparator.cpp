@@ -200,7 +200,7 @@ double DistanceMatrixComparator::compareStructuresFull(
 
   const size_t numAtoms1 = str1Data.distancesMtx.n_cols;
   const size_t numAtoms2 = str2Data.distancesMtx.n_cols;
-  const unsigned int leastCommonMultiple = utility::math::leastCommonMultiple(numAtoms1, numAtoms2);
+  const unsigned int leastCommonMultiple = math::leastCommonMultiple(numAtoms1, numAtoms2);
 
   ::std::vector<size_t> indices(leastCommonMultiple);
   for(size_t i = 0; i < leastCommonMultiple; ++i)

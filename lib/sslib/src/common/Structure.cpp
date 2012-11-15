@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include <boost/foreach.hpp>
+
 extern "C"
 {
 #  include <spglib/spglib.h>
@@ -47,6 +49,23 @@ myNumAtoms(0),
 myDistanceCalculator(*this)
 {}
 
+Structure::Structure(const Structure & toCopy):
+myName(toCopy.myName),
+myNumAtoms(toCopy.myNumAtoms),
+myTypedProperties(toCopy.myTypedProperties),
+myDistanceCalculator(*this)
+{
+  // Copy over the unit cell (if exists)
+  if(toCopy.myCell.get())
+    myCell = toCopy.myCell->clone();
+
+  // Copy over the atoms
+  BOOST_FOREACH(const Atom & atom, toCopy.myAtoms)
+  {
+    newAtom(atom);
+  }
+}
+
 const std::string & Structure::getName() const
 {
 	return myName;
@@ -67,12 +86,12 @@ const UnitCell * Structure::getUnitCell() const
 	return myCell.get();
 }
 
-void Structure::setUnitCell(const UnitCellPtr cell)
+void Structure::setUnitCell(UnitCellPtr cell)
 {
   if(myCell.get() == cell.get())
     return;
 
-  if(myCell)
+  if(myCell.get())
     myCell->setStructure(NULL);
 
 	myCell = cell;
@@ -108,9 +127,7 @@ Atom & Structure::newAtom(const AtomSpeciesId::Value species)
 
 Atom & Structure::newAtom(const Atom & toCopy)
 {
-  Atom * const atom = new Atom(toCopy, *this, ++myNumAtoms);
-  myAtoms.push_back(atom);
-  return *atom;
+  return *myAtoms.insert(myAtoms.end(), new Atom(toCopy, *this, ++myNumAtoms));
 }
 
 bool Structure::removeAtom(const Atom & atom)
@@ -198,7 +215,7 @@ const DistanceCalculator & Structure::getDistanceCalculator() const
 
 bool Structure::makePrimitive()
 {
-  if(myNumAtoms > 0 && myCell)
+  if(myNumAtoms > 0 && myCell.get())
   {
     double lattice[3][3];
     const::arma::mat33 & orthoMtx = myCell->getOrthoMtx();
@@ -260,7 +277,7 @@ bool Structure::makePrimitive()
         pos << positions[i][0] << ::arma::endr
           << positions[i][1] << ::arma::endr
           << positions[i][2] << ::arma::endr;
-        atom->setPosition(pos);
+        atom->setPosition(myCell->wrapVecInplace(pos));
       }
 
       return true;
@@ -274,7 +291,7 @@ UniquePtr<Structure>::Type Structure::getPrimitiveCopy() const
 {
   UniquePtr<Structure>::Type structure;
 
-  if(myNumAtoms > 0 && myCell)
+  if(myNumAtoms > 0 && myCell.get())
   {
     // Get the lattice
     double lattice[3][3];
@@ -329,6 +346,7 @@ UniquePtr<Structure>::Type Structure::getPrimitiveCopy() const
       }
 
       structure->setUnitCell(UnitCellPtr(new UnitCell(newLattice)));
+      const UnitCell * const unitCell = structure->getUnitCell();
 
       Atom * atom;
       ::arma::vec3 pos;
@@ -338,7 +356,7 @@ UniquePtr<Structure>::Type Structure::getPrimitiveCopy() const
         pos << positions[i][0] << ::arma::endr
           << positions[i][1] << ::arma::endr
           << positions[i][2] << ::arma::endr;
-        atom->setPosition(pos);
+        atom->setPosition(unitCell->fracToCartInplace(unitCell->wrapVecFracInplace(pos)));
       }
 
     }

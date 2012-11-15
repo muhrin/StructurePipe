@@ -16,24 +16,22 @@
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
-namespace sstbx
-{
-	namespace common
-	{
-		class Structure;
-	}
-	namespace utility
-	{
-		class IStructureSet;
-	}
+namespace sstbx {
+namespace common {
+class Structure;
+}
+namespace utility {
+class UniqueStructureSet;
+}
 }
 
-namespace spipe { namespace blocks {
+namespace spipe {
+namespace blocks {
 
 class RemoveDuplicates : public pipelib::AbstractSimpleBlock<StructureDataTyp, SharedDataTyp>
 {
 public:
-	RemoveDuplicates(sstbx::utility::IStructureSet & structureSet);
+	RemoveDuplicates(sstbx::utility::UniqueStructureSet & structureSet);
 
 	virtual void in(::spipe::common::StructureData & data);
 
@@ -47,7 +45,7 @@ private:
 		::sstbx::common::Structure *,
 		::spipe::common::StructureData *> StructureDataMap;
 
-	sstbx::utility::IStructureSet & myStructureSet;
+	sstbx::utility::UniqueStructureSet & myStructureSet;
 
 	StructureDataMap	myStructureDataMap;
 

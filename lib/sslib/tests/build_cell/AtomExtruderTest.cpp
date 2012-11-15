@@ -55,12 +55,11 @@ BOOST_AUTO_TEST_CASE(ExtrusionTest)
     // Make the volume somewhat bigger than the space filled by the atoms
     randomCell.setTargetVolume(2.0 * numAtoms * 4.0 / 3.0 * ssc::Constants::PI /* times r^3, but r=1 */);
 
-    const ssc::UnitCellPtr cell = randomCell.generateCell();
-    structure.setUnitCell(cell);
-    // WARNING: Can't use cell after this as ownership has been given to structure!
+    structure.setUnitCell(randomCell.generateCell());
+    const ssc::UnitCell * const cell = structure.getUnitCell();
 
     // Check that the volume is not NaN
-    volume = structure.getUnitCell()->getVolume();
+    volume = cell->getVolume();
     BOOST_CHECK(volume == volume);
 
     for(size_t j = 0; j < numAtoms; ++j)

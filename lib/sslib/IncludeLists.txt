@@ -126,7 +126,6 @@ set(sslib_Header_Files__utility
   include/utility/IndexingEnums.h
   include/utility/IndexRemappingView.h
   include/utility/IStructureComparator.h
-  include/utility/IStructureSet.h
   include/utility/MapEx.h
   include/utility/Math.h
   include/utility/MetaProgramming.h
@@ -139,6 +138,7 @@ set(sslib_Header_Files__utility
   include/utility/SortedDistanceComparator.h
   include/utility/SortedDistanceComparatorEx.h
   include/utility/StableComparison.h
+  include/utility/TransformFunctions.h
   include/utility/UniqueStructureSet.h
 )
 source_group("Header Files\\utility" FILES ${sslib_Header_Files__utility})

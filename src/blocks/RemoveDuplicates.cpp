@@ -14,7 +14,7 @@
 
 // From SSTbx
 #include <common/Structure.h>
-#include <utility/IStructureSet.h>
+#include <utility/UniqueStructureSet.h>
 
 // From PipelineLib
 #include <pipelib/IPipeline.h>
@@ -26,22 +26,25 @@
 // NAMESPACES ////////////////////////////////
 
 
-namespace spipe { namespace blocks {
+namespace spipe {
+namespace blocks {
 
-RemoveDuplicates::RemoveDuplicates(sstbx::utility::IStructureSet & structureSet):
+namespace ssu = ::sstbx::utility;
+
+RemoveDuplicates::RemoveDuplicates(ssu::UniqueStructureSet & structureSet):
 pipelib::Block<StructureDataTyp, SharedDataTyp>("Remove duplicates"),
 myStructureSet(structureSet)
 {}
 
 void RemoveDuplicates::in(::spipe::common::StructureData & data)
 {
-	const std::pair<sstbx::common::Structure *, bool> result = myStructureSet.insert(data.getStructure());
+  const std::pair<ssu::UniqueStructureSet::iterator, bool> result = myStructureSet.insert(data.getStructure());
 
 	if(result.second)
 	{
 		// Flag the data to say that we will want to use it again
 		myPipeline->flagData(*this, data);
-    myStructureDataMap.insert(StructureDataMap::value_type(result.first, &data));
+    myStructureDataMap.insert(StructureDataMap::value_type(*result.first, &data));
 		data.timesFound.reset(1);
 
 		myOutput->in(data);
@@ -52,7 +55,7 @@ void RemoveDuplicates::in(::spipe::common::StructureData & data)
 		myPipeline->dropData(data);
 
 		// Up the 'times found' counter on the original structure
-		StructureDataMap::iterator it = myStructureDataMap.find(result.first);
+		StructureDataMap::iterator it = myStructureDataMap.find(*result.first);
 		
 		if(it == myStructureDataMap.end())
 		{
