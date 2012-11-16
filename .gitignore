@@ -1,0 +1,8 @@
+# Ignore the build directory completely
+build/
+*.sln
+*.vcproj
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+lib/
