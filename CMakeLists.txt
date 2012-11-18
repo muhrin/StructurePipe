@@ -78,6 +78,6 @@ include_directories(
   ${SPIPE_INCLUDE_DIRS}
 )
 
-add_subdirectory(src ${CMAKE_BINARY_DIR}/bin)
+add_subdirectory(src ${CMAKE_BINARY_DIR}/spipe)
 
 set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")
