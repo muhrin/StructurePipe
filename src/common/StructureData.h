@@ -22,6 +22,8 @@
 #include <utility/BoostFilesystem.h>
 #include <utility/HeterogeneousMap.h>
 
+#include "PipeLibTypes.h"
+
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx {
 namespace common {
@@ -53,7 +55,7 @@ public:
   /* Get the path to where this structure was last saved relative to the output path
   /* of a given structure pipe.
   /**/
-  ::boost::filesystem::path getRelativeSavePath(const ::spipe::SpPipelineTyp & pipeline) const;
+  ::boost::filesystem::path getRelativeSavePath(const SpRunnerAccess & runner) const;
 
 	::boost::optional<double>				enthalpy;
 	::boost::optional<std::string>		name;

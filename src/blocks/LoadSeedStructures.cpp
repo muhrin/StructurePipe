@@ -17,9 +17,6 @@
 #include <common/Structure.h>
 #include <io/IoFunctions.h>
 
-// From PipelineLib
-#include <pipelib/IPipeline.h>
-
 // Local includes
 #include "common/SharedData.h"
 #include "common/StructureData.h"
@@ -39,7 +36,7 @@ namespace ssio = ::sstbx::io;
 LoadSeedStructures::LoadSeedStructures(
   const ssc::AtomSpeciesDatabase & atomSpeciesDb,
   const ::std::string & seedStructures):
-::pipelib::Block<spipe::StructureDataTyp, spipe::SharedDataTyp>("Load seed structures"),
+::pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>("Load seed structures"),
 mySpeciesDb(atomSpeciesDb)
 {
   // First of all split the string up
@@ -56,7 +53,7 @@ void LoadSeedStructures::start()
 
   BOOST_FOREACH(const ssc::Structure & str, myStructures)
   {
-    StructureData & data = myPipeline->newData();
+    StructureData & data = getRunner()->createData();
     // Make a clone of our structure
     ssc::Structure & structure = data.setStructure(str.clone());
     
@@ -66,7 +63,7 @@ void LoadSeedStructures::start()
     data.name.reset(structure.getName());
 
     // Send it on its way
-    myOutput->in(data);
+    out(data);
   }
 }
 

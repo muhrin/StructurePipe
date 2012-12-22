@@ -16,9 +16,6 @@
 #include <common/Structure.h>
 #include <utility/UniqueStructureSet.h>
 
-// From PipelineLib
-#include <pipelib/IPipeline.h>
-
 #include <boost/foreach.hpp>
 
 #include <map>
@@ -32,7 +29,7 @@ namespace blocks {
 namespace ssu = ::sstbx::utility;
 
 RemoveDuplicates::RemoveDuplicates(ssu::UniqueStructureSet & structureSet):
-pipelib::Block<StructureDataTyp, SharedDataTyp>("Remove duplicates"),
+pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>("Remove duplicates"),
 myStructureSet(structureSet)
 {}
 
@@ -43,34 +40,24 @@ void RemoveDuplicates::in(::spipe::common::StructureData & data)
 	if(result.second)
 	{
 		// Flag the data to say that we will want to use it again
-		myPipeline->flagData(*this, data);
-    myStructureDataMap.insert(StructureDataMap::value_type(*result.first, &data));
+    myStructureDataHandles.push_back(getRunner()->createDataHandle(data));
 		data.timesFound.reset(1);
 
-		myOutput->in(data);
+		out(data);
 	}
 	else
 	{
 		// The structure is not unique so discard it
-		myPipeline->dropData(data);
+		getRunner()->dropData(data);
 
 		// Up the 'times found' counter on the original structure
-		StructureDataMap::iterator it = myStructureDataMap.find(*result.first);
-		
-		if(it == myStructureDataMap.end())
-		{
-			PASSERT(true);
-		}
+    // TODO: FINISH!
 
-		::spipe::common::StructureData & origStrData = *it->second;
-		if(origStrData.timesFound)
-		{
-			origStrData.timesFound.reset(*origStrData.timesFound + 1);
-		}
-		else
-		{
-			origStrData.timesFound.reset(1);
-		}
+		//::spipe::common::StructureData & origStrData = *it->second;
+		//if(origStrData.timesFound)
+		//	origStrData.timesFound.reset(*origStrData.timesFound + 1);
+		//else
+		//	origStrData.timesFound.reset(1);
 
 
 	}
@@ -79,12 +66,13 @@ void RemoveDuplicates::in(::spipe::common::StructureData & data)
 void RemoveDuplicates::pipelineFinishing()
 {
 	// Make sure we clean up any data we are holding on to
-  BOOST_FOREACH(const StructureDataMap::value_type & pair, myStructureDataMap)
+  BOOST_FOREACH(const StructureDataHandle & handle, myStructureDataHandles)
 	{
-		myPipeline->unflagData(*this, *pair.second);
+		getRunner()->releaseDataHandle(handle);
 	}
-	myStructureDataMap.clear();
+	myStructureDataHandles.clear();
 	myStructureSet.clear();
 }
 
-}}
+}
+}

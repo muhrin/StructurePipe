@@ -8,7 +8,7 @@
 // INCLUDES //////////////////////////////////
 #include "common/StructureData.h"
 
-#include <pipelib/IPipeline.h>
+#include <pipelib/pipelib.h>
 
 // Local includes
 #include "common/SharedData.h"
@@ -45,7 +45,7 @@ ssc::Structure & StructureData::setStructure(sstbx::UniquePtr<ssc::Structure>::T
 }
 
 ::boost::filesystem::path
-StructureData::getRelativeSavePath(const ::spipe::SpPipelineTyp & pipeline) const
+StructureData::getRelativeSavePath(const SpRunnerAccess & runner) const
 {
   fs::path relativePath;
 
@@ -56,7 +56,7 @@ StructureData::getRelativeSavePath(const ::spipe::SpPipelineTyp & pipeline) cons
     relativePath = *lastSaved;
     if(ssu::fs::isAbsolute(relativePath))
     {
-      relativePath = ssu::fs::make_relative(pipeline.getSharedData().getOutputPath(), relativePath);
+      relativePath = ssu::fs::make_relative(runner.memory().shared().getOutputPath(runner), relativePath);
     }
   }
 

@@ -22,8 +22,9 @@
 #include <common/Types.h>
 #include <io/ResReaderWriter.h>
 
-// From PipelineLib
-#include <pipelib/AbstractSimpleStartBlock.h>
+#include <pipelib/pipelib.h>
+
+#include "PipeLibTypes.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 namespace sstbx {
@@ -36,7 +37,7 @@ class Structure;
 namespace spipe {
 namespace blocks {
 
-class LoadSeedStructures : public pipelib::AbstractSimpleStartBlock<StructureDataTyp, SharedDataTyp>
+class LoadSeedStructures : public pipelib::StartBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>
 {
 public:
 
