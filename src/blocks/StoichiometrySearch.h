@@ -58,15 +58,8 @@ struct SpeciesParameter
   size_t                                maxNum;
 };
 
-class StoichiometrySearch :
-  public ::pipelib::StartBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>,
-  public pipelib::FinishedSink<StructureDataTyp>
+class StoichiometrySearch : public SpStartBlock, public SpFinishedSink
 {
-  typedef ::pipelib::StartBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp> StartBlockType;
-  typedef Block<StructureDataTyp, SharedDataTyp, SharedDataTyp> BlockType;
-  typedef BlockType::RunnerSetupType RunnerSetupType;
-  typedef RunnerSetupType::ChildRunnerPtr SubpipeRunnerPtr;
-  typedef FinishedSink<StructureDataTyp>::PipelineDataPtr StructureDataPtr;
 public:
   typedef ::std::vector<SpeciesParameter> SpeciesParamters;
 
@@ -74,13 +67,13 @@ public:
     const ::sstbx::common::AtomSpeciesId::Value  species1,
     const ::sstbx::common::AtomSpeciesId::Value  species2,
     const size_t          maxAtoms,
-    StartBlockType &      subpipe);
+    SpStartBlock &        subpipe);
 
   StoichiometrySearch(
     const SpeciesParamters & speciesParameters,
     const size_t       maxAtoms,
     const double       atomsRadius,
-    StartBlockType &   sweepPipe);
+    SpStartBlock &     subpipe);
 
   // From Block ////////
   virtual void pipelineInitialising();
@@ -92,7 +85,7 @@ public:
   // End from StartBlock ///
 
   // From IDataSink /////////////////////////////
-  virtual void finished(StructureDataPtr data);
+  virtual void finished(SpStructureDataPtr data);
   // End from IDataSink /////////////////////////
 
 private:
@@ -118,7 +111,9 @@ private:
     const ::sstbx::common::AtomSpeciesDatabase & atomsDb
   );
 
-  StartBlockType &                      mySubpipe;
+  SpStartBlock &  mySubpipe;
+  SpChildRunnerPtr mySubpipeRunner;
+
 
   // Use this to write out our table data
   ::spipe::utility::DataTableSupport    myTableSupport;
@@ -129,7 +124,6 @@ private:
 	::std::vector<StructureDataTyp *>		  myBuffer;
 
   SpeciesParamters                      mySpeciesParameters;
-  SubpipeRunnerPtr                      mySubpipeRunner;
 };
 
 }

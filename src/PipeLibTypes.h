@@ -25,14 +25,15 @@ namespace spipe {
 
 // TYPEDEFS ///////////////////////
 
-typedef common::StructureData			                                            StructureDataTyp;
-typedef common::SharedData					                                          SharedDataTyp;
+typedef common::StructureData StructureDataTyp;
+typedef common::SharedData SharedDataTyp;
 
 // Pipe blocks
 typedef pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>        SpBlock;
 typedef pipelib::FinishedSink<StructureDataTyp>                               SpFinishedSink;
 typedef SpFinishedSink::PipelineDataPtr                                       SpStructureDataPtr;
 typedef pipelib::PipeBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>    SpPipeBlockTyp;
+typedef pipelib::StartBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>   SpStartBlock;
 
 // Pipe engine and runner
 typedef pipelib::PipeRunner<StructureDataTyp, SharedDataTyp, SharedDataTyp>   SpRunner;

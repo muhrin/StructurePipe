@@ -45,8 +45,8 @@ StoichiometrySearch::StoichiometrySearch(
   const ::sstbx::common::AtomSpeciesId::Value  species1,
   const ::sstbx::common::AtomSpeciesId::Value  species2,
   const size_t maxAtoms,
-  StartBlockType & subpipe):
-pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>("Sweep stoichiometry"),
+  SpStartBlock & subpipe):
+SpBlock("Sweep stoichiometry"),
 myMaxAtoms(maxAtoms),
 mySubpipe(subpipe)
 {
@@ -58,7 +58,7 @@ StoichiometrySearch::StoichiometrySearch(
   const SpeciesParamters & speciesParameters,
   const size_t       maxAtoms,
   const double       atomsRadius,
-  StartBlockType &   sweepPipe):
+  SpStartBlock &   sweepPipe):
 pipelib::Block<StructureDataTyp, SharedDataTyp, SharedDataTyp>("Sweep stoichiometry"),
 mySpeciesParameters(speciesParameters),
 myMaxAtoms(maxAtoms),
@@ -141,7 +141,7 @@ void StoichiometrySearch::start()
     sweepPipeOutputPath = sweepPipeData.getPipeRelativeOutputPath().string();
 
     // Start the sweep pipeline
-    mySubpipe.start();
+    mySubpipeRunner->run();
 
     // Update the table
     updateTable(sweepPipeOutputPath, currentIdx, atomsDb);
@@ -153,11 +153,11 @@ void StoichiometrySearch::start()
   } // End loop over stoichiometries
 }
 
-void StoichiometrySearch::finished(StructureDataPtr data)
+void StoichiometrySearch::finished(SpStructureDataPtr data)
 {
-	// Register the data with our pipeline to transfer ownership
-	// and save it in the buffer for sending down the pipe
-	myBuffer.push_back(&getRunner()->registerData(data));
+  // Register the data with our pipeline to transfer ownership
+  // and save it in the buffer for sending down the pipe
+  myBuffer.push_back(&getRunner()->registerData(data));
 }
 
 void StoichiometrySearch::releaseBufferedStructures(
@@ -205,7 +205,7 @@ void StoichiometrySearch::releaseBufferedStructures(
 void StoichiometrySearch::runnerAttached(RunnerSetupType & setup)
 {
   mySubpipeRunner = setup.createChildRunner(mySubpipe);
-	// Set outselves to collect any finished data from the sweep pipeline
+  // Set outselves to collect any finished data from the sweep pipeline
   mySubpipeRunner->setFinishedDataSink(this);
 }
 
