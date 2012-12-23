@@ -42,57 +42,7 @@
 #include <pipelib/pipelib.h>
 
 // FORWARD DECLARES //////////////
-//namespace pipelib
-//{
-//template <
-//  typename PipelineData,
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class Block;
-//
-//template <
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class MemoryAccess;
-//
-//template <
-//  typename PipelineData,
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class PipeBlock;
-//
-//template <
-//  typename PipelineData,
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class PipeRunner;
-//
-//template <
-//  typename PipelineData,
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class RunnerSetup;
-//
-//template <
-//  typename PipelineData,
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class StartBlock;
-//
-//template <
-//  typename PipelineData,
-//  typename SharedData,
-//  typename GlobalData
-//>
-//class StartBlock;
-//
-//}
+
 
 namespace spipe {
 namespace common {

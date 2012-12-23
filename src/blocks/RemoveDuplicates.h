@@ -9,10 +9,12 @@
 #define REMOVE_DUPLICATES_H
 
 // INCLUDES /////////////////////////////////////////////
-
 #include <map>
 
 #include <pipelib/pipelib.h>
+
+#include <utility/UniqueStructureSet.h>
+#include <utility/IStructureComparator.h>
 
 #include "PipeLibTypes.h"
 
@@ -22,9 +24,6 @@ namespace sstbx {
 namespace common {
 class Structure;
 }
-namespace utility {
-class UniqueStructureSet;
-}
 }
 
 namespace spipe {
@@ -33,7 +32,7 @@ namespace blocks {
 class RemoveDuplicates : public pipelib::PipeBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>
 {
 public:
-	RemoveDuplicates(sstbx::utility::UniqueStructureSet & structureSet);
+	RemoveDuplicates(sstbx::utility::IStructureComparator & comparator);
 
 	virtual void in(::spipe::common::StructureData & data);
 
@@ -42,11 +41,9 @@ public:
   // End from Block ///////////////////
 
 private:
-	typedef ::std::vector<StructureDataHandle> StructureDataHandles;
+  typedef sstbx::utility::UniqueStructureSet<StructureDataHandle> StructureSet;
 
-	sstbx::utility::UniqueStructureSet & myStructureSet;
-
-	StructureDataHandles	myStructureDataHandles;
+	StructureSet	myStructureSet;
 };
 
 }
