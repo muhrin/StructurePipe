@@ -1,5 +1,4 @@
 
-
 cmake_minimum_required(VERSION 2.6)
 
 set(SP_VERSION_MAJOR 0)
@@ -11,10 +10,9 @@ message(STATUS "Configuring StructurePipe ${SP_VERSION}")
 
 project(StructurePipe)
 
-# Tell CMake where to find modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
-
 ## FIND PACKAGES ########################################
+
+include(cmake/utility.cmake)
 
 ## Boost ##
 # Disable auto-linking
@@ -40,6 +38,8 @@ if(NOT SPGLIB_INCLUDE_DIRS)
   find_package(Spglib REQUIRED)
 endif(NOT SPGLIB_INCLUDE_DIRS)
 
+find_package_or_install(Pipelib)
+
 ## END FIND PACKAGES ####################################
 
 ## Configuration options ###############################
@@ -59,9 +59,7 @@ configure_file (
 
 ## First libraries #####################################
 
-add_subdirectory(lib/pipelib)    # Pipeline library
 add_subdirectory(lib/sslib)      # Structure searching library
-
 
 ## Now StructurePipe ####################################
 
@@ -82,7 +80,7 @@ include_directories(
 )
 
 include_directories(
-  lib/pipelib/include
+  ${PIPELIB_INCLUDE_DIRS}
   lib/sslib/include
 )
 
