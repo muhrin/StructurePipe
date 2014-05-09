@@ -10,42 +10,43 @@
 #define BLOCK_CONNECTOR_H
 
 // INCLUDES /////////////////////////////////////////////
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_of.hpp>
-
 #include "pipelib/Pipeline.h"
+
+#include "pipelib/BlockHandle.h"
+#include "pipelib/Types.h"
 
 namespace pipelib {
 
-template <typename PipelineData, typename SharedData, typename GlobalData>
+template <typename Pipe, typename Shared, typename Global>
 class Block;
 
-template <typename PipelineData, typename SharedData, typename GlobalData>
+template <typename Pipe, typename Shared, typename Global>
 class PipeBlock;
 
-template <
-  typename PipelineData,
-  typename SharedData,
-  typename GlobalData,
-  class ConnectingType = Block<PipelineData, SharedData, GlobalData>
->
-class BlockConnector
+template < typename Pipe, typename Shared, typename Global>
+class ChannelConnector
 {
-  typedef Block<PipelineData, SharedData, GlobalData> BlockType;
-
-  BOOST_STATIC_ASSERT((::boost::is_base_of<ConnectingType, BlockType>::value));
+  typedef Block<Pipe, Shared, Global> BlockType;
+  typedef typename BlockType::HandleType BlockHandleType;
 public:
+  ChannelConnector(BlockType * const block, const Channel channel);
+  BlockHandleType operator ()(BlockHandleType to);
+protected:
+  BlockType * const myBlock;
+  const Channel myChannel;
+};
 
-  typedef PipeBlock<PipelineData, SharedData, GlobalData> PipeBlockType;
-
-  BlockConnector(ConnectingType & block, const Channel channel);
-
-  ConnectingType & operator |= (PipeBlockType & toConnect);
-
+template < typename Pipe, typename Shared, typename Global>
+class Connector
+{
+  typedef Block<Pipe, Shared, Global> BlockType;
+  typedef typename BlockType::HandleType BlockHandleType;
+public:
+  Connector(BlockType * const block);
+  BlockHandleType operator ()(BlockHandleType block);
+  ChannelConnector<Pipe, Shared, Global> operator [](const Channel channel);
 private:
-
-  ConnectingType & myBlock;
-  Channel myChannel;
+  BlockType * const myBlock;
 };
 
 }

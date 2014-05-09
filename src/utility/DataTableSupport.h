@@ -14,14 +14,13 @@
 
 #include <boost/scoped_ptr.hpp>
 
-#include <io/BoostFilesystem.h>
+#include <spl/io/BoostFilesystem.h>
 
 #include <pipelib/pipelib.h>
 
 // Local includes
-#include "PipeLibTypes.h"
+#include "SpTypes.h"
 #include "utility/DataTable.h"
-
 
 namespace spipe {
 namespace utility {
@@ -29,42 +28,48 @@ namespace utility {
 // FORWARD DECLARATIONS ////////////////////////////////////
 class DataTableWriter;
 
-class DataTableSupport : public SpRunnerListener
+class DataTableSupport : public EngineAccessListener
 {
 public:
 
   DataTableSupport(const bool clearTableOnPipeFinish = true);
 
-  DataTableSupport(
-    const ::boost::filesystem::path & filename,
-    const bool clearTableOnPipeFinish = true);
+  DataTableSupport(const ::boost::filesystem::path & filename, const bool clearTableOnPipeFinish =
+      true);
+  virtual
   ~DataTableSupport();
 
-  void registerRunner(SpRunnerAccess & runner);
-  bool deregisterRunner();
+  void
+  registerEngine(EngineAccess * const engine);
+  bool
+  deregisterEngine();
 
-  DataTable & getTable();
+  DataTable &
+  getTable();
 
-  void setFilename(const ::boost::filesystem::path & filename);
+  void
+  setFilename(const ::boost::filesystem::path & filename);
 
   // From IPipeListener /////////////////////
-  virtual void notify(const ::pipelib::event::PipeRunnerStateChanged<SpRunner> & evt);
+  virtual void
+  notify(const ::pipelib::event::PipeEngineStateChanged< EngineAccess> & evt);
+  virtual void
+  notify(const ::pipelib::event::PipeEngineDestroyed< EngineAccess> & evt);
   // End from IPipeListener /////////////////
 
 private:
+  typedef ::boost::scoped_ptr< DataTableWriter> DataTableWriterPtr;
 
-  typedef ::boost::scoped_ptr<DataTableWriter> DataTableWriterPtr;
+  bool
+  createWriter();
 
-  bool createWriter();
-
-  SpRunnerAccess *                  myRunner;
-  ::boost::filesystem::path         myFilename;
-  DataTable                         myTable;
-  DataTableWriterPtr                myWriter;
-  const bool                        myClearTableOnPipeFinish;
+  EngineAccess * myEngine;
+  ::boost::filesystem::path myFilename;
+  DataTable myTable;
+  DataTableWriterPtr myWriter;
+  const bool myClearTableOnPipeFinish;
 
 };
-
 
 }
 }

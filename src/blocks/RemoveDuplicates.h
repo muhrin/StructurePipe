@@ -9,18 +9,25 @@
 #define REMOVE_DUPLICATES_H
 
 // INCLUDES /////////////////////////////////////////////
+#include "StructurePipe.h"
+
 #include <map>
+
+#include <boost/noncopyable.hpp>
+#ifdef SP_ENABLE_THREAD_AWARE
+#  include <boost/thread/mutex.hpp>
+#endif
 
 #include <pipelib/pipelib.h>
 
-#include <utility/UniqueStructureSet.h>
-#include <utility/IStructureComparator.h>
+#include <spl/utility/UniqueStructureSet.h>
+#include <spl/utility/UtilityFwd.h>
 
-#include "PipeLibTypes.h"
+#include "SpTypes.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
-namespace sstbx {
+namespace spl {
 namespace common {
 class Structure;
 }
@@ -29,21 +36,33 @@ class Structure;
 namespace spipe {
 namespace blocks {
 
-class RemoveDuplicates : public pipelib::PipeBlock<StructureDataTyp, SharedDataTyp, SharedDataTyp>
+class RemoveDuplicates : public Barrier, ::boost::noncopyable
 {
 public:
-	RemoveDuplicates(sstbx::utility::IStructureComparator & comparator);
+  RemoveDuplicates(::spl::utility::IStructureComparatorPtr comparator);
+  RemoveDuplicates(const ::spl::utility::IStructureComparator & comparator);
 
-	virtual void in(::spipe::common::StructureData & data);
+  virtual void
+  in(common::StructureData * const data);
 
   // From Block /////////////////////////
-	virtual void pipelineFinishing();
+  virtual void
+  pipelineFinishing();
   // End from Block ///////////////////
 
-private:
-  typedef sstbx::utility::UniqueStructureSet<StructureDataHandle> StructureSet;
+  // From Barrier ////////////////////////
+  virtual size_t release();
+  virtual bool hasData() const;
+  // End from Barrier ///////////////////
 
-	StructureSet	myStructureSet;
+private:
+  typedef spl::utility::UniqueStructureSet< common::StructureData *> StructureSet;
+
+  StructureSet myStructureSet;
+
+#ifdef SP_ENABLE_THREAD_AWARE
+  ::boost::mutex myMutex;
+#endif
 };
 
 }

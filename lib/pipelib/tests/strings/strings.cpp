@@ -6,30 +6,36 @@
 #include "PrintStringBlock.h"
 #include "RandomStringBlock.h"
 
-int main()
+#include "pipelibtest.h"
+
+BOOST_AUTO_TEST_CASE(Strings)
 {
-	using namespace pipelib;
-	using std::string;
+  using namespace pipelib;
+  using std::string;
 
-	// Create the pipeline
-  NoSharedGlobal<string>::SingleThreadedEngineType engine;
+  typedef pipelib::BlockHandle< string, const void *, const void *>::Type BlockHandle;
+  typedef pipelib::SimpleBarrier< string, const void *, const void *> Barrier;
 
-	// Create the start block
-	RandomStringBlock start(10);
+  // Create the pipeline
+#ifdef PIPELIB_USE_BOOST_THREAD
+  NoSharedGlobal< string>::BoostThreadEngineType engine(4);
+#else
+  NosharedGlobal< string>::SerialEngine engine;
+#endif
 
-	// Create pipeline blocks
-	PrintStringBlock b1(1);
-	PrintStringBlock b2(2);
-  pipelib::SimpleBarrier<string, const void *, const void *> barrier;
-	PrintStringBlock b3(3);
+  // Create the start block
+  BlockHandle start(new RandomStringBlock(2));
+
+  // Create pipeline blocks
+  BlockHandle b1(new PrintStringBlock(1));
+  BlockHandle b2(new PrintStringBlock(2));
+  BlockHandle barrier(new Barrier());
+  BlockHandle b3(new PrintStringBlock(3));
 
   // Connect everything
-  start |= b1 |= b2 |= barrier |= b3;
+  start->connect(b1)->connect(b2)->connect(barrier)->connect(b3);
 
-	// Run the pipe
+  // Run the pipe
   engine.run(start);
-
-	return 0;
 }
-
 

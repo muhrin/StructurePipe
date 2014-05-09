@@ -8,45 +8,33 @@
 // INCLUDES //////////////////////////////////
 #include "utility/DataTableWriter.h"
 
+#include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>
+#include <boost/range/iterator_range.hpp>
 
-#include "utility/DataTableValueChanged.h"
+#include <spl/SSLibAssert.h>
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe
-{
-namespace utility
-{
+namespace spipe {
+namespace utility {
 
 namespace fs = ::boost::filesystem;
 
-DataTableWriter::DataTableWriter(
-  spipe::utility::DataTable & table,
-  const std::string &filename,
-  const bool        append,
-  const size_t      writeDelay):
-myTable(table),
-myAppend(append),
-myWriteDelay(writeDelay),
-myOutputPath(::boost::filesystem::path(filename)),
-myDataSinceWrite(0),
-myColumnDelimiter(" ")
+DataTableWriter::DataTableWriter(spipe::utility::DataTable & table,
+    const std::string &filename, const bool append, const size_t writeDelay) :
+    myTable(table), myOutputPath(::boost::filesystem::path(filename)), myAppend(
+        append), myColumnDelimiter(" "), myWriteDelay(writeDelay), myDataSinceWrite(
+        0)
 {
   initialise();
 }
 
-DataTableWriter::DataTableWriter(
-  DataTable &                       table,
-  const ::boost::filesystem::path & filepath,
-  const bool                        append,
-  const size_t                      writeDelay ):
-myTable(table),
-myAppend(append),
-myWriteDelay(writeDelay),
-myOutputPath(filepath),
-myDataSinceWrite(0),
-myColumnDelimiter(" ")
+DataTableWriter::DataTableWriter(DataTable & table,
+    const ::boost::filesystem::path & filepath, const bool append,
+    const size_t writeDelay) :
+    myTable(table), myOutputPath(filepath), myAppend(append), myColumnDelimiter(
+        " "), myWriteDelay(writeDelay), myDataSinceWrite(0)
 {
   initialise();
 }
@@ -54,13 +42,28 @@ myColumnDelimiter(" ")
 DataTableWriter::~DataTableWriter()
 {
   if(myOutStream.is_open())
+  {
+    myOutStream << ::std::endl;
     myOutStream.close();
+  }
 
   // Tell the table to stop sending us messages
-  myTable.removeDataTableChangeListener(*this);
+  myTable.removeDataTableChangeListener(this);
 }
 
-bool DataTableWriter::write()
+bool
+DataTableWriter::write()
+{
+  // Do we need to write the full table?
+  if(myFullWriteRequired)
+    return writeFull();
+  else
+    writeFrom(myLastWriteCoords);
+  return true;
+}
+
+bool
+DataTableWriter::writeFull()
 {
   using ::std::ios_base;
 
@@ -70,6 +73,8 @@ bool DataTableWriter::write()
   if(!myOutStream.is_open())
   {
     myOutStream.open(myOutputPath, ios_base::out | ios_base::in);
+    // Save the write marker
+    myWriteMarker = myOutStream.tellp();
   }
 
   if(myOutStream.good())
@@ -78,54 +83,70 @@ bool DataTableWriter::write()
     myOutStream.seekp(myWriteMarker);
 
     // Print the header first
-    myOutStream << "# " << "[key]";
-    BOOST_FOREACH(const DataTable::Column & colInfo, myTable.myColumns)
-    {
-      myOutStream << myColumnDelimiter << colInfo.getName();
-    }
-    myOutStream << ::std::endl;
+    myOutStream << "# "
+        << ::boost::algorithm::join(
+            ::boost::make_iterator_range(myTable.columnNamesBegin(),
+                myTable.columnNamesEnd()), myColumnDelimiter);
 
     // Now print any table notes
-    BOOST_FOREACH(const ::std::string & note, myTable.myTableNotes)
+    if(myTable.hasNotes())
     {
-      myOutStream << "# " << note << ::std::endl;
+      myOutStream << "\n# "
+          << ::boost::algorithm::join(
+              ::boost::make_iterator_range(myTable.notesBegin(),
+                  myTable.notesEnd()), "\n# ");
     }
 
-    BOOST_FOREACH(const DataTable::RowMap::value_type & rowPair, myTable.myRows)
+    for(DataTable::RowIterator it = myTable.rowsBegin(), end =
+        myTable.rowsEnd(); it != end; ++it)
     {
-      myOutStream << rowPair.first;
-      BOOST_FOREACH(const DataTable::Value & value, rowPair.second)
-      {
-        myOutStream << myColumnDelimiter << value;
-      }
-      myOutStream << ::std::endl;
+      myOutStream << "\n" << ::boost::algorithm::join(*it, myColumnDelimiter);
+      myLastWriteCoords.second = it->size();
     }
 
+    ::std::flush(myOutStream);
+
+    myLastWriteCoords.first = myTable.numRows() - 1;
+
+    myFullWriteRequired = false;
   }
   else
     return false;
 
-  if(!myOutStream.is_open())
-  {
-    myOutStream.close();
-  }
-
   return true;
 }
 
-void DataTableWriter::notify(const DataTableValueChanged & evt)
+void
+DataTableWriter::onDataTableValueChanged(const DataTable::Coords & coords,
+    const ::std::string & oldValue, const ::std::string & newValue)
 {
-  myDataSinceWrite += diff(evt.getOldValue(), evt.getNewValue());
-  
+  myDataSinceWrite += diff(oldValue, newValue);
+
+  if(!myFullWriteRequired && coords < myLastWriteCoords)
+    myFullWriteRequired = true;
+
   if(myDataSinceWrite > myWriteDelay)
-  {
     write();
-  }
 }
 
-void DataTableWriter::initialise()
+void
+DataTableWriter::onDataTableColumnChanged(const size_t index, const ::std::string & oldValue,
+    const ::std::string & newValue)
+{
+  myDataSinceWrite += diff(oldValue, newValue);
+  myFullWriteRequired = true;
+
+  if(myDataSinceWrite > myWriteDelay)
+    write();
+}
+
+void
+DataTableWriter::initialise()
 {
   using ::std::ios_base;
+
+  myLastWriteCoords = DataTable::Coords(0, 0);
+  myFullWriteRequired = true;
 
   const bool fileExists = fs::exists(myOutputPath);
 
@@ -134,29 +155,60 @@ void DataTableWriter::initialise()
   {
     const fs::path parentPath = myOutputPath.parent_path();
 
-    if(!exists(parentPath))
+    if(!parentPath.empty() && !exists(parentPath))
       fs::create_directories(parentPath);
   }
 
   ::std::ios_base::openmode openMode = ios_base::out;
-
   if(fileExists && myAppend)
-  {
-    openMode = openMode | ios_base::app | ios_base::ate;
-  }
+    openMode = openMode | ios_base::ate;
 
   // Try opening the file
   myOutStream.open(myOutputPath, openMode);
   // Save the write marker
   myWriteMarker = myOutStream.tellp();
-  // Clean up
-  myOutStream.close();
 
   // Listen for changes to the table
-  myTable.addDataTableChangeListener(*this);
+  myTable.addDataTableChangeListener(this);
 }
 
-size_t DataTableWriter::diff(const ::std::string & v1, const ::std::string & v2) const
+void
+DataTableWriter::writeFrom(const DataTable::Coords & coords)
+{
+  // Reset changes counter
+  myDataSinceWrite = 0;
+
+  DataTable::RowIterator rowIt = myTable.rowsBegin() + coords.first;
+
+  SSLIB_ASSERT(::std::distance(rowIt, myTable.rowsEnd()) >= 0);
+
+  // is there a remainder of a row to print?
+  if(myLastWriteCoords.second > 0 && myLastWriteCoords.second < rowIt->size())
+  {
+    myOutStream << myColumnDelimiter
+        << ::boost::algorithm::join(
+            ::boost::make_iterator_range(rowIt->begin() + coords.second,
+                rowIt->end()), myColumnDelimiter);
+    myLastWriteCoords.second = rowIt->size();
+  }
+
+  ++rowIt;
+  for(const DataTable::RowIterator end = myTable.rowsEnd(); rowIt != end;
+      ++rowIt)
+  {
+    myOutStream << "\n" << ::boost::algorithm::join(*rowIt, myColumnDelimiter);
+    myLastWriteCoords.second = rowIt->size();
+  }
+
+  ::std::flush(myOutStream);
+
+  myLastWriteCoords.first = myTable.numRows() - 1;
+
+  myFullWriteRequired = false;
+}
+
+size_t
+DataTableWriter::diff(const ::std::string & v1, const ::std::string & v2) const
 {
   const size_t min = ::std::min(v1.size(), v2.size());
   size_t numDifferentChars = 0;
@@ -166,7 +218,8 @@ size_t DataTableWriter::diff(const ::std::string & v1, const ::std::string & v2)
       ++numDifferentChars;
   }
 
-  numDifferentChars += ::std::abs((int)v1.size() - (int)v2.size());
+  numDifferentChars += ::std::abs(
+      static_cast< int>(v1.size()) - static_cast< int>(v2.size()));
 
   return numDifferentChars;
 }

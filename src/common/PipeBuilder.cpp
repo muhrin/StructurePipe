@@ -6,15 +6,15 @@
 // */
 //
 //// INCLUDES //////////////////////////////////
-//#include "common/PipeBuilder.h"
+//#include "spl/common/PipeBuilder.h"
 //
 //#include <boost/foreach.hpp>
 //
 //#include <pipelib/IPipeline.h>
 //
 //// Local includes
-//#include "common/StructureData.h"
-//#include "common/SharedData.h"
+//#include "spl/common/StructureData.h"
+//#include "spl/common/SharedData.h"
 //
 //#include <yaml-cpp/yaml.h>
 //
@@ -82,7 +82,7 @@
 //      {
 //        const YAML::Node & seqNode = pipeNode[kw::PIPELINE__SEQ];
 //
-//        SpBlock * prevBlock = startBlock;
+//        Block * prevBlock = startBlock;
 //
 //        // Do the first as a start block
 //        if(seqNode[0])

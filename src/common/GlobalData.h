@@ -12,6 +12,11 @@
 // INCLUDES /////////////////////////////////////////////
 #include "StructurePipe.h"
 
+#include <boost/filesystem.hpp>
+
+#include <spl/io/StructureReadWriteManager.h>
+#include <spl/utility/HeterogeneousMap.h>
+
 // FORWARD DECLARATIONS ////////////////////////////////////
 
 namespace spipe {
@@ -20,10 +25,31 @@ namespace common {
 class GlobalData
 {
 public:
+  GlobalData();
 
+  const std::string &
+  getSeedName() const;
+  void
+  setSeedName(const std::string & seedName);
 
+  spl::utility::HeterogeneousMap objectsStore;
+
+  spl::io::StructureReadWriteManager &
+  getStructureIo();
+
+  const boost::filesystem::path &
+  getWorkingDir() const;
+  void
+  setWorkingDir(const boost::filesystem::path & workingDir);
+
+private:
+  void
+  reset();
+
+  boost::filesystem::path myWorkingDir;
+  std::string mySeedName;
+  spl::io::StructureReadWriteManager myStructureIoManager;
 };
-
 
 }
 }

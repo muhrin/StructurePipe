@@ -10,12 +10,16 @@
 #define DATA_TABLE_H
 
 // INCLUDES /////////////////////////////////////////////
+#include "StructurePipe.h"
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include <pipelib/event/EventSupport.h>
+#ifdef SP_ENABLE_THREAD_AWARE
+#  include <boost/thread/mutex.hpp>
+#endif
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
@@ -26,76 +30,89 @@ class IDataTableChangeListener;
 
 class DataTable
 {
+  static const ::std::string KEY_COLUMN_NAME;
+  static const ::std::vector< ::std::string> DEFAULT_COLUMN_NAMES;
 public:
+  typedef ::std::string Key;
+  typedef ::std::string Value;
 
-  typedef ::std::string   Key;
-  typedef ::std::string   Value;
+private:
+  typedef ::std::vector< Value> Row;
+  // Maps a row key to column data
+  typedef ::std::map< Key, size_t> RowMap;
+  typedef ::std::vector< ::std::string> ColumnNames;
+  typedef ::std::map< ::std::string, size_t> ColumnMap;
+  typedef ::std::vector<Row> Rows;
+  typedef ::std::vector< ::std::string> NotesContainer;
+
+public:
+  typedef ::std::pair<size_t, size_t> Coords;
+  typedef Rows::const_iterator RowIterator;
+  typedef ColumnNames::const_iterator ColumnNameIterator;
+  typedef NotesContainer::const_iterator NotesIterator;
 
   static const int COL_UNDEFINED = -1;
 
-  class Column
-  {
-  public:
+  DataTable();
 
-    Column();
-    Column(const ::std::string & name);
-    Column(const char * const name);
-    Column(const Column & toCopy);
+  size_t numRows() const;
+  RowIterator rowsBegin() const;
+  RowIterator rowsEnd() const;
 
-    bool operator ==(const Column & rhs) const;
+  size_t numColumns() const;
+  ColumnNameIterator columnNamesBegin() const;
+  ColumnNameIterator columnNamesEnd() const;
 
+  bool hasNotes() const;
+  NotesIterator notesBegin() const;
+  NotesIterator notesEnd() const;
 
-    const ::std::string & getName() const;
+  Coords
+  insert(const Key & key, const ::std::string & colName, const Value & value);
 
-  private:
+  void
+  addTableNote(const ::std::string & note);
 
-    ::std::string myName;
+  void
+  writeToFile(const ::std::string & filename,
+      const ::std::string & colDelimiter = " ") const;
 
-    friend class DataTable;
-  };
-
-  //void insert(const Key & key, const size_t col, const Value & value);
-  size_t insert(const Key & key, const Column & col, const Value & value);
-
-  void addTableNote(const ::std::string & note);
-
-  void writeToFile(
-    const ::std::string & filename,
-    const ::std::string & colDelimiter = "\t") const;
-
-  void clear();
+  bool
+  empty() const;
+  void
+  clear();
 
   // Event //////////////////////////////////////
-  void addDataTableChangeListener(IDataTableChangeListener & listener);
-  bool removeDataTableChangeListener(IDataTableChangeListener & listener);
+  void
+  addDataTableChangeListener(IDataTableChangeListener * const listener);
+  bool
+  removeDataTableChangeListener(IDataTableChangeListener * const listener);
 
 private:
+  Value
+  insertValue(const Coords & coords, const Value & value);
+  size_t
+  row(const Key & key);
+  size_t
+  col(const ::std::string & colName);
+  Coords
+  coords(const Key & key, const ::std::string & colName);
 
-  /* Maps each column to a value*/
-  typedef ::std::vector<Value>             ColumnData;
-  /* Maps a row key to column data */
-  typedef ::std::map<Key, ColumnData>      RowMap;
+  Rows myRows;
+  RowMap myRowMap;
+  ColumnNames myColumnNames;
+  ColumnMap myColumnMap;
+  NotesContainer myTableNotes;
 
-  typedef ::std::vector<Column>            ColumnInfo;
+  ::std::set<IDataTableChangeListener *> myListeners;
 
-  typedef ::pipelib::event::EventSupport<IDataTableChangeListener> ChangeListenerSupport;
-  typedef ::std::vector< ::std::string>    NotesContainer;
-
-  void insertColumn(const Column & colInfo, const size_t col);
-  Value insertValue(const Key & key, const size_t col, const Value & value);
-
-  ::std::string         myColDelimiter;
-  ColumnInfo            myColumns;
-  RowMap                myRows;
-  NotesContainer        myTableNotes;
-
-
-  ChangeListenerSupport myChangeListenerSupport;
-
-  friend class DataTableWriter;
+#ifdef SP_ENABLE_THREAD_AWARE
+  ::boost::mutex myTableMutex;
+  ::boost::mutex myNotesMutex;
+#endif
 };
 
-
-}}
+}
+}
 
 #endif /* DATA_TABLE_H */

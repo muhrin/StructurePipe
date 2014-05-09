@@ -6,14 +6,15 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "UtilityFunctions.h"
+#include "common/UtilityFunctions.h"
 
 #include <iomanip>
 
+#include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
 
-// From SSTbx
-#include <io/IoFunctions.h>
+#include <spl/io/IoFunctions.h>
+#include <spl/utility/Armadillo.h>
 
 // From local
 #include "common/StructureData.h"
@@ -23,25 +24,7 @@
 namespace spipe {
 namespace common {
 
-namespace ssio = ::sstbx::io;
-
-ProcessId getProcessId()
-{
-	return NS_BOOST_IPC_DETAIL::get_current_process_id();
-}
-
-std::string generateUniqueName()
-{
-	// Use boost as portable way to get the process id
-	const ProcessId	processId	= getProcessId();
-	const time_t	currTime	= time(NULL);
-
-	// Build up the name
-	std::stringstream ss;	//create a stringstream
-	ss << processId << "-" << currTime;
-
-	return ss.str();
-}
+namespace ssio = ::spl::io;
 
 void parseParamString(
   const std::string & str,
@@ -114,12 +97,22 @@ void parseParamString(
   nSteps = lNSteps;
 }
 
-::std::string getString(const double in, unsigned int digitsAfterDecimal)
+::std::string toString(const double in, unsigned int digitsAfterDecimal)
 {
   int digits = ssio::getPrecision(in, digitsAfterDecimal);
   ::std::ostringstream ss;
   ss << ::std::setprecision(digits) << in;
   return ss.str();
+}
+
+::std::string
+generateParamDirName(const ::arma::vec & params, const ::std::string & seedName)
+{
+  static const ::boost::hash< ::arma::vec> VEC_HASHER = ::boost::hash< ::arma::vec>();
+
+  std::stringstream stream;
+  stream << seedName << "-" << std::hex << VEC_HASHER(params);
+  return stream.str();
 }
 
 }

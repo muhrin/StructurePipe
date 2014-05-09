@@ -6,162 +6,239 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "StructurePipe.h"
 #include "utility/DataTable.h"
 
 #include <fstream>
 
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string/join.hpp>
+#ifdef SP_ENABLE_THREAD_AWARE
+#  include <boost/thread/locks.hpp>
+#endif
+#include <boost/range/iterator_range.hpp>
 
-#include "utility/DataTableValueChanged.h"
+#include <spl/SSLibAssert.h>
+
 #include "utility/IDataTableChangeListener.h"
 
 // NAMESPACES ////////////////////////////////
 
-namespace spipe
+namespace spipe {
+namespace utility {
+
+const ::std::string DataTable::KEY_COLUMN_NAME = "[key]";
+const ::std::vector< ::std::string> DataTable::DEFAULT_COLUMN_NAMES(1,
+    DataTable::KEY_COLUMN_NAME);
+
+DataTable::DataTable() :
+    myColumnNames(DEFAULT_COLUMN_NAMES)
 {
-namespace utility
-{
-
-DataTable::Column::Column() {}
-
-DataTable::Column::Column(const ::std::string & name):
-myName(name)
-{}
-
-DataTable::Column::Column(const char * const name):
-myName(name)
-{}
-
-DataTable::Column::Column(const Column & toCopy):
-myName(toCopy.myName)
-{}
-
-bool DataTable::Column::operator ==(const Column & rhs) const
-{
-  return myName == rhs.myName;
 }
 
-const ::std::string & DataTable::Column::getName() const
+size_t
+DataTable::numRows() const
 {
-  return myName;
+  return myRows.size();
 }
 
-
-size_t DataTable::insert(
-  const DataTable::Key &    key,
-  const DataTable::Column & col,
-  const DataTable::Value &  value)
+DataTable::RowIterator
+DataTable::rowsBegin() const
 {
-  bool found = false;
-  int colNo = COL_UNDEFINED;
-  for(size_t i = 0; i < myColumns.size(); ++i)
-  {
-    if(myColumns[i] == col)
-    {
-      colNo = i;
-      break;
-    }
-  }
+  return myRows.begin();
+}
 
-  if(colNo == COL_UNDEFINED)
-  {
-    // Stick the column at the end
-    colNo = myColumns.size();
-    insertColumn(col, colNo);
-  }
+DataTable::RowIterator
+DataTable::rowsEnd() const
+{
+  return myRows.end();
+}
 
-  const Value oldValue = insertValue(key, colNo, value);
+size_t
+DataTable::numColumns() const
+{
+  return myColumnNames.size();
+}
+
+DataTable::ColumnNameIterator
+DataTable::columnNamesBegin() const
+{
+  return myColumnNames.begin();
+}
+
+DataTable::ColumnNameIterator
+DataTable::columnNamesEnd() const
+{
+  return myColumnNames.end();
+}
+
+bool
+DataTable::hasNotes() const
+{
+  return !myTableNotes.empty();
+}
+
+DataTable::NotesIterator
+DataTable::notesBegin() const
+{
+  return myTableNotes.begin();
+}
+
+DataTable::NotesIterator
+DataTable::notesEnd() const
+{
+  return myTableNotes.end();
+}
+
+DataTable::Coords
+DataTable::insert(const DataTable::Key & key, const ::std::string & colName,
+    const DataTable::Value & value)
+{
+#ifdef SP_ENABLE_THREAD_AWARE
+  ::boost::lock_guard< boost::mutex> guard(myTableMutex);
+#endif
+
+  const Coords coords = this->coords(key, colName);
+
+  const Value oldValue = insertValue(coords, value);
 
   // Send out message that a value has been inserted
-  myChangeListenerSupport.notify(DataTableValueChanged(key, col, oldValue, value));
+  BOOST_FOREACH(IDataTableChangeListener * l, myListeners)
+  {
+    l->onDataTableValueChanged(coords, oldValue, value);
+  }
 
-  return colNo;
+  return coords;
 }
 
-void DataTable::addTableNote(const ::std::string & note)
+void
+DataTable::addTableNote(const ::std::string & note)
 {
+#ifdef SP_ENABLE_THREAD_AWARE
+  ::boost::lock_guard< boost::mutex> guard(myNotesMutex);
+#endif
   myTableNotes.push_back(note);
 }
 
-void DataTable::writeToFile(
-  const ::std::string & filename,
-  const ::std::string & colDelimiter) const
+void
+DataTable::writeToFile(const ::std::string & filename,
+    const ::std::string & colDelimiter) const
 {
   ::std::ofstream tableFile;
   tableFile.open(filename.c_str());
 
   // Print the header first
-  tableFile << "# " << "[key]";
-  BOOST_FOREACH(const DataTable::Column & colInfo, myColumns)
-  {
-    tableFile << colDelimiter << colInfo.getName();
-  }
-  tableFile << ::std::endl;
+  tableFile << "# " << ::boost::algorithm::join(myColumnNames, colDelimiter);
 
-  BOOST_FOREACH(const RowMap::value_type & rowPair, myRows)
-  {
-    tableFile << rowPair.first;
-    BOOST_FOREACH(const Value & value, rowPair.second)
-    {
-      tableFile << colDelimiter << value;
-    }
-    tableFile << ::std::endl;
-  }
+  if(hasNotes())
+    tableFile << "\n# " << ::boost::algorithm::join(myTableNotes, "\n# ");
+
+  BOOST_FOREACH(const Rows::const_reference row, myRows)
+    tableFile << "\n" << ::boost::algorithm::join(row, colDelimiter);
+
+  tableFile << "\n";
 
   tableFile.close();
 }
 
-void DataTable::clear()
+bool
+DataTable::empty() const
+{
+  if(myRows.empty())
+    return true;
+
+  BOOST_FOREACH(const Row & row, myRows)
+  {
+    if(!row.empty())
+      return true;
+  }
+
+  return false;
+}
+
+void
+DataTable::clear()
 {
   myRows.clear();
-  myColumns.clear();
+  myRowMap.clear();
+  myColumnNames = DEFAULT_COLUMN_NAMES;
+  myColumnMap.clear();
   myTableNotes.clear();
+
+  // TODO: Should send message about clearing
 }
 
-
-void DataTable::addDataTableChangeListener(IDataTableChangeListener & listener)
+void
+DataTable::addDataTableChangeListener(IDataTableChangeListener * const listener)
 {
-  myChangeListenerSupport.insert(listener);
+  myListeners.insert(listener);
 }
 
-
-bool DataTable::removeDataTableChangeListener(IDataTableChangeListener & listener)
+bool
+DataTable::removeDataTableChangeListener(IDataTableChangeListener * const listener)
 {
-  return myChangeListenerSupport.remove(listener);
+  return myListeners.erase(listener);
 }
 
-void DataTable::insertColumn(const Column & colInfo, const size_t col)
+DataTable::Value
+DataTable::insertValue(const Coords & coords, const Value & value)
 {
-  SP_ASSERT(col != COL_UNDEFINED);
+  if(coords.first >= myRows.size())
+    myRows.resize(coords.first + 1);
+  Row & row = myRows[coords.first];
 
-  if(myColumns.size() <= col)
-  {
-    myColumns.resize(col + 1);
-  }
-
-  myColumns[col] = colInfo;
-}
-
-DataTable::Value DataTable::insertValue(const Key & key, const size_t col, const Value & value)
-{
-  ColumnData & colData = myRows[key];
-
-  Value oldValue = "";
+  Value oldValue;
   // Make sure it's big enough to store the value
-  if(colData.size() <= col)
-  {
-    colData.resize(col + 1);
-  }
+  if(coords.second >= row.size())
+    row.resize(coords.second + 1);
   else
-  {
-    oldValue = colData[col];
-  }
+    oldValue = row[coords.second];
 
   // Store the value
-  colData[col] = value;
+  row[coords.second] = value;
 
   return oldValue;
+}
+
+size_t
+DataTable::row(const Key & key)
+{
+  SSLIB_ASSERT(!key.empty());
+
+  RowMap::iterator it = myRowMap.find(key);
+  if(it == myRowMap.end())
+  {
+    myRows.push_back(Row(1, key));
+    it = myRowMap.insert(::std::make_pair(key, myRows.size() - 1)).first;
+  }
+
+  return it->second;
+}
+
+size_t
+DataTable::col(const ::std::string & name)
+{
+  SSLIB_ASSERT(!name.empty());
+
+  RowMap::iterator it = myColumnMap.find(name);
+  if(it == myColumnMap.end())
+  {
+    myColumnNames.push_back(name);
+    it =
+        myColumnMap.insert(::std::make_pair(name, myColumnNames.size() - 1)).first;
+    // Send out message that column has been added
+    BOOST_FOREACH(IDataTableChangeListener * l, myListeners)
+    {
+      l->onDataTableColumnChanged(it->second, "", name);
+    }
+  }
+
+  return it->second;
+}
+
+DataTable::Coords
+DataTable::coords(const Key & key, const ::std::string & colName)
+{
+  return Coords(row(key), col(colName));
 }
 
 }
