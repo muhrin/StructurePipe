@@ -198,9 +198,9 @@ include_directories(
   ${SPGLIB_INCLUDE_DIRS}
 )
 
-###################
-## spipe library ##
-###################
+###########################
+## StructurePipe Library ##
+###########################
 add_library(spipe
   ${spipe_Files}
 )
@@ -211,6 +211,7 @@ target_link_libraries(spipe
   ${ARMADILLO_LIBRARIES}
   ${YAML_CPP_LIBRARIES}
   ${SPGLIB_LIBRARIES}
+  pipelib
   sslib
 )
 
@@ -221,7 +222,7 @@ install(TARGETS spipe
 )
 
 ###################
-## spipe binary  ##
+## StructurePipe ##
 ###################
 ## Boost ##
 # Disable auto-linking

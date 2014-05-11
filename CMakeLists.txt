@@ -57,16 +57,16 @@ set(SP_BUILD_TESTS FALSE CACHE BOOL "Build spipe tests.")
 set(SP_ENABLE_THREAD_AWARE TRUE CACHE BOOL "Enable multithreaded awareness in spipe.")
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/src/StructurePipeConfig.h.in"
-  "${PROJECT_BINARY_DIR}/src/StructurePipeConfig.h"
+  "${PROJECT_SOURCE_DIR}/include/StructurePipeConfig.h.in"
+  "${PROJECT_BINARY_DIR}/include/StructurePipeConfig.h"
 )
 
 ## Now StructurePipe ####################################
 
 # Include directories with header files
 include_directories(
-  ${PROJECT_BINARY_DIR}/src  # So that we find StructurePipeConfig.h
-  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_BINARY_DIR}/include  # So that we find StructurePipeConfig.h
+  ${PROJECT_SOURCE_DIR}/include
   ${Boost_INCLUDE_DIRS}
   ${ARMADILLO_INCLUDE_DIRS}
   ${PIPELIB_INCLUDE_DIRS}

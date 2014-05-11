@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "PipeFunctions.h"
+#include "common/PipeFunctions.h"
 
 #include <spl/io/BoostFilesystem.h>
 #include <spl/utility/UtilFunctions.h>
