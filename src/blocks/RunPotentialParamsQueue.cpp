@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/RunPotentialParamsQueue.h"
+#include "spipe/blocks/RunPotentialParamsQueue.h"
 
 #include <algorithm>
 
@@ -23,9 +23,9 @@
 #include <spl/utility/Armadillo.h>
 
 // Local includes
-#include "common/PipeFunctions.h"
-#include "common/UtilityFunctions.h"
-#include "utility/DataTableInserters.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/UtilityFunctions.h"
+#include "spipe/utility/DataTableInserters.h"
 
 // NAMESPACES ////////////////////////////////
 

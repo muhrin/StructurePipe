@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/PasteFragment.h"
+#include "spipe/blocks/PasteFragment.h"
 
 #include <boost/foreach.hpp>
 #include <boost/range/iterator_range.hpp>

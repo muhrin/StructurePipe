@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/Clone.h"
+#include "spipe/blocks/Clone.h"
 
 // NAMESPACES ////////////////////////////////
 

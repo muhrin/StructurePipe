@@ -6,13 +6,13 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/KeepTopN.h"
+#include "spipe/blocks/KeepTopN.h"
 
 #include <spl/common/Structure.h>
 
 #include <pipelib/pipelib.h>
 
-#include "common/StructureData.h"
+#include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 

@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/BuildStructures.h"
+#include "spipe/blocks/BuildStructures.h"
 
 #include <cmath>
 
@@ -23,8 +23,8 @@
 #include <spl/utility/UtilFunctions.h>
 
 // Local includes
-#include "common/PipeFunctions.h"
-#include "common/UtilityFunctions.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 

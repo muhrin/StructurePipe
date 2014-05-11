@@ -8,7 +8,7 @@ set(SP_VERSION "${SP_VERSION_MAJOR}.${SP_VERSION_MINOR}.${SP_VERSION_PATCH}")
 
 message(STATUS "Configuring StructurePipe ${SP_VERSION}")
 
-project(StructurePipe)
+project(SPipe)
 
 ## FIND PACKAGES ########################################
 
@@ -38,7 +38,7 @@ set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header fi
 if(WIN32 AND NOT CYGWIN)
   set(DEF_INSTALL_CMAKE_DIR CMake)
 else()
-  set(DEF_INSTALL_CMAKE_DIR share/Pipelib/cmake)
+  set(DEF_INSTALL_CMAKE_DIR share/${CMAKE_PROJECT_NAME}/cmake)
 endif()
 set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
   "Installation directory for CMake files")
@@ -57,15 +57,15 @@ set(SP_BUILD_TESTS FALSE CACHE BOOL "Build spipe tests.")
 set(SP_ENABLE_THREAD_AWARE TRUE CACHE BOOL "Enable multithreaded awareness in spipe.")
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/include/StructurePipeConfig.h.in"
-  "${PROJECT_BINARY_DIR}/include/StructurePipeConfig.h"
+  "${PROJECT_SOURCE_DIR}/include/spipe/StructurePipeConfig.h.in"
+  "${PROJECT_BINARY_DIR}/include/spipe/StructurePipeConfig.h"
 )
 
 ## Now StructurePipe ####################################
 
 # Include directories with header files
 include_directories(
-  ${PROJECT_BINARY_DIR}/include  # So that we find StructurePipeConfig.h
+  ${PROJECT_BINARY_DIR}/include  # So that we find SPipeConfig.h
   ${PROJECT_SOURCE_DIR}/include
   ${Boost_INCLUDE_DIRS}
   ${ARMADILLO_INCLUDE_DIRS}
@@ -124,7 +124,7 @@ target_link_libraries(spipe-bin
 
 ## Installation
 install(TARGETS spipe spipe-bin
-  EXPORT SPipeTargets
+  EXPORT ${CMAKE_PROJECT_NAME}Targets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
   LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
   ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT lib
@@ -139,11 +139,12 @@ install(DIRECTORY src/ DESTINATION ${INSTALL_INCLUDE_DIR}
 ### Configuration file settings
 ###
 # Add all targets to the build-tree export set
-export(TARGETS spipe spipe-bin FILE "${PROJECT_BINARY_DIR}/SPipeTargets.cmake")
+export(TARGETS spipe spipe-bin
+  FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGE SPipe)
+export(PACKAGE ${PROJECT_NAME})
 
 # Create the *Config.cmake and *ConfigVersion.cmake files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
@@ -172,7 +173,7 @@ install(FILES
   DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 # Install the export set for use with the install-tree
-install(EXPORT SPipeTargets DESTINATION
+install(EXPORT ${CMAKE_PROJECT_NAME}Targets DESTINATION
   "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 

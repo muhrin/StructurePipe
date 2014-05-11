@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "factory/PipeEngineFactory.h"
+#include "spipe/factory/PipeEngineFactory.h"
 
 // NAMESPACES ////////////////////////////////
 

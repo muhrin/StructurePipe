@@ -6,12 +6,12 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/NiggliReduce.h"
+#include "spipe/blocks/NiggliReduce.h"
 
 #include <spl/common/Structure.h>
 #include <spl/common/UnitCell.h>
 
-#include "common/StructureData.h"
+#include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 

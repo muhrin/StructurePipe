@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/LoadStructures.h"
+#include "spipe/blocks/LoadStructures.h"
 
 #include <iterator>
 #include <sstream>
@@ -22,10 +22,10 @@
 #include <spl/utility/UtilFunctions.h>
 
 // Local includes
-#include "common/PipeFunctions.h"
-#include "common/SharedData.h"
-#include "common/StructureData.h"
-#include "common/UtilityFunctions.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 

@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "utility/Initialisation.h"
+#include "spipe/utility/Initialisation.h"
 
 #include <ctime>
 #include <iostream>

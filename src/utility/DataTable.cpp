@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "utility/DataTable.h"
+#include "spipe/utility/DataTable.h"
 
 #include <fstream>
 
@@ -19,7 +19,7 @@
 
 #include <spl/SSLibAssert.h>
 
-#include "utility/IDataTableChangeListener.h"
+#include "spipe/utility/IDataTableChangeListener.h"
 
 // NAMESPACES ////////////////////////////////
 

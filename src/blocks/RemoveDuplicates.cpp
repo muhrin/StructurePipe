@@ -6,8 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/RemoveDuplicates.h"
-#include "StructurePipe.h"
+#include "spipe/blocks/RemoveDuplicates.h"
 
 #include <map>
 
@@ -15,7 +14,8 @@
 
 #include <spl/common/Structure.h>
 
-#include "common/StructureData.h"
+#include "spipe/StructurePipe.h"
+#include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 

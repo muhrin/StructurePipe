@@ -6,33 +6,33 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "factory/BlockFactory.h"
+#include "spipe/factory/BlockFactory.h"
 
 #include <spl/potential/Types.h>
 #include <spl/utility/UtilityFwd.h>
 
 // Local includes
-#include "blocks/BuildStructures.h"
-#include "blocks/Clone.h"
-#include "blocks/CutAndPaste.h"
-#include "blocks/FindSymmetryGroup.h"
-#include "blocks/KeepStableCompositions.h"
-#include "blocks/KeepTopN.h"
-#include "blocks/KeepWithinXPercent.h"
-#include "blocks/LoadStructures.h"
-#include "blocks/NiggliReduce.h"
-#include "blocks/GeomOptimise.h"
-#include "blocks/ParamGeomOptimise.h"
-#include "blocks/PasteFragment.h"
-#include "blocks/RemoveDuplicates.h"
-#include "blocks/RunPotentialParamsQueue.h"
-#include "blocks/SearchStoichiometries.h"
-#include "blocks/SeparateAtoms.h"
-#include "blocks/SweepPotentialParams.h"
-#include "blocks/WriteStructures.h"
-#include "common/CommonData.h"
-#include "common/StructureData.h"
-#include "common/SharedData.h"
+#include "spipe/blocks/BuildStructures.h"
+#include "spipe/blocks/Clone.h"
+#include "spipe/blocks/CutAndPaste.h"
+#include "spipe/blocks/FindSymmetryGroup.h"
+#include "spipe/blocks/KeepStableCompositions.h"
+#include "spipe/blocks/KeepTopN.h"
+#include "spipe/blocks/KeepWithinXPercent.h"
+#include "spipe/blocks/LoadStructures.h"
+#include "spipe/blocks/NiggliReduce.h"
+#include "spipe/blocks/GeomOptimise.h"
+#include "spipe/blocks/ParamGeomOptimise.h"
+#include "spipe/blocks/PasteFragment.h"
+#include "spipe/blocks/RemoveDuplicates.h"
+#include "spipe/blocks/RunPotentialParamsQueue.h"
+#include "spipe/blocks/SearchStoichiometries.h"
+#include "spipe/blocks/SeparateAtoms.h"
+#include "spipe/blocks/SweepPotentialParams.h"
+#include "spipe/blocks/WriteStructures.h"
+#include "spipe/common/CommonData.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/SharedData.h"
 
 // NAMESPACES ////////////////////////////////
 

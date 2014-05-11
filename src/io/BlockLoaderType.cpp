@@ -6,11 +6,11 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "io/BlockLoaderType.h"
+#include "spipe/io/BlockLoaderType.h"
 
 #include <boost/tokenizer.hpp>
 
-#include "build/BlockLoader.h"
+#include "spipe/build/BlockLoader.h"
 // NAMESPACES ////////////////////////////////
 
 namespace spipe {

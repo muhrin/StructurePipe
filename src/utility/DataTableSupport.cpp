@@ -6,11 +6,11 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "utility/DataTableSupport.h"
+#include "spipe/utility/DataTableSupport.h"
 
 // Local includes
-#include "common/SharedData.h"
-#include "utility/DataTableWriter.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/utility/DataTableWriter.h"
 
 // NAMESPACES ////////////////////////////////
 

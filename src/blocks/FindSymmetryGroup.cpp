@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/FindSymmetryGroup.h"
+#include "spipe/blocks/FindSymmetryGroup.h"
 
 #include <vector>
 
@@ -21,7 +21,7 @@
 #include <spl/common/UnitCell.h>
 
 // Local includes
-#include "common/StructureData.h"
+#include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 

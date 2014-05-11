@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "common/CommonData.h"
+#include "spipe/common/CommonData.h"
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>

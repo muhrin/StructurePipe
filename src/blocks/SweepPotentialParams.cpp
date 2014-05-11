@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/SweepPotentialParams.h"
+#include "spipe/blocks/SweepPotentialParams.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
@@ -15,12 +15,12 @@
 #include <spl/utility/MultiIdxRange.h>
 #include <spl/utility/UtilFunctions.h>
 
-#include "common/Assert.h"
-#include "common/PipeFunctions.h"
-#include "common/SharedData.h"
-#include "common/StructureData.h"
-#include "common/UtilityFunctions.h"
-#include "utility/DataTableInserters.h"
+#include "spipe/common/Assert.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/UtilityFunctions.h"
+#include "spipe/utility/DataTableInserters.h"
 
 // NAMESPACES ////////////////////////////////
 

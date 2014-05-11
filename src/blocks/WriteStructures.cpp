@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/WriteStructures.h"
+#include "spipe/blocks/WriteStructures.h"
 
 #include <spl/common/Structure.h>
 #include <spl/io/StructureReadWriteManager.h>
@@ -14,10 +14,10 @@
 #include <spl/utility/UtilFunctions.h>
 
 // From local
-#include "common/PipeFunctions.h"
-#include "common/SharedData.h"
-#include "common/StructureData.h"
-#include "common/UtilityFunctions.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 

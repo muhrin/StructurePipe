@@ -6,15 +6,15 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "utility/DataTableInserters.h"
+#include "spipe/utility/DataTableInserters.h"
 
 #include <vector>
 
 #include <spl/common/Structure.h>
 #include <spl/io/ResourceLocator.h>
 
-#include "common/StructureData.h"
-#include "common/UtilityFunctions.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 

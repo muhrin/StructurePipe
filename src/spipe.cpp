@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include <StructurePipe.h>
+#include <spipe/StructurePipe.h>
 
 #include <boost/program_options.hpp>
 
@@ -19,10 +19,10 @@
 #include <pipelib/pipelib.h>
 
 // Local includes
-#include "build/PipeBuilder.h"
-#include "factory/PipeEngineFactory.h"
-#include "factory/PipeEngineSchema.h"
-#include "utility/Initialisation.h"
+#include "spipe/build/PipeBuilder.h"
+#include "spipe/factory/PipeEngineFactory.h"
+#include "spipe/factory/PipeEngineSchema.h"
+#include "spipe/utility/Initialisation.h"
 
 // MACROS ////////////////////////////////////
 

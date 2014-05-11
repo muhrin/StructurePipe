@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/ParamGeomOptimise.h"
+#include "spipe/blocks/ParamGeomOptimise.h"
 
 #include <sstream>
 
@@ -20,10 +20,10 @@
 #include <spl/potential/IParameterisable.h>
 #include <spl/potential/IPotential.h>
 
-#include "common/PipeFunctions.h"
-#include "common/StructureData.h"
-#include "common/SharedData.h"
-#include "common/UtilityFunctions.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 

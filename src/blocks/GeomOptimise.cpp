@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/GeomOptimise.h"
+#include "spipe/blocks/GeomOptimise.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -16,10 +16,10 @@
 #include <spl/potential/GeomOptimiser.h>
 #include <spl/potential/IPotential.h>
 
-#include "common/PipeFunctions.h"
-#include "common/StructureData.h"
-#include "common/SharedData.h"
-#include "common/UtilityFunctions.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/common/UtilityFunctions.h"
 
 // NAMESPACES ////////////////////////////////
 

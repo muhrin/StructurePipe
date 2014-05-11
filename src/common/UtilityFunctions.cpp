@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "common/UtilityFunctions.h"
+#include "spipe/common/UtilityFunctions.h"
 
 #include <iomanip>
 
@@ -17,7 +17,7 @@
 #include <spl/utility/Armadillo.h>
 
 // From local
-#include "common/StructureData.h"
+#include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 

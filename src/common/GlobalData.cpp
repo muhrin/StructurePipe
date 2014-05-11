@@ -6,12 +6,12 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "common/GlobalData.h"
+#include "spipe/common/GlobalData.h"
 
 #include <spl/utility/UtilFunctions.h>
 
-#include "common/UtilityFunctions.h"
-#include "utility/PipeDataInitialisation.h"
+#include "spipe/common/UtilityFunctions.h"
+#include "spipe/utility/PipeDataInitialisation.h"
 
 // NAMESPACES ////////////////////////////////
 namespace ssc = ::spl::common;

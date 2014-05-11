@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "utility/PipeDataInitialisation.h"
+#include "spipe/utility/PipeDataInitialisation.h"
 
 #include <spl/SSLibTypes.h>
 #include <spl/io/CastepReader.h>

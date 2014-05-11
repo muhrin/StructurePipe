@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/KeepStableCompositions.h"
+#include "spipe/blocks/KeepStableCompositions.h"
 
 #ifdef SPL_WITH_CGAL
 

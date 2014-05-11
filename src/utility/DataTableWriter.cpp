@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "utility/DataTableWriter.h"
+#include "spipe/utility/DataTableWriter.h"
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/foreach.hpp>

@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/SearchStoichiometries.h"
+#include "spipe/blocks/SearchStoichiometries.h"
 
 #include <boost/foreach.hpp>
 #include <boost/optional.hpp>
@@ -19,12 +19,12 @@
 #include <spl/utility/MultiIdx.h>
 
 // Local includes
-#include "common/CommonData.h"
-#include "common/PipeFunctions.h"
-#include "common/StructureData.h"
-#include "common/SharedData.h"
-#include "common/UtilityFunctions.h"
-#include "utility/DataTable.h"
+#include "spipe/common/CommonData.h"
+#include "spipe/common/PipeFunctions.h"
+#include "spipe/common/StructureData.h"
+#include "spipe/common/SharedData.h"
+#include "spipe/common/UtilityFunctions.h"
+#include "spipe/utility/DataTable.h"
 
 namespace spipe {
 namespace blocks {

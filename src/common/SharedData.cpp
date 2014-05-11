@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "common/SharedData.h"
+#include "spipe/common/SharedData.h"
 
 #include <pipelib/pipelib.h>
 

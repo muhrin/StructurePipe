@@ -6,13 +6,13 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/CutAndPaste.h"
+#include "spipe/blocks/CutAndPaste.h"
 
 #include <boost/foreach.hpp>
 
 #include <spl/common/Atom.h>
 
-#include "common/Assert.h"
+#include "spipe/common/Assert.h"
 
 // NAMESPACES ////////////////////////////////
 

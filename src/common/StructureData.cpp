@@ -6,12 +6,12 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "common/StructureData.h"
+#include "spipe/common/StructureData.h"
 
 #include <pipelib/pipelib.h>
 
 // Local includes
-#include "common/SharedData.h"
+#include "spipe/common/SharedData.h"
 #include "spl/common/Structure.h"
 #include "spl/io/ResourceLocator.h"
 

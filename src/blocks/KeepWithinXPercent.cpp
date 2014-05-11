@@ -6,14 +6,14 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/KeepWithinXPercent.h"
+#include "spipe/blocks/KeepWithinXPercent.h"
 
 #include <spl/common/Structure.h>
 
 #include <pipelib/pipelib.h>
 
-#include "common/Assert.h"
-#include "common/StructureData.h"
+#include "spipe/common/Assert.h"
+#include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 

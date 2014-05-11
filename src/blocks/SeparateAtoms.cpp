@@ -6,7 +6,7 @@
  */
 
 // INCLUDES //////////////////////////////////
-#include "blocks/SeparateAtoms.h"
+#include "spipe/blocks/SeparateAtoms.h"
 
 #include <spl/build_cell/PointSeparator.h>
 #include <spl/common/AtomSpeciesDatabase.h>
