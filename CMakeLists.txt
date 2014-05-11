@@ -20,29 +20,36 @@ add_definitions(-DBOOST_ALL_NO_LIB)
 find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem regex)
 
 ## Armadillo ##
-if(NOT ARMADILLO_INCLUDE_DIRS)
-  find_package(Armadillo REQUIRED)
-  if("${ARMADILLO_INCLUDE_DIRS}" STREQUAL "")
-    set(ARMADILLO_INCLUDE_DIRS "${ARMADILLO_ROOT}/include")
-  endif()
-endif(NOT ARMADILLO_INCLUDE_DIRS)
+find_package(Armadillo REQUIRED)
+if("${ARMADILLO_INCLUDE_DIRS}" STREQUAL "")
+  set(ARMADILLO_INCLUDE_DIRS "${ARMADILLO_ROOT}/include")
+endif()
 
-## Yaml ##
-if(NOT YAML_CPP_LIBRARIES)
-  find_package(YamlCpp QUIET)
-endif(NOT YAML_CPP_LIBRARIES)
-
-#
-# Spglib
-if(NOT SPGLIB_INCLUDE_DIRS)
-  find_package(Spglib REQUIRED)
-endif(NOT SPGLIB_INCLUDE_DIRS)
-
+find_package(YamlCpp QUIET)
+find_package(Spglib REQUIRED)
+find_package_or_install(Schemer)
 find_package_or_install(Pipelib)
-
-## END FIND PACKAGES ####################################
+find_package_or_install(SPL)
 
 ## Configuration options ###############################
+
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+if(WIN32 AND NOT CYGWIN)
+  set(DEF_INSTALL_CMAKE_DIR CMake)
+else()
+  set(DEF_INSTALL_CMAKE_DIR share/Pipelib/cmake)
+endif()
+set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
+  "Installation directory for CMake files")
+
+# Make relative paths absolute (needed later on)
+foreach(p LIB BIN INCLUDE CMAKE)
+  set(var INSTALL_${p}_DIR)
+  if(NOT IS_ABSOLUTE "${${var}}")
+    set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+  endif()
+endforeach()
 
 # Build settings
 set(SP_WITH_YAML ${YamlCpp_FOUND} CACHE BOOL "Build StructurePipe with YAML support.")
@@ -54,39 +61,119 @@ configure_file (
   "${PROJECT_BINARY_DIR}/src/StructurePipeConfig.h"
 )
 
-## End configuration options ###########################
-
-
-## First libraries #####################################
-
-add_subdirectory(lib/sslib)      # Structure searching library
-
 ## Now StructurePipe ####################################
-
-set(SPIPE_INCLUDE_DIRS
-  ${PROJECT_BINARY_DIR}/src  # So that we find StructurePipeConfig.h
-  ${PROJECT_SOURCE_DIR}/src
-  CACHE FILEPATH INTERNAL FORCE
-)
 
 # Include directories with header files
 include_directories(
+  ${PROJECT_BINARY_DIR}/src  # So that we find StructurePipeConfig.h
+  ${PROJECT_SOURCE_DIR}/src
   ${Boost_INCLUDE_DIRS}
   ${ARMADILLO_INCLUDE_DIRS}
   ${PIPELIB_INCLUDE_DIRS}
-  ${SSLIB_INCLUDE_DIRS}
+  ${SCHEMER_INCLUDE_DIRS}
+  ${SPL_INCLUDE_DIRS}
   ${SPGLIB_INCLUDE_DIRS}
   ${SPIPE_INCLUDE_DIRS}
 )
 
-include_directories(
-  ${PIPELIB_INCLUDE_DIRS}
-  lib/sslib/include
-)
-
-add_subdirectory(src)
+include(Include.cmake)
+include(Src.cmake)
 
 set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")
+
+###################
+## spipe library ##
+###################
+add_library(spipe
+  ${spipe_Header_Files}
+  ${spipe_Source_Files}
+)
+
+# Libraries we need to link to
+target_link_libraries(spipe
+  ${Boost_LIBRARIES}
+  ${ARMADILLO_LIBRARIES}
+  ${YAML_CPP_LIBRARIES}
+  ${SCHEMER_LIBRARIES}
+  ${SPGLIB_LIBRARIES}
+  ${SPL_LIBRARIES}
+)
+
+###################
+## spipe binary  ##
+###################
+## Boost ##
+# Disable auto-linking
+add_definitions(-DBOOST_ALL_NO_LIB)
+find_package(Boost 1.36.0 QUIET REQUIRED COMPONENTS system program_options)
+
+# Make sure that after make install shared libraries are correctly linked
+# to. See http://www.cmake.org/Wiki/CMake_RPATH_handling#Common_questions
+# for more details
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+add_executable(spipe-bin src/spipe.cpp)
+add_dependencies(spipe-bin spipe)
+set_target_properties(spipe-bin PROPERTIES OUTPUT_NAME spipe)
+
+# Libraries we need to link to
+target_link_libraries(spipe-bin
+  ${Boost_LIBRARIES}
+  spipe
+)
+
+## Installation
+install(TARGETS spipe spipe-bin
+  EXPORT SPipeTargets
+  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+  LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
+  ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT lib
+)
+# Header files
+install(DIRECTORY src/ DESTINATION ${INSTALL_INCLUDE_DIR}
+  COMPONENT dev
+  PATTERN "*.h"
+)
+
+###
+### Configuration file settings
+###
+# Add all targets to the build-tree export set
+export(TARGETS spipe spipe-bin FILE "${PROJECT_BINARY_DIR}/SPipeTargets.cmake")
+
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE SPipe)
+
+# Create the *Config.cmake and *ConfigVersion.cmake files
+file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
+   "${INSTALL_INCLUDE_DIR}")
+
+# ... for the build tree
+set(CONF_INCLUDE_DIRS
+  "${PROJECT_SOURCE_DIR}/include"  "${PROJECT_BINARY_DIR}/include"
+)
+configure_file(cmake/SPipeConfig.cmake.in
+  "${PROJECT_BINARY_DIR}/SPipeConfig.cmake" @ONLY)
+
+# ... for the install tree
+set(CONF_INCLUDE_DIRS "\${SPIPE_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+configure_file(cmake/SPipeConfig.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/SPipeConfig.cmake" @ONLY)
+
+# ... for both
+configure_file(cmake/SPipeConfigVersion.cmake.in
+  "${PROJECT_BINARY_DIR}/SPipeConfigVersion.cmake" @ONLY)
+
+# Install the *Config.cmake and *ConfigVersion.cmake
+install(FILES
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/SPipeConfig.cmake"
+  "${PROJECT_BINARY_DIR}/SPipeConfigVersion.cmake"
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+# Install the export set for use with the install-tree
+install(EXPORT SPipeTargets DESTINATION
+  "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
 
 #
@@ -94,3 +181,4 @@ set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")
 if(SP_BUILD_TESTS)
   add_subdirectory(tests)
 endif(SP_BUILD_TESTS)
+
