@@ -1,0 +1,6 @@
+
+
+// Build settings
+#cmakedefine SP_WITH_YAML
+#cmakedefine SP_ENABLE_THREAD_AWARE
+

@@ -14,7 +14,8 @@
 #endif
 
 // Include the configuration header file
-#include "StructurePipeConfig.h"
+#include "spipe/Version.h"
+#include "spipe/Config.h"
 
 // INCLUDES /////////////
 #include <pipelib/pipelib.h>

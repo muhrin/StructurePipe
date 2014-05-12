@@ -1,12 +1,12 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-set(SP_VERSION_MAJOR 0)
-set(SP_VERSION_MINOR 3)
-set(SP_VERSION_PATCH 0)
-set(SP_VERSION "${SP_VERSION_MAJOR}.${SP_VERSION_MINOR}.${SP_VERSION_PATCH}")
+set(SPIPE_VERSION_MAJOR 0)
+set(SPIPE_VERSION_MINOR 3)
+set(SPIPE_VERSION_PATCH 0)
+set(SPIPE_VERSION "${SPIPE_VERSION_MAJOR}.${SPIPE_VERSION_MINOR}.${SPIPE_VERSION_PATCH}")
 
-message(STATUS "Configuring StructurePipe ${SP_VERSION}")
+message(STATUS "Configuring SPipe ${SPIPE_VERSION}")
 
 project(SPipe)
 
@@ -56,9 +56,13 @@ set(SP_WITH_YAML ${YamlCpp_FOUND} CACHE BOOL "Build StructurePipe with YAML supp
 set(SP_BUILD_TESTS FALSE CACHE BOOL "Build spipe tests.")
 set(SP_ENABLE_THREAD_AWARE TRUE CACHE BOOL "Enable multithreaded awareness in spipe.")
 
-configure_file (
-  "${PROJECT_SOURCE_DIR}/include/spipe/StructurePipeConfig.h.in"
-  "${PROJECT_BINARY_DIR}/include/spipe/StructurePipeConfig.h"
+configure_file(
+  "${PROJECT_SOURCE_DIR}/include/spipe/Version.h.in"
+  "${PROJECT_BINARY_DIR}/include/spipe/Version.h"
+)
+configure_file(
+  "${PROJECT_SOURCE_DIR}/include/spipe/Config.h.in"
+  "${PROJECT_BINARY_DIR}/include/spipe/Config.h"
 )
 
 ## Now StructurePipe ####################################
