@@ -20,28 +20,29 @@ PipeEngineFactory::createEngine(const Engine & settings) const
     return EnginePtr(createSerialEngine(*settings.serialEngine).release());
 #ifdef PIPELIB_USE_BOOST_THREAD
   else if(settings.boostThreadEngine)
-    return EnginePtr(
-        createBoostThreadEngine(*settings.boostThreadEngine).release());
+  return EnginePtr(
+      createBoostThreadEngine(*settings.boostThreadEngine).release());
 #endif
 
   return EnginePtr();
 }
 
-UniquePtr< ::spipe::SerialEngine>::Type
+UniquePtr< spipe::SerialEngine>::Type
 PipeEngineFactory::createSerialEngine(const SerialEngine & settings) const
 {
-  return UniquePtr< ::spipe::SerialEngine>::Type(new ::spipe::SerialEngine);
+  return UniquePtr< spipe::SerialEngine>::Type(new spipe::SerialEngine);
 }
 
 #ifdef PIPELIB_USE_BOOST_THREAD
-UniquePtr< ::spipe::BoostThreadEngine>::Type
+UniquePtr< spipe::BoostThreadEngine>::Type
 PipeEngineFactory::createBoostThreadEngine(
     const BoostThreadEngine & settings) const
 {
-  return UniquePtr< ::spipe::BoostThreadEngine>::Type(
-      new ::spipe::BoostThreadEngine(settings.nThreads));
+  return UniquePtr< spipe::BoostThreadEngine>::Type(
+      new spipe::BoostThreadEngine(settings.nThreads));
 }
 #endif
 
-} // namespace factory
-} // namespace spipe
+}
+ // namespace factory
+}// namespace spipe

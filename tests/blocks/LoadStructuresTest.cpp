@@ -14,12 +14,11 @@
 #include <spl/common/Structure.h>
 #include <spl/io/IoFunctions.h>
 
-// From SPipe
-#include <SpTypes.h>
-#include <StructurePipe.h>
-#include <common/SharedData.h>
-#include <common/StructureData.h>
-#include <blocks/LoadStructures.h>
+#include <spipe/SpTypes.h>
+#include <spipe/StructurePipe.h>
+#include <spipe/common/SharedData.h>
+#include <spipe/common/StructureData.h>
+#include <spipe/blocks/LoadStructures.h>
 
 namespace ssc = spl::common;
 namespace blocks = spipe::blocks;

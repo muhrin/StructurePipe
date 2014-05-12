@@ -22,13 +22,12 @@
 #include <spl/common/AtomSpeciesDatabase.h>
 #include <spl/common/Structure.h>
 
-// From SPipe
-#include <SpTypes.h>
-#include <StructurePipe.h>
-#include <common/SharedData.h>
-#include <common/StructureData.h>
-#include <blocks/BuildStructures.h>
-#include <blocks/SearchStoichiometries.h>
+#include <spipe/SpTypes.h>
+#include <spipe/StructurePipe.h>
+#include <spipe/common/SharedData.h>
+#include <spipe/common/StructureData.h>
+#include <spipe/blocks/BuildStructures.h>
+#include <spipe/blocks/SearchStoichiometries.h>
 
 namespace splbc = ::spl::build_cell;
 namespace ssc = ::spl::common;

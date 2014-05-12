@@ -23,14 +23,14 @@ namespace factory {
 class PipeEngineFactory
 {
 public:
-  typedef UniquePtr< ::spipe::Engine>::Type EnginePtr;
+  typedef UniquePtr< spipe::Engine>::Type EnginePtr;
 
   EnginePtr
   createEngine(const Engine & settings) const;
-  UniquePtr< ::spipe::SerialEngine>::Type
+  UniquePtr< spipe::SerialEngine>::Type
   createSerialEngine(const SerialEngine & settings) const;
-#ifdef SP_ENABLE_THREAD_AWARE
-  UniquePtr< ::spipe::BoostThreadEngine>::Type
+#ifdef SPIPE_USE_THREAD
+  UniquePtr< spipe::BoostThreadEngine>::Type
   createBoostThreadEngine(const BoostThreadEngine & settings) const;
 #endif
 };

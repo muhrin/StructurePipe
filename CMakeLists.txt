@@ -9,29 +9,9 @@ set(SPIPE_VERSION "${SPIPE_VERSION_MAJOR}.${SPIPE_VERSION_MINOR}.${SPIPE_VERSION
 project(SPipe)
 message(STATUS "Configuring ${PROJECT_NAME} ${SPIPE_VERSION}")
 
-## FIND PACKAGES ########################################
-
-include(cmake/utility.cmake)
-
-## Boost ##
-# Disable auto-linking
-add_definitions(-DBOOST_ALL_NO_LIB)
-find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem regex)
-
-## Armadillo ##
-find_package(Armadillo CONFIG REQUIRED)
-if("${ARMADILLO_INCLUDE_DIRS}" STREQUAL "")
-  set(ARMADILLO_INCLUDE_DIRS "${ARMADILLO_ROOT}/include")
-endif()
-
-find_package(YamlCpp QUIET)
-find_package(Spglib REQUIRED)
-find_package_or_install(Schemer)
-find_package_or_install(Pipelib)
-find_package_or_install(SPL)
-
 ## Configuration options ###############################
 
+# Install directories
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for library files.")
@@ -52,9 +32,10 @@ foreach(p LIB BIN INCLUDE CMAKE)
 endforeach()
 
 # Build settings
-set(SP_WITH_YAML ${YamlCpp_FOUND} CACHE BOOL "Build StructurePipe with YAML support.")
-set(SP_BUILD_TESTS FALSE CACHE BOOL "Build spipe tests.")
-set(SP_ENABLE_THREAD_AWARE TRUE CACHE BOOL "Enable multithreaded awareness in spipe.")
+set(SPIPE_USE_YAML TRUE CACHE BOOL "Build ${CMAKE_PROJECT} with YAML support (requires yaml-cpp).")
+set(SPIPE_USE_THREAD TRUE CACHE BOOL
+  "Enable threading support in ${CMAKE_PROJECT} (required Boost thread).")
+set(SP_BUILD_TESTS FALSE CACHE BOOL "Build ${CMAKE_PROJECT} tests.")
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/include/spipe/Version.h.in"
@@ -64,6 +45,28 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/include/spipe/Config.h.in"
   "${PROJECT_BINARY_DIR}/include/spipe/Config.h"
 )
+
+
+## FIND PACKAGES ########################################
+
+include(cmake/utility.cmake)
+
+## Boost ##
+# Disable auto-linking
+add_definitions(-DBOOST_ALL_NO_LIB)
+find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem regex)
+
+## Armadillo ##
+find_package(Armadillo REQUIRED)
+if("${ARMADILLO_INCLUDE_DIRS}" STREQUAL "")
+  set(ARMADILLO_INCLUDE_DIRS "${ARMADILLO_ROOT}/include")
+endif()
+
+find_package(YamlCpp QUIET)
+find_package(Spglib REQUIRED)
+find_package_or_install(Schemer)
+find_package_or_install(Pipelib)
+find_package_or_install(SPL)
 
 ## Now StructurePipe ####################################
 

@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-#ifdef SP_ENABLE_THREAD_AWARE
+#ifdef SPIPE_USE_THREAD
 #  include <boost/thread/mutex.hpp>
 #endif
 
@@ -106,7 +106,7 @@ private:
 
   ::std::set<IDataTableChangeListener *> myListeners;
 
-#ifdef SP_ENABLE_THREAD_AWARE
+#ifdef SPIPE_USE_THREAD
   ::boost::mutex myTableMutex;
   ::boost::mutex myNotesMutex;
 #endif

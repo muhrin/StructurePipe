@@ -89,7 +89,7 @@ KeepWithinXPercent::keep(StructureDataType * const structure, const double energ
 {
   using ::std::make_pair;
 
-#ifdef SP_ENABLE_THREAD_AWARE
+#ifdef SPIPE_USE_THREAD
   boost::lock_guard<boost::mutex> guard(myMutex);
 #endif
 

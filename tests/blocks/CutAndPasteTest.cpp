@@ -21,9 +21,9 @@
 #include <spl/common/UnitCell.h>
 #include <spl/math/Matrix.h>
 
-#include <PipeLibTypes.h>
-#include <blocks/BuildStructures.h>
-#include <blocks/CutAndPaste.h>
+#include <spipe/PipeLibTypes.h>
+#include <spipe/blocks/BuildStructures.h>
+#include <spipe/blocks/CutAndPaste.h>
 
 using namespace spipe;
 

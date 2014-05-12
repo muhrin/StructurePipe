@@ -20,11 +20,11 @@
 #include <spl/common/Structure.h>
 
 // From SPipe
-#include <SpTypes.h>
-#include <StructurePipe.h>
-#include <common/SharedData.h>
-#include <common/StructureData.h>
-#include <blocks/KeepTopN.h>
+#include <spipe/SpTypes.h>
+#include <spipe/StructurePipe.h>
+#include <spipe/common/SharedData.h>
+#include <spipe/common/StructureData.h>
+#include <spipe/blocks/KeepTopN.h>
 
 namespace ssc = ::spl::common;
 namespace blocks = ::spipe::blocks;

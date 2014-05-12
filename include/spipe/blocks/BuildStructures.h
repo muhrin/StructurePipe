@@ -17,7 +17,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/variant.hpp>
-#ifdef SP_ENABLE_THREAD_AWARE
+#ifdef SPIPE_USE_THREAD
 #  include <boost/thread/mutex.hpp>
 #endif
 
@@ -73,7 +73,7 @@ private:
   const int myNumToGenerate;
   const float myAtomsMultiplierGenerate;
   const int myMaxAttempts;
-#ifdef SP_ENABLE_THREAD_AWARE
+#ifdef SPIPE_USE_THREAD
   ::boost::mutex myBuildStructuresMutex;
 #endif
 };
