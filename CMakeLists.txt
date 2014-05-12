@@ -35,6 +35,7 @@ endforeach()
 set(SPIPE_USE_YAML TRUE CACHE BOOL "Build ${CMAKE_PROJECT} with YAML support (requires yaml-cpp).")
 set(SPIPE_USE_THREAD TRUE CACHE BOOL
   "Enable threading support in ${CMAKE_PROJECT} (required Boost thread).")
+set(PIPELIB_USE_BOOST_THREAD ${SPIPE_USE_THREAD} CACHE INTERNAL "Tell pipelib to enable thread.") 
 set(SP_BUILD_TESTS FALSE CACHE BOOL "Build ${CMAKE_PROJECT} tests.")
 
 configure_file(

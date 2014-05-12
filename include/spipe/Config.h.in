@@ -2,5 +2,10 @@
 
 // Build settings
 #cmakedefine SPIPE_USE_YAML
+
 #cmakedefine SPIPE_USE_THREAD
+#ifdef SPIPE_USE_THREAD
+// This is necessary to get threading support in pipelib
+#  define PIPELIB_USE_BOOST_THREAD
+#endif 
 

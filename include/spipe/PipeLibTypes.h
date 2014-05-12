@@ -12,10 +12,9 @@
 // INCLUDES /////////////
 #include <boost/filesystem/path.hpp>
 
-#include <pipelib/pipelib.h>
-
 #include <spl/SSLibTypes.h>
 
+#include "spipe/StructurePipe.h"
 #include "spipe/common/Assert.h"
 #include "spipe/common/PipeFunctions.h"
 
@@ -55,14 +54,14 @@ template< class Base>
             "SPipe Block")
     {
     }
-    ::boost::filesystem::path
+    boost::filesystem::path
     workingDir() const
     {
       SPIPE_ASSERT(this->getEngine());
       return common::getWorkingDir(this->getEngine()->sharedData(),
           this->getEngine()->globalData());
     }
-    ::boost::filesystem::path
+    boost::filesystem::path
     outputFileStemPath() const
     {
       SPIPE_ASSERT(this->getEngine());

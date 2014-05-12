@@ -10,7 +10,7 @@
 #define SP_TYPES_H
 
 // INCLUDES /////////////
-#include "PipeLibTypes.h"
+#include "spipe/PipeLibTypes.h"
 #include "spipe/common/GlobalData.h"
 #include "spipe/common/SharedData.h"
 #include "spipe/common/StructureData.h"
