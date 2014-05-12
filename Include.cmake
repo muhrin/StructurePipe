@@ -1,10 +1,4 @@
 
-## spipe/build/
-set(spipe_Header_Files__build
-  include/spipe/build/BlockLoader.h
-)
-source_group("Header Files\\build" FILES ${spipe_Header_Files__build})
-
 ## spipe/blocks/
 set(spipe_Header_Files__blocks
   include/spipe/blocks/blocks.h

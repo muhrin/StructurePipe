@@ -1,10 +1,4 @@
 
-## spipe/build
-set(spipe_Source_Files__build
-  src/buildBlockLoader.cpp
-)
-source_group("Source Files\\build" FILES ${spipe_Source_Files__build})
-
 ## spipe/blocks/
 set(spipe_Source_Files__blocks
   src/blocks/BuildStructures.cpp

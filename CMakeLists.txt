@@ -6,9 +6,8 @@ set(SPIPE_VERSION_MINOR 3)
 set(SPIPE_VERSION_PATCH 0)
 set(SPIPE_VERSION "${SPIPE_VERSION_MAJOR}.${SPIPE_VERSION_MINOR}.${SPIPE_VERSION_PATCH}")
 
-message(STATUS "Configuring SPipe ${SPIPE_VERSION}")
-
 project(SPipe)
+message(STATUS "Configuring ${PROJECT_NAME} ${SPIPE_VERSION}")
 
 ## FIND PACKAGES ########################################
 
@@ -83,7 +82,7 @@ include_directories(
 include(Include.cmake)
 include(Src.cmake)
 
-set_property(TARGET PROPERTY PROJECT_LABEL "StructurePipe")
+set_property(TARGET PROPERTY PROJECT_LABEL ${PROJECT_NAME})
 
 ###################
 ## spipe library ##
