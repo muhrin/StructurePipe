@@ -19,7 +19,7 @@ add_definitions(-DBOOST_ALL_NO_LIB)
 find_package(Boost 1.36.0 REQUIRED COMPONENTS system filesystem regex)
 
 ## Armadillo ##
-find_package(Armadillo REQUIRED)
+find_package(Armadillo CONFIG REQUIRED)
 if("${ARMADILLO_INCLUDE_DIRS}" STREQUAL "")
   set(ARMADILLO_INCLUDE_DIRS "${ARMADILLO_ROOT}/include")
 endif()
@@ -34,6 +34,7 @@ find_package_or_install(SPL)
 
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for library files.")
 if(WIN32 AND NOT CYGWIN)
   set(DEF_INSTALL_CMAKE_DIR CMake)
 else()
@@ -133,7 +134,12 @@ install(TARGETS spipe spipe-bin
   ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT lib
 )
 # Header files
-install(DIRECTORY src/ DESTINATION ${INSTALL_INCLUDE_DIR}
+install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}
+  COMPONENT dev
+  PATTERN "*.h"
+)
+install(DIRECTORY ${PROJECT_BINARY_DIR}/include/
+  DESTINATION ${INSTALL_INCLUDE_DIR}
   COMPONENT dev
   PATTERN "*.h"
 )
