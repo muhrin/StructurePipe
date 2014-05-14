@@ -8,7 +8,7 @@
 // INCLUDES //////////////////////////////////
 #include "spipe/utility/PipeDataInitialisation.h"
 
-#include <spl/SSLibTypes.h>
+#include <spl/SSLib.h>
 #include <spl/io/CastepReader.h>
 #include <spl/io/CellReaderWriter.h>
 #include <spl/io/StructureReadWriteManager.h>

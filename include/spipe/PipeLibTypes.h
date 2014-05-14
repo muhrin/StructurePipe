@@ -12,7 +12,7 @@
 // INCLUDES /////////////
 #include <boost/filesystem/path.hpp>
 
-#include <spl/SSLibTypes.h>
+#include <spl/SSLib.h>
 
 #include "spipe/StructurePipe.h"
 #include "spipe/common/Assert.h"

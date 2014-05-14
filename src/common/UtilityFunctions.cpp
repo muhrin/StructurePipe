@@ -10,13 +10,12 @@
 
 #include <iomanip>
 
-#include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <spl/io/IoFunctions.h>
 #include <spl/utility/Armadillo.h>
+#include <spl/utility/UtilFunctions.h>
 
-// From local
 #include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
@@ -24,21 +23,18 @@
 namespace spipe {
 namespace common {
 
-namespace ssio = ::spl::io;
+namespace ssio = spl::io;
 
-void parseParamString(
-  const std::string & str,
-  double &            from,
-  double &            step,
-  unsigned int &      nSteps
-)
+void
+parseParamString(const std::string & str, double & from, double & step,
+    unsigned int & nSteps)
 {
   using std::string;
   using boost::lexical_cast;
 
   if(str.empty())
   {
-    throw ::std::invalid_argument("Cannot get parameters from empty string");
+    throw std::invalid_argument("Cannot get parameters from empty string");
   }
 
   const size_t plusPos = str.find("+");
@@ -54,26 +50,27 @@ void parseParamString(
   // Try to get the from value
   try
   {
-    lFrom = lexical_cast<double>(substr);
+    lFrom = lexical_cast< double>(substr);
   }
   catch(const boost::bad_lexical_cast &)
   {
-    throw ::std::invalid_argument("Could not parse " + substr + " as double");
+    throw std::invalid_argument("Could not parse " + substr + " as double");
   }
 
   // Try to get step if it exists
   if(plusPos != string::npos)
   {
-    const size_t plusEnd = timesPos == string::npos ? string::npos : timesPos - 1;
+    const size_t plusEnd =
+        timesPos == string::npos ? string::npos : timesPos - 1;
     substr = str.substr(plusPos + 1, plusEnd - plusPos);
     try
     {
-      lStep = lexical_cast<double>(substr);
-      lNSteps = 2;  // Have two steps (the original number, lFrom, and lFrom+lStep)
+      lStep = lexical_cast< double>(substr);
+      lNSteps = 2; // Have two steps (the original number, lFrom, and lFrom+lStep)
     }
     catch(const boost::bad_lexical_cast &)
     {
-      throw ::std::invalid_argument("Could not parse " + substr + " as double");
+      throw std::invalid_argument("Could not parse " + substr + " as double");
     }
 
     // Try to get nsteps if it exists
@@ -82,11 +79,12 @@ void parseParamString(
       substr = str.substr(timesPos + 1, string::npos);
       try
       {
-        lNSteps = lexical_cast<unsigned int>(substr) + 1;
+        lNSteps = lexical_cast< unsigned int>(substr) + 1;
       }
       catch(const boost::bad_lexical_cast &)
       {
-        throw ::std::invalid_argument("Could not parse " + substr + " as unsigned integer");
+        throw std::invalid_argument(
+            "Could not parse " + substr + " as unsigned integer");
       }
     }
   }
@@ -97,22 +95,19 @@ void parseParamString(
   nSteps = lNSteps;
 }
 
-::std::string toString(const double in, unsigned int digitsAfterDecimal)
+std::string
+toString(const double in, unsigned int digitsAfterDecimal)
 {
   int digits = ssio::getPrecision(in, digitsAfterDecimal);
-  ::std::ostringstream ss;
-  ss << ::std::setprecision(digits) << in;
+  std::ostringstream ss;
+  ss << std::setprecision(digits) << in;
   return ss.str();
 }
 
-::std::string
-generateParamDirName(const ::arma::vec & params, const ::std::string & seedName)
+std::string
+generateParamDirName(const arma::vec & params, const std::string & seedName)
 {
-  static const ::boost::hash< ::arma::vec> VEC_HASHER = ::boost::hash< ::arma::vec>();
-
-  std::stringstream stream;
-  stream << seedName << "-" << std::hex << VEC_HASHER(params);
-  return stream.str();
+  return spl::utility::generateUniqueName(seedName);
 }
 
 }
