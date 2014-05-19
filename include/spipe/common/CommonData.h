@@ -32,24 +32,28 @@ namespace common {
 class ParamRange
 {
 public:
-  ParamRange() {}
+  ParamRange()
+  {
+  }
   ParamRange(const size_t dims);
 
-  bool fromStrings(const ::std::vector< ::std::string> & paramStrings);
+  bool
+  fromStrings(const std::vector< std::string> & paramStrings);
 
-  ::std::vector<double> from;
-  ::std::vector<double> step;
-  ::std::vector<int> nSteps;
+  std::vector< double> from;
+  std::vector< double> step;
+  std::vector< int> nSteps;
 
 private:
-  bool parseParamString(const size_t idx, const ::std::string & paramString);
+  bool
+  parseParamString(const size_t idx, const std::string & paramString);
 };
 
 struct GlobalKeys
 {
   // The current parameterised potential parameters
-  static ::spl::utility::Key< ::std::vector<double> >  POTENTIAL_PARAMS;
-  static ::spl::utility::Key< ::spl::build_cell::GenerationSettings> GENERATION_SETTINGS;
+  static spl::utility::Key< std::vector< std::string> > POTENTIAL_PARAMS;
+  static spl::utility::Key< spl::build_cell::GenerationSettings> GENERATION_SETTINGS;
 };
 
 }

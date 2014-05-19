@@ -28,20 +28,20 @@ namespace structure_properties = ::spl::common::structure_properties;
 bool
 insertStructureInfoAndPotentialParams(const utility::DataTable::Key & key,
     const common::StructureData & structureData,
-    const ::boost::filesystem::path & pathsRelativeTo, DataTable & table)
+    const boost::filesystem::path & pathsRelativeTo, DataTable & table)
 {
   if(!structureData.getStructure())
     return false;
 
-  const ::std::vector< double> * const params = structureData.objectsStore.find(
-      common::GlobalKeys::POTENTIAL_PARAMS);
+  const std::vector< std::string> * const params =
+      structureData.objectsStore.find(common::GlobalKeys::POTENTIAL_PARAMS);
   if(params)
   {
     // Update the table with the current parameters
     for(size_t i = 0; i < params->size(); ++i)
     {
-      table.insert(key, "p_" + ::boost::lexical_cast< ::std::string>(i),
-          common::toString((*params)[i]));
+      table.insert(key, "p_" + boost::lexical_cast< std::string>(i),
+          (*params)[i]);
     }
   }
 

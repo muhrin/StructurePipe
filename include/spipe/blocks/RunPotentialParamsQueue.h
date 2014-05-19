@@ -64,7 +64,7 @@ public:
   start();
   // End from StartBlock
 private:
-  typedef std::vector< double> Params;
+  typedef std::vector< std::string> Params;
 
   // From FinishedSink ///////////////////////
   virtual void

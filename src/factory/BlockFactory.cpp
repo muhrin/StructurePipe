@@ -28,7 +28,6 @@
 #include "spipe/blocks/RunPotentialParamsQueue.h"
 #include "spipe/blocks/SearchStoichiometries.h"
 #include "spipe/blocks/SeparateAtoms.h"
-#include "spipe/blocks/SweepPotentialParams.h"
 #include "spipe/blocks/WriteStructures.h"
 #include "spipe/common/CommonData.h"
 #include "spipe/common/StructureData.h"
@@ -235,22 +234,6 @@ BlockFactory::createBlock(BlockHandle * const blockOut,
   if(options.pairDistances)
     sep->setPairDistances(*options.pairDistances);
   blockOut->reset(sep.release());
-  return true;
-}
-
-bool
-BlockFactory::createBlock(BlockHandle * const blockOut,
-    blocks::SweepPotentialParams & options) const
-{
-  if(!options.pipe)
-    return false;
-
-  common::ParamRange paramRange;
-  if(!paramRange.fromStrings(options.range))
-    return false;
-
-  blockOut->reset(
-      new spipe::blocks::SweepPotentialParams(paramRange, options.pipe));
   return true;
 }
 

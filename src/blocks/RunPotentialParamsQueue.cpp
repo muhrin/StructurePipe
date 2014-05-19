@@ -10,6 +10,7 @@
 
 #include <algorithm>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
@@ -32,18 +33,18 @@
 namespace spipe {
 namespace blocks {
 
-namespace fs = ::boost::filesystem;
-namespace ip = ::boost::interprocess;
-namespace posix_time = ::boost::posix_time;
+namespace fs = boost::filesystem;
+namespace ip = boost::interprocess;
+namespace posix_time = boost::posix_time;
 
-namespace splio = ::spl::io;
-namespace splu = ::spl::utility;
+namespace splio = spl::io;
+namespace splu = spl::utility;
 
-const ::std::string RunPotentialParamsQueue::DEFAULT_PARAMS_QUEUE_FILE =
+const std::string RunPotentialParamsQueue::DEFAULT_PARAMS_QUEUE_FILE =
     "params_queue";
-const ::std::string RunPotentialParamsQueue::DEFAULT_PARAMS_DONE_FILE =
+const std::string RunPotentialParamsQueue::DEFAULT_PARAMS_DONE_FILE =
     "params_done";
-const ::std::string RunPotentialParamsQueue::POTPARAMS_FILE_EXTENSION =
+const std::string RunPotentialParamsQueue::POTPARAMS_FILE_EXTENSION =
     "potparams";
 
 // The number of work items to take the first time around, after that it will
@@ -61,7 +62,7 @@ RunPotentialParamsQueue::RunPotentialParamsQueue(BlockHandle & sweepPipeline) :
 }
 
 RunPotentialParamsQueue::RunPotentialParamsQueue(
-    const ::std::string * const queueFile, const ::std::string * const doneFile,
+    const std::string * const queueFile, const std::string * const doneFile,
     BlockHandle & sweepPipeline) :
     Block("Run potential params queue"), mySweepPipeline(sweepPipeline), mySubpipeEngine(
     NULL), myQueueFile(queueFile ? *queueFile : DEFAULT_PARAMS_QUEUE_FILE), myDoneFile(
@@ -118,7 +119,7 @@ RunPotentialParamsQueue::start()
   {
     while(!myParamsQueue.empty())
     {
-      ::spipe::SharedDataType & sweepSharedData = mySubpipeEngine->sharedData();
+      spipe::SharedDataType & sweepSharedData = mySubpipeEngine->sharedData();
 
       const posix_time::ptime startTime =
           posix_time::microsec_clock::universal_time();
@@ -162,18 +163,18 @@ RunPotentialParamsQueue::getWork()
   ip::scoped_lock< ip::file_lock> lockQueue(lock);
 
   fs::fstream queueStream(myQueueFile);
-  ::std::stringstream takenWorkItems, originalContents;
-  ::std::string line;
+  std::stringstream takenWorkItems, originalContents;
+  std::string line;
   size_t numParamsRead = 0;
   while(numParamsRead < myNumWorkItemsChunk)
   {
-    if(!::std::getline(queueStream, line))
+    if(!std::getline(queueStream, line))
       break;
 
     bool takenWork = false;
     if(!line.empty() && line[0] != '#')
     {
-      const ::boost::optional< Params> & params = readParams(line);
+      const boost::optional< Params> & params = readParams(line);
       if(params)
       {
         ++numParamsRead;
@@ -189,23 +190,23 @@ RunPotentialParamsQueue::getWork()
   if(numParamsRead > 0)
   {
     // Save the rest of the file to buffer
-    ::std::copy(::std::istreambuf_iterator< char>(queueStream),
-        ::std::istreambuf_iterator< char>(),
-        ::std::ostreambuf_iterator< char>(originalContents));
+    std::copy(std::istreambuf_iterator< char>(queueStream),
+        std::istreambuf_iterator< char>(),
+        std::ostreambuf_iterator< char>(originalContents));
 
     // Go back to the start of the file
     queueStream.clear(); // Clear the EoF flag
-    queueStream.seekg(0, ::std::ios::beg);
+    queueStream.seekg(0, std::ios::beg);
 
     // Write out the whole new contents
     // First the rest of the file
-    ::std::copy(::std::istreambuf_iterator< char>(originalContents),
-        ::std::istreambuf_iterator< char>(),
-        ::std::ostreambuf_iterator< char>(queueStream));
+    std::copy(std::istreambuf_iterator< char>(originalContents),
+        std::istreambuf_iterator< char>(),
+        std::ostreambuf_iterator< char>(queueStream));
     // Then the part of the queue that we're running
-    ::std::copy(::std::istreambuf_iterator< char>(takenWorkItems),
-        ::std::istreambuf_iterator< char>(),
-        ::std::ostreambuf_iterator< char>(queueStream));
+    std::copy(std::istreambuf_iterator< char>(takenWorkItems),
+        std::istreambuf_iterator< char>(),
+        std::ostreambuf_iterator< char>(queueStream));
   }
   queueStream.close();
 
@@ -214,35 +215,18 @@ RunPotentialParamsQueue::getWork()
 
 void
 RunPotentialParamsQueue::writeParams(const Params & params,
-    ::std::ostream & os) const
+    std::ostream & os) const
 {
   for(size_t i = 0; i < params.size(); ++i)
     os << params[i] << " ";
   os << "\n";
 }
 
-::boost::optional< RunPotentialParamsQueue::Params>
-RunPotentialParamsQueue::readParams(const ::std::string & paramsLine) const
+boost::optional< RunPotentialParamsQueue::Params>
+RunPotentialParamsQueue::readParams(const std::string & paramsLine) const
 {
-  typedef boost::tokenizer< boost::char_separator< char> > Toker;
-  const boost::char_separator< char> tokSep(" \t");
-
   Params params;
-  Toker toker(paramsLine, tokSep);
-  BOOST_FOREACH(const ::std::string & tok, toker)
-  {
-    try
-    {
-      params.push_back(::boost::lexical_cast< double>(tok));
-    }
-    catch(const ::boost::bad_lexical_cast & /*e*/)
-    {
-    }
-  }
-
-  if(params.empty())
-    return ::boost::optional< Params>();
-
+  boost::split(params, paramsLine, boost::is_any_of(" \t"));
   return params;
 }
 
@@ -257,9 +241,9 @@ RunPotentialParamsQueue::updateDoneParams()
   ip::scoped_lock< ip::file_lock> lockQueue(lock);
 
   fs::ofstream doneStream(myDoneFile, std::ios::out | std::ios::app);
-  ::std::for_each(myDoneParams.begin(), myDoneParams.end(),
-      ::boost::bind(&RunPotentialParamsQueue::writeParams, this, _1,
-          ::boost::ref(doneStream)));
+  std::for_each(myDoneParams.begin(), myDoneParams.end(),
+      boost::bind(&RunPotentialParamsQueue::writeParams, this, _1,
+          boost::ref(doneStream)));
 
   doneStream.close();
   myDoneParams.clear();
@@ -289,11 +273,11 @@ RunPotentialParamsQueue::updateWorkChunkSize()
 
 void
 RunPotentialParamsQueue::releaseBufferedStructures(
-    const ::spipe::utility::DataTable::Key & key)
+    const spipe::utility::DataTable::Key & key)
 {
-  ::std::for_each(myBuffer.begin(), myBuffer.end(),
-      ::boost::bind(&RunPotentialParamsQueue::updateTable, this,
-          ::boost::ref(key), _1));
+  std::for_each(myBuffer.begin(), myBuffer.end(),
+      boost::bind(&RunPotentialParamsQueue::updateTable, this,
+          boost::ref(key), _1));
 
   // Send any finished structure data down my pipe
   BOOST_FOREACH(StructureDataType * const sweepStrData, myBuffer)

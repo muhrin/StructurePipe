@@ -61,7 +61,7 @@ public:
   // End from PipeBlock ///////////////////////
 
 private:
-  typedef std::vector< double> PotentialParams;
+  typedef std::vector< std::string> PotentialParams;
 
   void
   init();

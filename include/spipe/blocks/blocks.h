@@ -16,5 +16,4 @@
 #include "spipe/blocks/RunPotentialParamsQueue.h"
 #include "spipe/blocks/SearchStoichiometries.h"
 #include "spipe/blocks/SeparateAtoms.h"
-#include "spipe/blocks/SweepPotentialParams.h"
 #include "spipe/blocks/WriteStructures.h"

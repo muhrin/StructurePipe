@@ -105,7 +105,7 @@ toString(const double in, unsigned int digitsAfterDecimal)
 }
 
 std::string
-generateParamDirName(const arma::vec & params, const std::string & seedName)
+generateParamDirName(const std::vector< std::string> & params, const std::string & seedName)
 {
   return spl::utility::generateUniqueName(seedName);
 }

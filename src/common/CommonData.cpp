@@ -18,13 +18,13 @@ namespace common {
 
 namespace ssu = ::spl::utility;
 
-ParamRange::ParamRange(const size_t dims):
-from(dims),
-step(dims),
-nSteps(dims)
-{}
+ParamRange::ParamRange(const size_t dims) :
+    from(dims), step(dims), nSteps(dims)
+{
+}
 
-bool ParamRange::fromStrings(const ::std::vector< ::std::string> & paramStrings)
+bool
+ParamRange::fromStrings(const ::std::vector< ::std::string> & paramStrings)
 {
   const size_t numParams = paramStrings.size();
   from.resize(numParams);
@@ -39,7 +39,9 @@ bool ParamRange::fromStrings(const ::std::vector< ::std::string> & paramStrings)
   return true;
 }
 
-bool ParamRange::parseParamString(const size_t idx, const ::std::string & paramString)
+bool
+ParamRange::parseParamString(const size_t idx,
+    const ::std::string & paramString)
 {
   using std::string;
   using boost::lexical_cast;
@@ -61,7 +63,7 @@ bool ParamRange::parseParamString(const size_t idx, const ::std::string & paramS
   // Try to get the from value
   try
   {
-    lFrom = lexical_cast<double>(substr);
+    lFrom = lexical_cast< double>(substr);
   }
   catch(const ::boost::bad_lexical_cast & /*e*/)
   {
@@ -72,13 +74,14 @@ bool ParamRange::parseParamString(const size_t idx, const ::std::string & paramS
   if(plusPos != string::npos)
   {
     // Is there only a plus?
-    const size_t plusEnd = timesPos == string::npos ? string::npos : timesPos - 1;
+    const size_t plusEnd =
+        timesPos == string::npos ? string::npos : timesPos - 1;
     substr = paramString.substr(plusPos + 1, plusEnd - plusPos);
     ::boost::trim(substr);
     try
     {
-      lStep = lexical_cast<double>(substr);
-      lNSteps = 1;  // Have two steps (the original number, lFrom, and lFrom+lStep)
+      lStep = lexical_cast< double>(substr);
+      lNSteps = 1; // Have two steps (the original number, lFrom, and lFrom+lStep)
     }
     catch(const ::boost::bad_lexical_cast & /*e*/)
     {
@@ -92,7 +95,7 @@ bool ParamRange::parseParamString(const size_t idx, const ::std::string & paramS
       ::boost::trim(substr);
       try
       {
-        lNSteps = lexical_cast<int>(substr);
+        lNSteps = lexical_cast< int>(substr);
       }
       catch(const boost::bad_lexical_cast & /*e*/)
       {
@@ -109,7 +112,7 @@ bool ParamRange::parseParamString(const size_t idx, const ::std::string & paramS
 }
 
 // Objects keys ////////////////
-ssu::Key< ::std::vector<double> > GlobalKeys::POTENTIAL_PARAMS;
+ssu::Key< ::std::vector< std::string> > GlobalKeys::POTENTIAL_PARAMS;
 ssu::Key< ::spl::build_cell::GenerationSettings> GlobalKeys::GENERATION_SETTINGS;
 
 }

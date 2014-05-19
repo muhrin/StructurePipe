@@ -116,10 +116,6 @@ BlockLoader::BlockLoader()
       CreatorPtr(
           new FactoryBlockCreator< factory::blocks::SeparateAtomsType>(
               myBlockFactory)));
-  registerCreator("sweepPotentialParams",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::SweepPotentialParamsSchema>(
-              myBlockFactory)));
   registerCreator("writeStructures",
       CreatorPtr(
           new FactoryBlockCreator< factory::blocks::WriteStructuresSchema>(

@@ -19,7 +19,6 @@ set(spipe_Header_Files__blocks
   include/spipe/blocks/RunPotentialParamsQueue.h
   include/spipe/blocks/SearchStoichiometries.h
   include/spipe/blocks/SeparateAtoms.h
-  include/spipe/blocks/SweepPotentialParams.h
   include/spipe/blocks/WriteStructures.h
 )
 source_group("Header Files\\blocks" FILES ${spipe_Header_Files__blocks})

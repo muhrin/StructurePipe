@@ -34,7 +34,8 @@ std::string
 toString(const double in, unsigned int digitsAfterDecimal = 5);
 
 std::string
-generateParamDirName(const ::arma::vec & params, const std::string & seedName);
+generateParamDirName(const std::vector< std::string> & params,
+    const std::string & seedName);
 
 }
 }

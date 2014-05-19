@@ -211,18 +211,6 @@ SCHEMER_MAP(SeparateAtomsType, SeparateAtoms)
       FailAction::CONTINUE);
 }
 
-struct SweepPotentialParams
-{
-  std::vector< std::string> range;
-  BlockHandle pipe;
-};
-
-SCHEMER_MAP(SweepPotentialParamsSchema, SweepPotentialParams)
-{
-  element< spl::factory::StringsVector>("range", &SweepPotentialParams::range);
-  element< io::BlockLoaderType>("pipe", &SweepPotentialParams::pipe);
-}
-
 struct WriteStructures
 {
   std::string format;

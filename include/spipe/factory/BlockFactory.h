@@ -80,9 +80,6 @@ public:
       blocks::SeparateAtoms & options) const;
   bool
   createBlock(BlockHandle * const blockOut,
-      blocks::SweepPotentialParams & options) const;
-  bool
-  createBlock(BlockHandle * const blockOut,
       const blocks::WriteStructures & options) const;
 
 private:
