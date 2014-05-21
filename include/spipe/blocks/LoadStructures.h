@@ -39,17 +39,15 @@ class ResourceLocator;
 namespace spipe {
 namespace blocks {
 
-class LoadStructures : public StartBlock, ::boost::noncopyable
+class LoadStructures : public StartBlock, boost::noncopyable
 {
 public:
-  static const double ATOMIC_VOLUME_MULTIPLIER;
-
   // seedStructures - Can be:
   // - path to single structure
   // - path to folder containing structures
   // - wildcard path to structures or folders containig structures
   // - a list containing a mixture of any of the above
-  LoadStructures(const ::std::string & seedStructures, const bool tryToScaleVolumes = false);
+  LoadStructures(const std::string & seedStructures);
 
   // From StartBlock ///
   virtual void
@@ -59,8 +57,8 @@ public:
   // End from StartBlock
 
 private:
-  typedef ::spl::common::StructurePtr StructurePtr;
-  typedef ::spl::io::StructuresContainer StructuresContainer;
+  typedef spl::common::StructurePtr StructurePtr;
+  typedef spl::io::StructuresContainer StructuresContainer;
 
   enum EntryType
   {
@@ -68,18 +66,16 @@ private:
   };
 
   int
-  processEntry(const ::std::string & entry);
+  processEntry(const std::string & entry);
   int
-  processWildcardEntry(const ::std::string & entry);
+  processWildcardEntry(const std::string & entry);
   EntryType
-  entryType(const ::std::string & entry) const;
+  entryType(const std::string & entry) const;
+  void
+  loadStructures();
 
-  double
-  getTotalAtomicVolume(const ::spl::common::Structure & structure) const;
-
-  const ::std::string mySeedStructuresString;
-  ::std::queue< ::spl::io::ResourceLocator> myStructureLocations;
-  const bool myTryToScaleVolumes;
+  const std::string mySeedStructuresString;
+  spl::io::StructuresContainer myStructures;
 };
 
 }

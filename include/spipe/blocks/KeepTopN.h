@@ -15,12 +15,13 @@
 #include <map>
 
 #include <boost/noncopyable.hpp>
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
 #  include <boost/thread/mutex.hpp>
 #endif
 
 #include <pipelib/pipelib.h>
 
+#include <spl/common/AtomsFormula.h>
 #include <spl/common/StructureProperties.h>
 
 #include "spipe/SpTypes.h"
@@ -30,15 +31,16 @@
 namespace spipe {
 namespace blocks {
 
-class KeepTopN : public Barrier, ::boost::noncopyable
+class KeepTopN : public Barrier, boost::noncopyable
 {
-  typedef ::spl::utility::Key<double> StructureProperty;
+  typedef spl::utility::Key< double> StructureProperty;
 
 public:
-  explicit KeepTopN(const size_t keepTopN);
-  KeepTopN(const size_t keepTopN, const StructureProperty & proeprty);
-  KeepTopN(const size_t keepTopN, const StructureProperty & proeprty, const bool usePerAtom);
-
+  explicit
+  KeepTopN(const size_t keepTopN);
+  KeepTopN(const size_t keepTopN, const StructureProperty & property);
+  KeepTopN(const size_t keepTopN, const StructureProperty & property,
+      const bool usePerAtom);
 
   // From Block /////////////////
   virtual void
@@ -53,19 +55,20 @@ public:
   // End from Barrier //////////////
 
 private:
-  typedef ::std::map< double, StructureDataType *> Structures;
+  typedef std::multimap< double, StructureDataType *> StructureOrder;
+  typedef std::map< spl::common::AtomsFormula, StructureOrder> StructuresByComposition;
 
   void
   keep(StructureDataType * const structure, const double energy);
 
   const size_t myKeepTopN;
-  const ::spl::utility::Key<double> myStructureProperty;
+  const spl::utility::Key< double> myStructureProperty;
   const bool myUsePerAtom;
 
-  Structures myStructures;
+  StructuresByComposition myStructures;
 
-#ifdef SPIPE_USE_THREAD
-  ::boost::mutex myMutex;
+#ifdef SPIPE_USE_BOOST_THREAD
+  boost::mutex myMutex;
 #endif
 };
 

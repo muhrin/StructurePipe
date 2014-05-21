@@ -20,29 +20,26 @@
 namespace spipe {
 namespace blocks {
 
-namespace ssc = ::spl::common;
+namespace ssc = spl::common;
 namespace structure_properties = ssc::structure_properties;
 
 KeepWithinXPercent::KeepWithinXPercent(const double percent) :
-    Block("Keep within X percent"), myKeepPercent(percent),
-    myStructureProperty(structure_properties::general::ENTHALPY),
-    myUsePerAtom(false)
+    Block("Keep within X percent"), myKeepPercent(percent), myStructureProperty(
+        structure_properties::general::ENTHALPY), myUsePerAtom(true)
 {
 }
 
 KeepWithinXPercent::KeepWithinXPercent(const double percent,
     const StructureProperty & property) :
-    Block("Keep within X percent"), myKeepPercent(percent),
-    myStructureProperty(property),
-    myUsePerAtom(false)
+    Block("Keep within X percent"), myKeepPercent(percent), myStructureProperty(
+        property), myUsePerAtom(true)
 {
 }
 
 KeepWithinXPercent::KeepWithinXPercent(const double percent,
     const StructureProperty & property, const bool usePerAtom) :
-    Block("Keep within X percent"), myKeepPercent(percent),
-    myStructureProperty(property),
-    myUsePerAtom(usePerAtom)
+    Block("Keep within X percent"), myKeepPercent(percent), myStructureProperty(
+        property), myUsePerAtom(usePerAtom)
 {
 }
 
@@ -61,7 +58,7 @@ KeepWithinXPercent::in(spipe::common::StructureData * const data)
 
   double localValue = *value;
   if(myUsePerAtom)
-    localValue /= static_cast<double>(structure->getNumAtoms());
+    localValue /= static_cast< double>(structure->getNumAtoms());
 
   keep(data, localValue);
 }
@@ -69,10 +66,12 @@ KeepWithinXPercent::in(spipe::common::StructureData * const data)
 size_t
 KeepWithinXPercent::release()
 {
-  const size_t numReleased = myStructures.size();
-  BOOST_FOREACH(Structures::reference structurePair, myStructures)
+  size_t numReleased = 0;
+  BOOST_FOREACH(StructuresByComposition::reference order, myStructures)
   {
-    out(structurePair.second);
+    BOOST_FOREACH(StructureOrder::reference structure, order.second)
+      out(structure.second);
+    numReleased += order.second.size();
   }
   myStructures.clear();
   return numReleased;
@@ -85,24 +84,29 @@ KeepWithinXPercent::hasData() const
 }
 
 void
-KeepWithinXPercent::keep(StructureDataType * const structure, const double energy)
+KeepWithinXPercent::keep(StructureDataType * const structure,
+    const double energy)
 {
-  using ::std::make_pair;
+  using std::make_pair;
 
-#ifdef SPIPE_USE_THREAD
-  boost::lock_guard<boost::mutex> guard(myMutex);
+#ifdef SPIPE_USE_BOOST_THREAD
+  boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
+
+  spl::common::AtomsFormula composition;
+  composition.reduce();
+  StructureOrder & order = myStructures[composition];
 
   // Check if we have any structures yet
   bool kept = true;
-  if(myStructures.empty())
-    myStructures.insert(make_pair(energy, structure));
+  if(order.empty())
+    order.insert(order.begin(), make_pair(energy, structure));
   else
   {
-    if(energy < myStructures.begin()->first)
-      newLowest(structure, energy);
-    else if(energy < getCutoff())
-      myStructures.insert(make_pair(energy, structure));
+    if(energy < order.begin()->first)
+      newLowest(structure, energy, &order);
+    else if(energy < getCutoff(order))
+      order.insert(make_pair(energy, structure));
     else
       kept = false;
   }
@@ -112,32 +116,36 @@ KeepWithinXPercent::keep(StructureDataType * const structure, const double energ
 }
 
 void
-KeepWithinXPercent::newLowest(StructureDataType * const structure, const double energy)
+KeepWithinXPercent::newLowest(StructureDataType * const structure,
+    const double energy, StructureOrder * const order)
 {
   // WARNING: This must be called from keep(...) or another method that locks a mutex
   // to make sure the operations in this method remain thread safe as it doesn't
   // use a lock itself
-  SPIPE_ASSERT(energy < myStructures.begin()->first);
+  SPIPE_ASSERT(energy < order->begin()->first);
 
-  myStructures.insert(myStructures.begin(), ::std::make_pair(energy, structure));
-  const double cutoff = getCutoff();
+  order->insert(order->begin(), std::make_pair(energy, structure));
+  const double cutoff = getCutoff(*order);
 
   // Go from the end erasing all entries greater than the new cutoff
-  Structures::reverse_iterator it;
+  StructureOrder::reverse_iterator it;
 
   // Erasing using reverse iterator is a bit annoying
   // see: http://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-  while((it = myStructures.rbegin())->first > cutoff)
+  while((it = order->rbegin())->first > cutoff)
   {
     drop(it->second);
-    myStructures.erase((++it).base());
+    order->erase((++it).base());
   }
 }
 
 double
-KeepWithinXPercent::getCutoff() const
+KeepWithinXPercent::getCutoff(const StructureOrder & order) const
 {
-  return myStructures.begin()->first * (1.0 - myKeepPercent);
+  if(order.empty())
+    return std::numeric_limits< double>::max();
+
+  return order.begin()->first * (1.0 - myKeepPercent);
 }
 
 }

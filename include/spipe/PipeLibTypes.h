@@ -75,6 +75,7 @@ template< class Base>
 typedef pipelib::Block< StructureDataType, SharedDataType, GlobalDataType> Block;
 typedef pipelib::Block< StructureDataType, SharedDataType, GlobalDataType>::HandleType BlockHandle;
 typedef pipelib::FinishedSink< StructureDataType> FinishedSink;
+typedef pipelib::DroppedSink< StructureDataType> DroppedSink;
 typedef FinishedSink::PipeUniquePtr StructureDataUniquePtr;
 typedef SPipeBlock<
     pipelib::PipeBlock< StructureDataType, SharedDataType, GlobalDataType> > PipeBlock;

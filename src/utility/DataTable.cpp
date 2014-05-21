@@ -12,7 +12,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/join.hpp>
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
 #  include <boost/thread/locks.hpp>
 #endif
 #include <boost/range/iterator_range.hpp>
@@ -93,7 +93,7 @@ DataTable::Coords
 DataTable::insert(const DataTable::Key & key, const ::std::string & colName,
     const DataTable::Value & value)
 {
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   ::boost::lock_guard< boost::mutex> guard(myTableMutex);
 #endif
 
@@ -113,7 +113,7 @@ DataTable::insert(const DataTable::Key & key, const ::std::string & colName,
 void
 DataTable::addTableNote(const ::std::string & note)
 {
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   ::boost::lock_guard< boost::mutex> guard(myNotesMutex);
 #endif
   myTableNotes.push_back(note);

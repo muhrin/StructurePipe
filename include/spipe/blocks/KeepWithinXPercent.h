@@ -15,12 +15,13 @@
 #include <map>
 
 #include <boost/noncopyable.hpp>
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
 #  include <boost/thread/mutex.hpp>
 #endif
 
 #include <pipelib/pipelib.h>
 
+#include <spl/common/AtomsFormula.h>
 #include <spl/common/StructureProperties.h>
 
 #include "spipe/SpTypes.h"
@@ -30,16 +31,16 @@
 namespace spipe {
 namespace blocks {
 
-class KeepWithinXPercent : public Barrier, ::boost::noncopyable
+class KeepWithinXPercent : public Barrier, boost::noncopyable
 {
-  typedef ::spl::utility::Key<double> StructureProperty;
+  typedef spl::utility::Key< double> StructureProperty;
 
 public:
   explicit
   KeepWithinXPercent(const double percent);
   KeepWithinXPercent(const double percent, const StructureProperty & property);
-  KeepWithinXPercent(const double percent, const StructureProperty & property, const bool usePerAtom);
-
+  KeepWithinXPercent(const double percent, const StructureProperty & property,
+      const bool usePerAtom);
 
   // From Block /////////////////
   virtual void
@@ -54,23 +55,25 @@ public:
   // End from Barrier //////////////
 
 private:
-  typedef ::std::multimap< double, StructureDataType *> Structures;
+  typedef std::multimap< double, StructureDataType *> StructureOrder;
+  typedef std::map< spl::common::AtomsFormula, StructureOrder> StructuresByComposition;
 
   void
   keep(StructureDataType * const structure, const double energy);
   void
-  newLowest(StructureDataType * const structure, const double energy);
+  newLowest(StructureDataType * const structure, const double energy,
+      StructureOrder * const order);
   double
-  getCutoff() const;
+  getCutoff(const StructureOrder & order) const;
 
   const double myKeepPercent;
   const StructureProperty myStructureProperty;
   const bool myUsePerAtom;
 
-  Structures myStructures;
+  StructuresByComposition myStructures;
 
-#ifdef SPIPE_USE_THREAD
-  ::boost::mutex myMutex;
+#ifdef SPIPE_USE_BOOST_THREAD
+  boost::mutex myMutex;
 #endif
 };
 

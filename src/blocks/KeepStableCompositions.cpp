@@ -68,7 +68,7 @@ KeepStableCompositions::in(common::StructureData * const data)
     return;
   }
 
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   ::boost::lock_guard< ::boost::mutex> lock(myMutex);
 #endif
   myStructureStore.insert(data);

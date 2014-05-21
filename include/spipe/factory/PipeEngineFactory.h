@@ -29,7 +29,7 @@ public:
   createEngine(const Engine & settings) const;
   UniquePtr< spipe::SerialEngine>::Type
   createSerialEngine(const SerialEngine & settings) const;
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   UniquePtr< spipe::BoostThreadEngine>::Type
   createBoostThreadEngine(const BoostThreadEngine & settings) const;
 #endif

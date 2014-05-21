@@ -20,7 +20,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/noncopyable.hpp>
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
 #  include <boost/thread/mutex.hpp>
 #endif
 
@@ -74,7 +74,7 @@ private:
   StructureStore myStructureStore;
   mutable ::boost::scoped_ptr< ::spl::analysis::ConvexHullStructures> myConvexHullStructures;
 
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   ::boost::mutex myMutex;
 #endif
 };

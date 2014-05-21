@@ -32,78 +32,47 @@
 namespace spipe {
 namespace blocks {
 
-namespace fs = ::boost::filesystem;
-namespace ssbc = ::spl::build_cell;
-namespace ssc = ::spl::common;
-namespace ssio = ::spl::io;
-namespace ssu = ::spl::utility;
+namespace fs = boost::filesystem;
+namespace ssbc = spl::build_cell;
+namespace ssc = spl::common;
+namespace ssio = spl::io;
+namespace ssu = spl::utility;
 
-const double LoadStructures::ATOMIC_VOLUME_MULTIPLIER = 2.0;
-
-LoadStructures::LoadStructures(const ::std::string & seedStructures,
-    const bool tryToScaleVolumes) :
-    Block("Load structures"), mySeedStructuresString(seedStructures), myTryToScaleVolumes(
-        tryToScaleVolumes)
+LoadStructures::LoadStructures(const std::string & seedStructures) :
+    Block("Load structures"), mySeedStructuresString(seedStructures)
 {
 }
 
 void
 LoadStructures::pipelineInitialising()
 {
-  std::queue< ::spl::io::ResourceLocator> empty;
-  std::swap(myStructureLocations, empty);
-
-  // First of all split the string up
-  ::std::string entry;
-  std::stringstream stream(mySeedStructuresString);
-  while(getline(stream, entry))
-    processEntry(entry);
+  if(myStructures.empty())
+    loadStructures();
 }
 
 void
 LoadStructures::start()
 {
-  using ::spipe::common::StructureData;
+  using spipe::common::StructureData;
 
-  double oldVolume, newVolume;
-  const ssc::UnitCell * unitCell;
-
-  while(!myStructureLocations.empty())
+  BOOST_FOREACH(const spl::common::Structure & str, myStructures)
   {
-    // Get the front of the queue
-    const ssio::ResourceLocator loc = myStructureLocations.front();
-    myStructureLocations.pop();
+    StructureData * const data = getEngine()->createData();
+    ssc::Structure & structure = data->setStructure(
+        UniquePtr< ssc::Structure>::Type(new ssc::Structure(str)));
 
-    // Load the structures
-    ssio::StructuresContainer structures;
-    getEngine()->globalData().getStructureIo().readStructures(structures, loc);
+    // Set up the structure name if needed
+    if(structure.getName().empty())
+      structure.setName(
+          common::generateStructureName(getEngine()->globalData()));
 
-    while(!structures.empty())
-    {
-      StructureData * const data = getEngine()->createData();
-      ssc::Structure & structure = data->setStructure(structures.pop_back());
-
-      // Set up the structure name if needed
-      if(structure.getName().empty())
-        structure.setName(
-            common::generateStructureName(getEngine()->globalData()));
-
-      unitCell = structure.getUnitCell();
-      if(myTryToScaleVolumes && unitCell)
-      {
-        oldVolume = unitCell->getVolume();
-        newVolume = ATOMIC_VOLUME_MULTIPLIER * getTotalAtomicVolume(structure);
-        structure.scale(newVolume / oldVolume);
-      }
-
-      // Send it on its way
-      out(data);
-    }
+    // Send it on its way
+    out(data);
   }
 }
 
 int
-LoadStructures::processEntry(const ::std::string & entry)
+LoadStructures::processEntry(const std::string & entry)
 {
   const EntryType type = entryType(entry);
 
@@ -111,7 +80,8 @@ LoadStructures::processEntry(const ::std::string & entry)
   {
     ssio::ResourceLocator loc;
     loc.set(entry);
-    myStructureLocations.push(loc);
+    getEngine()->globalData().getStructureIo().readStructures(myStructures,
+        loc);
   }
   else if(type == WILDCARD_PATH)
     return processWildcardEntry(entry);
@@ -120,9 +90,9 @@ LoadStructures::processEntry(const ::std::string & entry)
 }
 
 int
-LoadStructures::processWildcardEntry(const ::std::string & entry)
+LoadStructures::processWildcardEntry(const std::string & entry)
 {
-  ::std::vector< fs::path> entryPaths;
+  std::vector< fs::path> entryPaths;
 
   if(!ssio::getWildcardPaths(entry, entryPaths))
     return -1;
@@ -132,7 +102,8 @@ LoadStructures::processWildcardEntry(const ::std::string & entry)
   {
     if(fs::is_regular_file(entryPath))
     {
-      myStructureLocations.push(ssio::ResourceLocator(entryPath));
+      getEngine()->globalData().getStructureIo().readStructures(myStructures,
+          ssio::ResourceLocator(entryPath));
       ++numOut;
     }
   }
@@ -140,9 +111,9 @@ LoadStructures::processWildcardEntry(const ::std::string & entry)
 }
 
 LoadStructures::EntryType
-LoadStructures::entryType(const ::std::string & entry) const
+LoadStructures::entryType(const std::string & entry) const
 {
-  if(entry.find('*') != ::std::string::npos)
+  if(entry.find('*') != std::string::npos)
     return WILDCARD_PATH;
 
   ssio::ResourceLocator entryLocator;
@@ -160,31 +131,16 @@ LoadStructures::entryType(const ::std::string & entry) const
   return UNKNOWN;
 }
 
-double
-LoadStructures::getTotalAtomicVolume(
-    const ::spl::common::Structure & structure) const
+void
+LoadStructures::loadStructures()
 {
-  typedef ::boost::optional< double> OptionalDouble;
+  SPIPE_ASSERT(getEngine());
 
-  ::std::vector< ssc::AtomSpeciesId::Value> species;
-  structure.getAtomSpecies(::std::back_inserter(species));
-
-  OptionalDouble radius;
-  double dRadius, volume = 0.0;
-  const ssc::AtomSpeciesDatabase & speciesDb =
-      getEngine()->sharedData().getSpeciesDatabase();
-  BOOST_FOREACH(ssc::AtomSpeciesId::Value spec, species)
-  {
-    radius = speciesDb.getRadius(spec);
-    if(radius)
-    {
-      dRadius = *radius;
-      volume += dRadius * dRadius * dRadius;
-    }
-  }
-
-  volume *= ssc::constants::FOUR_THIRDS * ssc::constants::PI;
-  return volume;
+  myStructures.clear();
+  std::string entry;
+  std::stringstream stream(mySeedStructuresString);
+  while(getline(stream, entry))
+    processEntry(entry);
 }
 
 }

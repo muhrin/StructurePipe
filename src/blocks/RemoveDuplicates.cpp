@@ -46,7 +46,7 @@ RemoveDuplicates::in(common::StructureData * const data)
     return;
   }
 
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   boost::lock_guard<boost::mutex> guard(myMutex);
 #endif
 

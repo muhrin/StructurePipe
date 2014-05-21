@@ -23,24 +23,21 @@ namespace ssc = ::spl::common;
 namespace structure_properties = ssc::structure_properties;
 
 KeepTopN::KeepTopN(const size_t keepTopN) :
-    Block("Keep top N"), myKeepTopN(keepTopN),
-    myStructureProperty(structure_properties::general::ENTHALPY),
-    myUsePerAtom(false)
+    Block("Keep top N"), myKeepTopN(keepTopN), myStructureProperty(
+        structure_properties::general::ENTHALPY), myUsePerAtom(true)
 {
 }
 
 KeepTopN::KeepTopN(const size_t keepTopN, const StructureProperty & property) :
-    Block("Keep top N"), myKeepTopN(keepTopN),
-    myStructureProperty(property),
-    myUsePerAtom(false)
+    Block("Keep top N"), myKeepTopN(keepTopN), myStructureProperty(property), myUsePerAtom(
+        true)
 {
 }
 
 KeepTopN::KeepTopN(const size_t keepTopN, const StructureProperty & property,
     const bool usePerAtom) :
-    Block("Keep top N"), myKeepTopN(keepTopN),
-    myStructureProperty(property),
-    myUsePerAtom(usePerAtom)
+    Block("Keep top N"), myKeepTopN(keepTopN), myStructureProperty(property), myUsePerAtom(
+        usePerAtom)
 {
 }
 
@@ -59,7 +56,7 @@ KeepTopN::in(common::StructureData * const data)
 
   double localValue = *value;
   if(myUsePerAtom)
-    localValue /= static_cast<double>(structure->getNumAtoms());
+    localValue /= static_cast< double>(structure->getNumAtoms());
 
   keep(data, localValue);
 }
@@ -67,10 +64,12 @@ KeepTopN::in(common::StructureData * const data)
 size_t
 KeepTopN::release()
 {
-  const size_t numReleased = myStructures.size();
-  BOOST_FOREACH(Structures::reference structurePair, myStructures)
+  size_t numReleased = 0;
+  BOOST_FOREACH(StructuresByComposition::reference order, myStructures)
   {
-    out(structurePair.second);
+    BOOST_FOREACH(StructureOrder::reference structure, order.second)
+      out(structure.second);
+    numReleased += order.second.size();
   }
   myStructures.clear();
   return numReleased;
@@ -85,19 +84,24 @@ KeepTopN::hasData() const
 void
 KeepTopN::keep(StructureDataType * const structure, const double energy)
 {
-#ifdef SPIPE_USE_THREAD
-  boost::lock_guard<boost::mutex> guard(myMutex);
+#ifdef SPIPE_USE_BOOST_THREAD
+  boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
 
-  myStructures[energy] = structure;
-  if(myStructures.size() > myKeepTopN)
+  spl::common::AtomsFormula composition =
+      structure->getStructure()->getComposition();
+  composition.reduce();
+  StructureOrder & order = myStructures[composition];
+
+  order.insert(std::make_pair(energy, structure));
+  if(order.size() > myKeepTopN)
   {
     // We have gone over by one, remove the last
-    Structures::reverse_iterator last = myStructures.rbegin();
+    StructureOrder::reverse_iterator last = order.rbegin();
     drop(last->second);
     // Erasing using reverse iterator is a bit annoying
     // see: http://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-    myStructures.erase((++last).base());
+    order.erase((++last).base());
   }
 }
 

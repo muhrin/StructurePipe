@@ -68,7 +68,7 @@ public:
   void
   finished(StructureDataPtr data)
   {
-    BOOST_REQUIRE(data->getStructure()->getNumAtoms() == 0);
+    BOOST_CHECK_EQUAL(data->getStructure()->getNumAtoms(), 0);
   }
 private:
   const splbc::GeneratorShape & myShape;
@@ -87,7 +87,7 @@ public:
   finished(StructureDataPtr data)
   {
     // Check we're left with the same number of atoms after pasting
-    BOOST_REQUIRE(data->getStructure()->getNumAtoms() == NUM_ATOMS);
+    BOOST_CHECK_EQUAL(data->getStructure()->getNumAtoms(), NUM_ATOMS);
   }
 private:
   const splbc::GeneratorShape & myShape;

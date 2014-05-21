@@ -80,14 +80,14 @@ BuildStructures::start()
 void
 BuildStructures::in(::spipe::common::StructureData * const data)
 {
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   myBuildStructuresMutex.lock();
 #endif
 
   // Create the random structure
   ssc::StructurePtr str = generateStructure();
 
-#ifdef SPIPE_USE_THREAD
+#ifdef SPIPE_USE_BOOST_THREAD
   myBuildStructuresMutex.unlock();
 #endif
 
