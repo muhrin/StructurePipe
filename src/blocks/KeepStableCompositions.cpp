@@ -19,15 +19,15 @@
 #include <pipelib/pipelib.h>
 
 // NAMESPACES ////////////////////////////////
-namespace spla = ::spl::analysis;
-namespace splc = ::spl::common;
-namespace splu = ::spl::utility;
+namespace spla = spl::analysis;
+namespace splc = spl::common;
+namespace splu = spl::utility;
 
 namespace spipe {
 namespace blocks {
 
-struct GetStructure : public ::std::unary_function< common::StructureData * const,
-    splc::Structure * const>
+struct GetStructure : public std::unary_function< common::StructureData * const,
+    splc::Structure * const >
 {
   splc::Structure *
   operator()(common::StructureData * const structureData) const
@@ -37,14 +37,12 @@ struct GetStructure : public ::std::unary_function< common::StructureData * cons
 };
 
 KeepStableCompositions::KeepStableCompositions() :
-    Block("Keep stable compositions"),
-    myWriteHull(false)
+    Block("Keep stable compositions"), myWriteHull(false)
 {
 }
 
 KeepStableCompositions::KeepStableCompositions(const bool writeHull) :
-    Block("Keep stable compositions"),
-    myWriteHull(writeHull)
+    Block("Keep stable compositions"), myWriteHull(writeHull)
 {
 }
 
@@ -69,7 +67,7 @@ KeepStableCompositions::in(common::StructureData * const data)
   }
 
 #ifdef SPIPE_USE_BOOST_THREAD
-  ::boost::lock_guard< ::boost::mutex> lock(myMutex);
+  boost::lock_guard< boost::mutex> lock(myMutex);
 #endif
   myStructureStore.insert(data);
   myConvexHullStructures.reset();
@@ -85,7 +83,15 @@ KeepStableCompositions::pipelineFinishing()
 size_t
 KeepStableCompositions::release()
 {
-  if(myConvexHullStructures.get() && myConvexHullStructures->numStable() == 0)
+  if(!myConvexHullStructures.get())
+  {
+    const size_t numReleased = myStructureStore.size();
+    BOOST_FOREACH(common::StructureData * const str, myStructureStore)
+      out(str);
+    myStructureStore.clear();
+    return numReleased;
+  }
+  else if(myConvexHullStructures->numStable() == 0)
     return 0;
 
   if(myOutputter.get())
@@ -115,7 +121,8 @@ KeepStableCompositions::release()
 bool
 KeepStableCompositions::hasData() const
 {
-  typedef ::boost::transform_iterator< GetStructure, StructureStore::const_iterator> StructuresIterator;
+  typedef boost::transform_iterator< GetStructure,
+      StructureStore::const_iterator> StructuresIterator;
 
   static const GetStructure GET_STRUCTURE = GetStructure();
 
@@ -128,8 +135,8 @@ KeepStableCompositions::hasData() const
   const spla::ConvexHullStructures::EndpointLabels endpoints =
       spla::ConvexHullStructures::generateEndpoints(first, end);
 
-  if(endpoints.empty())
-    return 0;
+  if(endpoints.size() < 2)
+    return true; // We're going to release all the structures in this case
 
   myConvexHullStructures.reset(new spla::ConvexHullStructures(endpoints));
   myConvexHullStructures->insert(first, end);

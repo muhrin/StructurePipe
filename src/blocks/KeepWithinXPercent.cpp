@@ -93,7 +93,8 @@ KeepWithinXPercent::keep(StructureDataType * const structure,
   boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
 
-  spl::common::AtomsFormula composition;
+  spl::common::AtomsFormula composition =
+      structure->getStructure()->getComposition();
   composition.reduce();
   StructureOrder & order = myStructures[composition];
 

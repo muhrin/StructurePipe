@@ -1,5 +1,5 @@
 /*
- * KeepTopNTest.cpp
+ * KeepWithinXPercentTest.cpp
  *
  *  Created on: May 21, 2014
  *      Author: Martin Uhrin
@@ -19,7 +19,7 @@ namespace splbc = spl::build_cell;
 namespace splc = spl::common;
 namespace properties = splc::structure_properties;
 
-BOOST_AUTO_TEST_SUITE(KeepTopNTest)
+BOOST_AUTO_TEST_SUITE(KeepWithinXPercentTest)
 
 class SeedBlock : public StartBlock
 {
@@ -32,7 +32,7 @@ public:
   start()
   {
     // Create 100 structure with one atom type having increasing energy
-    for(int i = 0; i < 100; ++i)
+    for(int i = -100; i < 0; ++i)
     {
       common::StructureData * const structureData = getEngine()->createData();
       splc::Structure & structure = structureData->setStructure(
@@ -109,13 +109,13 @@ private:
   CompositionCount myNumDropped;
 };
 
-BOOST_AUTO_TEST_CASE(KeepTopNBlock)
+BOOST_AUTO_TEST_CASE(KeepWithinXPercent)
 {
   typedef SerialEngine Engine;
 
   BlockHandle seed(new SeedBlock());
-  BlockHandle keepTopN(new blocks::KeepTopN(10));
-  seed->connect(keepTopN);
+  BlockHandle keepWithinXPercent(new blocks::KeepWithinXPercent(0.1));
+  seed->connect(keepWithinXPercent);
 
   KeepChecker checker;
 

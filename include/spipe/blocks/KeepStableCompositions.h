@@ -32,19 +32,11 @@
 #include "spipe/SpTypes.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
-namespace spl {
-namespace analysis {
-class ConvexHull;
-}
-namespace common {
-class Structure;
-}
-}
 
 namespace spipe {
 namespace blocks {
 
-class KeepStableCompositions : public Barrier, ::boost::noncopyable
+class KeepStableCompositions : public Barrier, boost::noncopyable
 {
 public:
   KeepStableCompositions();
@@ -67,15 +59,15 @@ public:
   // End from Barrier //////////////
 
 private:
-  typedef ::std::set< common::StructureData *> StructureStore;
+  typedef std::set< common::StructureData *> StructureStore;
 
   const bool myWriteHull;
-  ::spl::UniquePtr< ::spl::analysis::ConvexHullOutputter>::Type myOutputter;
+  spl::UniquePtr< spl::analysis::ConvexHullOutputter>::Type myOutputter;
   StructureStore myStructureStore;
-  mutable ::boost::scoped_ptr< ::spl::analysis::ConvexHullStructures> myConvexHullStructures;
+  mutable boost::scoped_ptr< spl::analysis::ConvexHullStructures> myConvexHullStructures;
 
 #ifdef SPIPE_USE_BOOST_THREAD
-  ::boost::mutex myMutex;
+  boost::mutex myMutex;
 #endif
 };
 
