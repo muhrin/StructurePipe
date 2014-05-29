@@ -20,20 +20,21 @@
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
-
 namespace spipe {
 namespace blocks {
 
-class FindSymmetryGroup : public PipeBlock, ::boost::noncopyable
+class FindSymmetryGroup : public PipeBlock, boost::noncopyable
 {
 public:
   FindSymmetryGroup();
 
   // From PipeBlock //////////////////////
-  virtual void in(common::StructureData * const data);
+  virtual void
+  in(spl::common::Structure * const structure);
   // End from PipeBlock /////////////////
 };
 
-}}
+}
+}
 
 #endif /* FIND_SYMMETRY_GROUP_H */

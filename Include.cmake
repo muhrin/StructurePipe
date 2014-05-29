@@ -13,12 +13,13 @@ set(spipe_Header_Files__blocks
   include/spipe/blocks/KeepWithinXPercent.h
   include/spipe/blocks/LoadStructures.h
   include/spipe/blocks/NiggliReduce.h
-  include/spipe/blocks/ParamGeomOptimise.h
   include/spipe/blocks/PasteFragment.h
   include/spipe/blocks/RemoveDuplicates.h
+  include/spipe/blocks/Rescale.h
   include/spipe/blocks/RunPotentialParamsQueue.h
   include/spipe/blocks/SearchStoichiometries.h
   include/spipe/blocks/SeparateAtoms.h
+  include/spipe/blocks/Shrink.h
   include/spipe/blocks/WriteStructures.h
 )
 source_group("Header Files\\blocks" FILES ${spipe_Header_Files__blocks})
@@ -35,7 +36,6 @@ set(spipe_Header_Files__common
   include/spipe/common/Assert.h
   include/spipe/common/CommonData.h
   include/spipe/common/GlobalData.h
-  include/spipe/common/PipeBuilder.h
   include/spipe/common/PipeFunctions.h
   include/spipe/common/SharedData.h
   include/spipe/common/StructureData.h

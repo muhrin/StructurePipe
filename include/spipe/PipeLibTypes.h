@@ -41,7 +41,8 @@ template< typename T>
 
 // TYPEDEFS ///////////////////////
 
-typedef common::StructureData StructureDataType;
+//typedef common::StructureData StructureDataType;
+typedef spl::common::Structure StructureDataType;
 typedef common::SharedData SharedDataType;
 typedef common::GlobalData GlobalDataType;
 

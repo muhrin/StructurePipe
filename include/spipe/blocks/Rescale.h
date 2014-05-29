@@ -1,38 +1,36 @@
 /*
- * NiggliReduce.h
+ * Rescale.h
  *
- *
- *  Created on: Aug 17, 2011
+ *  Created on: May 22, 2014
  *      Author: Martin Uhrin
  */
 
-#ifndef NIGGLI_REDUCE_H
-#define NIGGLI_REDUCE_H
+#ifndef SPIPE__BLOCKS__RESCALE_H_
+#define SPIPE__BLOCKS__RESCALE_H_
 
 // INCLUDES /////////////////////////////////////////////
 #include "spipe/StructurePipe.h"
 
-#include <boost/noncopyable.hpp>
-
-#include <pipelib/pipelib.h>
-
-#include "spipe/SpTypes.h"
+#include "spipe/PipeLibTypes.h"
 
 // FORWARD DECLARATIONS ////////////////////////////////////
 
 namespace spipe {
 namespace blocks {
 
-class NiggliReduce : public PipeBlock, boost::noncopyable
+class Rescale : public PipeBlock
 {
 public:
-  NiggliReduce();
+  Rescale(const double scaleFactor);
 
   virtual void
   in(spl::common::Structure * const data);
+
+private:
+  const double myScaleFactor;
 };
 
 }
 }
 
-#endif /* NIGGLI_REDUCE_H */
+#endif /* SPIPE__BLOCKS__RESCALE_H_ */

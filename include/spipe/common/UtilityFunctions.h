@@ -37,6 +37,10 @@ std::string
 generateParamDirName(const std::vector< std::string> & params,
     const std::string & seedName);
 
+spl::io::ResourceLocator
+getRelativeSavePath(const spl::common::Structure & structure,
+    const boost::filesystem::path & relativeTo);
+
 }
 }
 

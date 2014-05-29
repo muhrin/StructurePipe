@@ -39,19 +39,15 @@ SeparateAtoms::pipelineInitialised()
 }
 
 void
-SeparateAtoms::in(StructureDataType * const data)
+SeparateAtoms::in(StructureDataType * const structure)
 {
   static const spl::build_cell::PointSeparator SEPARATOR;
 
-  if(data->getStructure())
-  {
-    spl::common::Structure * const structure = data->getStructure();
-    spl::build_cell::SeparationData sepData(*structure, mySpeciesDb);
-    if(SEPARATOR.separatePoints(&sepData))
-      structure->setAtomPositions(sepData.points);
-  }
+  spl::build_cell::SeparationData sepData(*structure, mySpeciesDb);
+  if(SEPARATOR.separatePoints(&sepData))
+    structure->setAtomPositions(sepData.points);
 
-  out(data);
+  out(structure);
 }
 
 }

@@ -10,8 +10,10 @@
 
 #include <iomanip>
 
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <spl/common/Structure.h>
 #include <spl/io/IoFunctions.h>
 #include <spl/utility/Armadillo.h>
 #include <spl/utility/UtilFunctions.h>
@@ -24,6 +26,7 @@ namespace spipe {
 namespace common {
 
 namespace ssio = spl::io;
+namespace structure_properties = spl::common::structure_properties;
 
 void
 parseParamString(const std::string & str, double & from, double & step,
@@ -105,9 +108,31 @@ toString(const double in, unsigned int digitsAfterDecimal)
 }
 
 std::string
-generateParamDirName(const std::vector< std::string> & params, const std::string & seedName)
+generateParamDirName(const std::vector< std::string> & params,
+    const std::string & seedName)
 {
   return spl::utility::generateUniqueName(seedName);
+}
+
+ssio::ResourceLocator
+getRelativeSavePath(const spl::common::Structure & structure,
+    const ::boost::filesystem::path & relativeTo)
+{
+  ssio::ResourceLocator relativeLocator;
+
+  const ssio::ResourceLocator * lastSaved = structure.getProperty(
+      structure_properties::io::LAST_ABS_FILE_PATH);
+
+  if(lastSaved)
+  {
+    relativeLocator = *lastSaved;
+    boost::filesystem::path relativePath = lastSaved->path();
+    // Make the path relative if necessary
+    relativePath = ssio::make_relative(relativeTo, relativePath);
+    relativeLocator.setPath(relativePath);
+  }
+
+  return relativeLocator;
 }
 
 }

@@ -34,29 +34,25 @@ public:
     // Create 100 structure with one atom type having increasing energy
     for(int i = 0; i < 100; ++i)
     {
-      common::StructureData * const structureData = getEngine()->createData();
-      splc::Structure & structure = structureData->setStructure(
-          spl::UniquePtr< splc::Structure>::Type(new splc::Structure()));
+      StructureDataType * const structure = getEngine()->createData();
 
-      structure.newAtom("A");
-      structure.setProperty(properties::general::ENTHALPY,
+      structure->newAtom("A");
+      structure->setProperty(properties::general::ENTHALPY,
           static_cast< double>(i));
 
-      out(structureData);
+      out(structure);
     }
     // Create 100 structures with two atom types having increasing energy
     for(int i = -100; i < 0; ++i)
     {
-      common::StructureData * const structureData = getEngine()->createData();
-      splc::Structure & structure = structureData->setStructure(
-          spl::UniquePtr< splc::Structure>::Type(new splc::Structure()));
+      StructureDataType * const structure = getEngine()->createData();
 
-      structure.newAtom("A");
-      structure.newAtom("B");
-      structure.setProperty(properties::general::ENTHALPY,
+      structure->newAtom("A");
+      structure->newAtom("B");
+      structure->setProperty(properties::general::ENTHALPY,
           static_cast< double>(i));
 
-      out(structureData);
+      out(structure);
     }
   }
 };
@@ -68,9 +64,9 @@ class KeepChecker : public FinishedSink, public DroppedSink
 public:
   virtual
   void
-  dropped(StructureDataPtr data)
+  dropped(StructureDataPtr structure)
   {
-    splc::AtomsFormula composition = data->getStructure()->getComposition();
+    splc::AtomsFormula composition = structure->getComposition();
     composition.reduce();
     std::map< splc::AtomsFormula, int>::iterator it = myNumDropped.find(
         composition);
@@ -82,9 +78,9 @@ public:
 
   virtual
   void
-  finished(StructureDataPtr data)
+  finished(StructureDataPtr structure)
   {
-    splc::AtomsFormula composition = data->getStructure()->getComposition();
+    splc::AtomsFormula composition = structure->getComposition();
     composition.reduce();
     std::map< splc::AtomsFormula, int>::iterator it = myNumFinished.find(
         composition);

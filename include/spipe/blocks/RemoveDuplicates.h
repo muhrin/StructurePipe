@@ -39,11 +39,11 @@ namespace blocks {
 class RemoveDuplicates : public Barrier, ::boost::noncopyable
 {
 public:
-  RemoveDuplicates(::spl::utility::IStructureComparatorPtr comparator);
-  RemoveDuplicates(const ::spl::utility::IStructureComparator & comparator);
+  RemoveDuplicates(spl::utility::IStructureComparatorPtr comparator);
+  RemoveDuplicates(const spl::utility::IStructureComparator & comparator);
 
   virtual void
-  in(common::StructureData * const data);
+  in(spl::common::Structure * const data);
 
   // From Block /////////////////////////
   virtual void
@@ -51,12 +51,14 @@ public:
   // End from Block ///////////////////
 
   // From Barrier ////////////////////////
-  virtual size_t release();
-  virtual bool hasData() const;
+  virtual size_t
+  release();
+  virtual bool
+  hasData() const;
   // End from Barrier ///////////////////
 
 private:
-  typedef spl::utility::UniqueStructureSet< common::StructureData *> StructureSet;
+  typedef spl::utility::UniqueStructureSet< > StructureSet;
 
   StructureSet myStructureSet;
 

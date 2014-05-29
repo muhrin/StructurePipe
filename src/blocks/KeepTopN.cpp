@@ -42,15 +42,14 @@ KeepTopN::KeepTopN(const size_t keepTopN, const StructureProperty & property,
 }
 
 void
-KeepTopN::in(common::StructureData * const data)
+KeepTopN::in(spl::common::Structure * const structure)
 {
-  const ssc::Structure * const structure = data->getStructure();
   const double * const value = structure->getProperty(myStructureProperty);
 
   // Let anything that doesn't have the property through
   if(value == NULL)
   {
-    out(data);
+    out(structure);
     return;
   }
 
@@ -58,7 +57,7 @@ KeepTopN::in(common::StructureData * const data)
   if(myUsePerAtom)
     localValue /= static_cast< double>(structure->getNumAtoms());
 
-  keep(data, localValue);
+  keep(structure, localValue);
 }
 
 size_t
@@ -82,14 +81,13 @@ KeepTopN::hasData() const
 }
 
 void
-KeepTopN::keep(StructureDataType * const structure, const double energy)
+KeepTopN::keep(spl::common::Structure * const structure, const double energy)
 {
 #ifdef SPIPE_USE_BOOST_THREAD
   boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
 
-  spl::common::AtomsFormula composition =
-      structure->getStructure()->getComposition();
+  spl::common::AtomsFormula composition = structure->getComposition();
   composition.reduce();
   StructureOrder & order = myStructures[composition];
 

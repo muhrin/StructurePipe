@@ -19,8 +19,8 @@
 namespace spipe {
 namespace blocks {
 
-namespace splbc = ::spl::build_cell;
-namespace splc = ::spl::common;
+namespace splbc = spl::build_cell;
+namespace splc = spl::common;
 
 CutAndPaste::CutAndPaste(ShapePtr shape, Settings & settings):
     Block("Cut and paste"),
@@ -45,17 +45,9 @@ CutAndPaste::pipelineInitialised()
 }
 
 void
-CutAndPaste::in(common::StructureData * const data)
+CutAndPaste::in(spl::common::Structure * const structure)
 {
-  if(!data->getStructure())
-  {
-    out(data);
-    return;
-  }
-
-  splc::Structure * const structure = data->getStructure();
-
-  ::std::vector<splc::Atom> cutAtoms;
+  std::vector<splc::Atom> cutAtoms;
   for(splc::Structure::AtomIterator it = structure->atomsBegin();
       it != structure->atomsEnd(); /* increment in body */)
   {
@@ -90,7 +82,7 @@ CutAndPaste::in(common::StructureData * const data)
     }
   }
 
-  out(data);
+  out(structure);
 }
 
 }

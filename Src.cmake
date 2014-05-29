@@ -11,12 +11,13 @@ set(spipe_Source_Files__blocks
   src/blocks/KeepWithinXPercent.cpp
   src/blocks/LoadStructures.cpp
   src/blocks/NiggliReduce.cpp
-  src/blocks/ParamGeomOptimise.cpp
   src/blocks/PasteFragment.cpp
   src/blocks/RemoveDuplicates.cpp
+  src/blocks/Rescale.cpp
   src/blocks/RunPotentialParamsQueue.cpp
   src/blocks/SearchStoichiometries.cpp
   src/blocks/SeparateAtoms.cpp
+  src/blocks/Shrink.cpp
   src/blocks/WriteStructures.cpp
 )
 source_group("Source Files\\blocks" FILES ${spipe_Source_Files__blocks})
@@ -32,7 +33,6 @@ source_group("Source Files\\build" FILES ${spipe_Source_Files__build})
 set(spipe_Source_Files__common
   src/common/CommonData.cpp
   src/common/GlobalData.cpp
-  src/common/PipeBuilder.cpp
   src/common/PipeFunctions.cpp
   src/common/SharedData.cpp
   src/common/StructureData.cpp

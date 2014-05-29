@@ -46,25 +46,25 @@ template< typename T>
     }
   };
 
-template< typename T>
-  ObjectData< T>
-  getObject(const ::spl::utility::Key< T> & key, StructureData & strDat,
-      SharedData & shared, GlobalData & global)
-  {
-    ObjectData< T> result;
-
-    // First try the object from the structure data
-    result.first = DataLocation::STRUCTURE;
-    result.second = strDat.objectsStore.find(key);
-
-    if(!result.second)
-    {
-      // Try using shared/global memory
-      result = getObject(key, shared, global);
-    }
-
-    return result.second;
-  }
+//template< typename T>
+//  ObjectData< T>
+//  getObject(const ::spl::utility::Key< T> & key, StructureData & strDat,
+//      SharedData & shared, GlobalData & global)
+//  {
+//    ObjectData< T> result;
+//
+//    // First try the object from the structure data
+//    result.first = DataLocation::STRUCTURE;
+//    result.second = strDat.objectsStore.find(key);
+//
+//    if(!result.second)
+//    {
+//      // Try using shared/global memory
+//      result = getObject(key, shared, global);
+//    }
+//
+//    return result.second;
+//  }
 
 template< typename T>
   ObjectData< T>

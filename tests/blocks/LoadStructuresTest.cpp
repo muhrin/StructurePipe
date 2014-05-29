@@ -35,11 +35,10 @@ public:
   }
 
   virtual void
-  finished(StructureDataPtr data)
+  finished(StructureDataPtr structure)
   {
-    const spl::io::ResourceLocator * const loc =
-        data->getStructure()->getProperty(
-            spl::common::structure_properties::io::LAST_ABS_FILE_PATH);
+    const spl::io::ResourceLocator * const loc = structure->getProperty(
+        spl::common::structure_properties::io::LAST_ABS_FILE_PATH);
     BOOST_REQUIRE(loc);
 
     const std::set< fs::path>::const_iterator it = myStructurePaths.find(

@@ -48,9 +48,9 @@ public:
   virtual void
   start()
   {
-    common::StructureData * const strData = getEngine()->createData();
-    strData->setStructure(myStructure->clone());
-    out(strData);
+    StructureDataType * const structure = getEngine()->createData();
+    *structure = *myStructure;
+    out(structure);
   }
 private:
   splc::StructurePtr myStructure;
@@ -66,9 +66,9 @@ public:
   }
   virtual
   void
-  finished(StructureDataPtr data)
+  finished(StructureDataPtr structure)
   {
-    BOOST_CHECK_EQUAL(data->getStructure()->getNumAtoms(), 0);
+    BOOST_CHECK_EQUAL(structure->getNumAtoms(), 0);
   }
 private:
   const splbc::GeneratorShape & myShape;
@@ -84,10 +84,10 @@ public:
   }
   virtual
   void
-  finished(StructureDataPtr data)
+  finished(StructureDataPtr structure)
   {
     // Check we're left with the same number of atoms after pasting
-    BOOST_CHECK_EQUAL(data->getStructure()->getNumAtoms(), NUM_ATOMS);
+    BOOST_CHECK_EQUAL(structure->getNumAtoms(), NUM_ATOMS);
   }
 private:
   const splbc::GeneratorShape & myShape;

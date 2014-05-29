@@ -24,20 +24,18 @@ Clone::Clone(const int times, const bool giveUniqueNames) :
 }
 
 void
-Clone::in(common::StructureData * const data)
+Clone::in(spl::common::Structure * const structure)
 {
   for(int i = 0; i < myTimes - 1; ++i)
   {
-    common::StructureData * const clone = getEngine()->createData();
-    *clone = *data; // Copy
-    if(clone->getStructure())
-      prepStructure(clone->getStructure());
+    spl::common::Structure * const clone = getEngine()->createData();
+    *clone = *structure; // Copy
+    prepStructure(clone);
     out(clone);
   }
 
-  if(data->getStructure())
-    prepStructure(data->getStructure());
-  out(data);
+  prepStructure(structure);
+  out(structure);
 }
 
 void

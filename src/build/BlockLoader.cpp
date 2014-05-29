@@ -21,105 +21,38 @@
 namespace spipe {
 namespace build {
 
-template< typename T>
-  class FactoryBlockCreator : public BlockLoader::BlockCreator
-  {
-  public:
-    FactoryBlockCreator(const factory::BlockFactory & factory) :
-        myFactory(factory)
-    {
-    }
-    virtual
-    ~FactoryBlockCreator()
-    {
-    }
-    virtual BlockHandle
-    createBlock(const YAML::Node & node, std::ostream * const errStream) const
-    {
-      static const T SCHEMA_TYPE = T();
-      typename T::BindingType factoryType;
-      schemer::ParseLog log;
-      SCHEMA_TYPE.nodeToValue(node, &factoryType, &log);
-      if(log.hasErrors())
-        log.printErrors();
-
-      BlockHandle handle;
-      myFactory.createBlock(&handle, factoryType);
-      return handle;
-    }
-  private:
-    const factory::BlockFactory & myFactory;
-  };
-
 BlockLoader::BlockLoader()
 {
+  namespace blocks = spipe::factory::blocks;
+
   // TODO: Move this element
-  registerCreator("generateStructures",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::BuildStructuresSchema>(
-              myBlockFactory)));
-  registerCreator("clone",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::CloneSchema>(
-              myBlockFactory)));
-  registerCreator("cutAndPaste",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::CutAndPasteSchema>(
-              myBlockFactory)));
-  registerCreator("findSymmetry",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::FindSymmetryGroupSchema>(
-              myBlockFactory)));
-  registerCreator("geomOptimise",
-        CreatorPtr(
-            new FactoryBlockCreator< factory::blocks::GeomOptimiseSchema>(
-                myBlockFactory)));
+  registerFactoryBlockCreator< blocks::BuildStructuresSchema>(
+      "generateStructures");
+  registerFactoryBlockCreator< blocks::CloneSchema>("clone");
+  registerFactoryBlockCreator< blocks::CutAndPasteSchema>("cutAndPaste");
+  registerFactoryBlockCreator< blocks::FindSymmetryGroupSchema>("findSymmetry");
+  registerFactoryBlockCreator< blocks::GeomOptimiseSchema>("geomOptimise");
 #ifdef SPL_WITH_CGAL
-  registerCreator("keepStableCompositions",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::KeepStableCompositionsSchema>(
-              myBlockFactory)));
+  registerFactoryBlockCreator< blocks::KeepStableCompositionsSchema>(
+      "keepStableCompositions");
 #endif
-  registerCreator("keepTopN",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::KeepTopNSchema>(
-              myBlockFactory)));
-  registerCreator("keepWithinXPercent",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::KeepWithinXPercentSchema>(
-              myBlockFactory)));
-  registerCreator("loadStructures",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::LoadStructures>(
-              myBlockFactory)));
-  registerCreator("pasteFragment",
-        CreatorPtr(
-            new FactoryBlockCreator< factory::blocks::PasteFragmentSchema>(
-                myBlockFactory)));
-  registerCreator("niggliReduce",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::NiggliReduceSchema>(
-              myBlockFactory)));
-  registerCreator("removeDuplicates",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::RemoveDuplicatesSchema>(
-              myBlockFactory)));
-  registerCreator("runPotentialParamsQueue",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::RunPotentialParamsQueueSchema>(
-              myBlockFactory)));
-  registerCreator("searchStoichiometries",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::SearchStoichiometriesSchema>(
-              myBlockFactory)));
-  registerCreator("separateAtoms",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::SeparateAtomsType>(
-              myBlockFactory)));
-  registerCreator("writeStructures",
-      CreatorPtr(
-          new FactoryBlockCreator< factory::blocks::WriteStructuresSchema>(
-              myBlockFactory)));
+  registerFactoryBlockCreator< blocks::KeepTopNSchema>("keepTopN");
+  registerFactoryBlockCreator< blocks::KeepWithinXPercentSchema>(
+      "keepWithinXPercent");
+  registerFactoryBlockCreator< blocks::LoadStructures>("loadStructures");
+  registerFactoryBlockCreator< blocks::PasteFragmentSchema>("pasteFragment");
+  registerFactoryBlockCreator< blocks::NiggliReduceSchema>("niggliReduce");
+  registerFactoryBlockCreator< blocks::RemoveDuplicatesSchema>(
+      "removeDuplicates");
+  registerFactoryBlockCreator< blocks::RescaleSchema>("rescale");
+  registerFactoryBlockCreator< blocks::RunPotentialParamsQueueSchema>(
+      "runPotentialParamsQueue");
+  registerFactoryBlockCreator< blocks::SearchStoichiometriesSchema>(
+      "searchStoichiometries");
+  registerFactoryBlockCreator< blocks::SeparateAtomsType>("separateAtoms");
+  registerFactoryBlockCreator< blocks::ShrinkSchema>("shrink");
+  registerFactoryBlockCreator< blocks::WriteStructuresSchema>(
+      "writeStructures");
 }
 
 BlockHandle

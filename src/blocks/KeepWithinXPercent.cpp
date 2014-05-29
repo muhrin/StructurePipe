@@ -44,15 +44,14 @@ KeepWithinXPercent::KeepWithinXPercent(const double percent,
 }
 
 void
-KeepWithinXPercent::in(spipe::common::StructureData * const data)
+KeepWithinXPercent::in(spl::common::Structure * const structure)
 {
-  const ssc::Structure * const structure = data->getStructure();
   const double * const value = structure->getProperty(myStructureProperty);
 
   // Let anything that doesn't have the property through
   if(value == NULL)
   {
-    out(data);
+    out(structure);
     return;
   }
 
@@ -60,7 +59,7 @@ KeepWithinXPercent::in(spipe::common::StructureData * const data)
   if(myUsePerAtom)
     localValue /= static_cast< double>(structure->getNumAtoms());
 
-  keep(data, localValue);
+  keep(structure, localValue);
 }
 
 size_t
@@ -84,7 +83,7 @@ KeepWithinXPercent::hasData() const
 }
 
 void
-KeepWithinXPercent::keep(StructureDataType * const structure,
+KeepWithinXPercent::keep(spl::common::Structure * const structure,
     const double energy)
 {
   using std::make_pair;
@@ -93,8 +92,7 @@ KeepWithinXPercent::keep(StructureDataType * const structure,
   boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
 
-  spl::common::AtomsFormula composition =
-      structure->getStructure()->getComposition();
+  spl::common::AtomsFormula composition = structure->getComposition();
   composition.reduce();
   StructureOrder & order = myStructures[composition];
 

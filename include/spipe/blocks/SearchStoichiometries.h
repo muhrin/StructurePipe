@@ -76,7 +76,6 @@ public:
   // End from IDataSink /////////////////////////
 
 private:
-  typedef spipe::StructureDataType StructureDataTyp;
   typedef boost::scoped_ptr< spipe::utility::DataTableWriter> TableWriterPtr;
 
   // From Block ////////
@@ -106,7 +105,7 @@ private:
   boost::filesystem::path myOutputPath;
 
   /** Buffer to store structure that have finished their path through the sub pipeline. */
-  std::vector< StructureDataTyp *> myBuffer;
+  std::vector< StructureDataType *> myBuffer;
 };
 
 }

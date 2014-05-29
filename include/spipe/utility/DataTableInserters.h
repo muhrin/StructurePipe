@@ -32,13 +32,12 @@ namespace utility {
 
 bool
 insertStructureInfoAndPotentialParams(const utility::DataTable::Key & key,
-    const common::StructureData & structureData,
-    const ::boost::filesystem::path & pathsRelativeTo, DataTable & table);
+    const StructureDataType & structureData,
+    const boost::filesystem::path & pathsRelativeTo, DataTable & table);
 
 template< typename T>
   bool
-  insertStructureProperty(const ::std::string & key,
-      const ::std::string & name,
+  insertStructureProperty(const ::std::string & key, const ::std::string & name,
       const ::spl::utility::Key< T> & property,
       const ::spl::common::Structure & structure, DataTable & table)
   {
@@ -46,8 +45,7 @@ template< typename T>
     if(!value)
       return false;
 
-    table.insert(key, name,
-        ::boost::lexical_cast< ::std::string>(*value));
+    table.insert(key, name, ::boost::lexical_cast< ::std::string>(*value));
     return true;
   }
 

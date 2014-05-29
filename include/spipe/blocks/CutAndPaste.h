@@ -27,14 +27,14 @@
 namespace spipe {
 namespace blocks {
 
-class CutAndPaste : public PipeBlock, ::boost::noncopyable
+class CutAndPaste : public PipeBlock, boost::noncopyable
 {
-  typedef ::spl::factory::GenShapeFactory::GenShapePtr ShapePtr;
+  typedef spl::factory::GenShapeFactory::GenShapePtr ShapePtr;
 public:
   struct Settings
   {
-    Settings():
-      paste(false), separate(true), fixUntouched(true)
+    Settings() :
+        paste(false), separate(true), fixUntouched(true)
     {
     }
     bool paste;
@@ -51,13 +51,13 @@ public:
   virtual void
   pipelineInitialised();
   virtual void
-  in(common::StructureData * const data);
+  in(spl::common::Structure * const data);
   // End from Block /////////////
 
 private:
   ShapePtr myShape;
   const Settings mySettings;
-  const ::spl::build_cell::PointSeparator mySeparator;
+  const spl::build_cell::PointSeparator mySeparator;
 
   // TODO: Temp, probably remove these later
   spl::factory::PairDistances myPairDistances;

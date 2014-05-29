@@ -41,14 +41,21 @@ class RunPotentialParamsQueue : public StartBlock,
     boost::noncopyable
 {
 public:
+  struct Settings
+  {
+    Settings();
+    std::string tag;
+    boost::filesystem::path queueFile;
+    boost::filesystem::path doneFile;
+    boost::posix_time::time_duration targetChunkTime;
+  };
+
   static const std::string DEFAULT_PARAMS_QUEUE_FILE;
   static const std::string DEFAULT_PARAMS_DONE_FILE;
   static const std::string POTPARAMS_FILE_EXTENSION;
 
   explicit
-  RunPotentialParamsQueue(BlockHandle & sweepPipeline);
-  RunPotentialParamsQueue(const std::string * const queueFile,
-      const std::string * const doneFile, BlockHandle & sweepPipeline);
+  RunPotentialParamsQueue(const Settings & settings, BlockHandle & sweepPipeline);
 
   // From Block ///////////////////////////////
   virtual void
@@ -91,9 +98,6 @@ private:
   BlockHandle mySweepPipeline;
   Engine * mySubpipeEngine;
 
-  const boost::filesystem::path myQueueFile;
-  const boost::filesystem::path myDoneFile;
-
   Params myCurrentParams;
 
   std::queue< Params> myParamsQueue;
@@ -103,9 +107,9 @@ private:
 
   size_t myNumWorkItemsChunk;
   spl::math::GenericRunningStats< boost::posix_time::time_duration> myWorkItemsTiming;
-  const boost::posix_time::time_duration myTargetChunkTime;
 
   spipe::utility::DataTableSupport myTableSupport;
+  const Settings mySettings;
 };
 
 }

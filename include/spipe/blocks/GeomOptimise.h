@@ -52,6 +52,7 @@ public:
     // to file.
     bool writeSummary;
     factory::FailAction::Value failAction;
+    boost::optional< std::string> paramsTag;
   };
 
   GeomOptimise(spl::potential::IGeomOptimiserPtr optimiser);
@@ -70,10 +71,12 @@ public:
 
   // From PipeBlock ///////////////////////////
   virtual void
-  in(common::StructureData * const data);
+  in(spl::common::Structure * const data);
   // End from PipeBlock ///////////////////////
 
-protected:
+private:
+  typedef std::vector< std::string> PotentialParams;
+
   spl::potential::GeomOptimiser &
   getOptimiser();
   spipe::utility::DataTableSupport &
@@ -84,13 +87,12 @@ protected:
       const spl::potential::OptimisationData & optimisationData);
 
   const Settings mySettings;
-  const spl::potential::OptimisationSettings myOptimisationParams;
-
-private:
+  const spl::potential::OptimisationSettings myOptimisationSettings;
   const spl::potential::IGeomOptimiserPtr myOptimiser;
 
   // Use a table to store data about structure that are being optimised
   spipe::utility::DataTableSupport myTableSupport;
+  PotentialParams myPotentialParams;
 };
 
 }

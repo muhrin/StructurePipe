@@ -44,7 +44,7 @@ public:
 
   // From Block /////////////////
   virtual void
-  in(common::StructureData * const data);
+  in(spl::common::Structure * const data);
   // End from Block /////////////
 
   // From Barrier /////////////////
@@ -55,11 +55,11 @@ public:
   // End from Barrier //////////////
 
 private:
-  typedef std::multimap< double, StructureDataType *> StructureOrder;
+  typedef std::multimap< double, spl::common::Structure *> StructureOrder;
   typedef std::map< spl::common::AtomsFormula, StructureOrder> StructuresByComposition;
 
   void
-  keep(StructureDataType * const structure, const double energy);
+  keep(spl::common::Structure * const structure, const double energy);
 
   const size_t myKeepTopN;
   const spl::utility::Key< double> myStructureProperty;

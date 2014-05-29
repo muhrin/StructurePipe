@@ -11,24 +11,7 @@
 #include <spl/potential/Types.h>
 #include <spl/utility/UtilityFwd.h>
 
-// Local includes
-#include "spipe/blocks/BuildStructures.h"
-#include "spipe/blocks/Clone.h"
-#include "spipe/blocks/CutAndPaste.h"
-#include "spipe/blocks/FindSymmetryGroup.h"
-#include "spipe/blocks/KeepStableCompositions.h"
-#include "spipe/blocks/KeepTopN.h"
-#include "spipe/blocks/KeepWithinXPercent.h"
-#include "spipe/blocks/LoadStructures.h"
-#include "spipe/blocks/NiggliReduce.h"
-#include "spipe/blocks/GeomOptimise.h"
-#include "spipe/blocks/ParamGeomOptimise.h"
-#include "spipe/blocks/PasteFragment.h"
-#include "spipe/blocks/RemoveDuplicates.h"
-#include "spipe/blocks/RunPotentialParamsQueue.h"
-#include "spipe/blocks/SearchStoichiometries.h"
-#include "spipe/blocks/SeparateAtoms.h"
-#include "spipe/blocks/WriteStructures.h"
+#include "spipe/blocks/blocks.h"
 #include "spipe/common/CommonData.h"
 #include "spipe/common/StructureData.h"
 #include "spipe/common/SharedData.h"
@@ -121,13 +104,10 @@ BlockFactory::createBlock(BlockHandle * const blockOut,
   spipe::blocks::GeomOptimise::Settings settings;
   settings.failAction = options.failAction;
   settings.writeSummary = options.writeSummary;
+  settings.paramsTag = options.paramsTag;
 
-  if(potentialIsParameterisable)
-    blockOut->reset(
-        new spipe::blocks::ParamGeomOptimise(optimiser, optParams, settings));
-  else
-    blockOut->reset(
-        new spipe::blocks::GeomOptimise(optimiser, optParams, settings));
+  blockOut->reset(
+      new spipe::blocks::GeomOptimise(optimiser, optParams, settings));
 
   return true;
 }
@@ -197,14 +177,26 @@ BlockFactory::createBlock(BlockHandle * blockOut,
 
 bool
 BlockFactory::createBlock(BlockHandle * const blockOut,
+    const blocks::Rescale & options) const
+{
+  blockOut->reset(new spipe::blocks::Rescale(options.scaleFactor));
+  return true;
+}
+
+bool
+BlockFactory::createBlock(BlockHandle * const blockOut,
     blocks::RunPotentialParamsQueue & options) const
 {
   if(!options.pipe)
     return false;
 
+  spipe::blocks::RunPotentialParamsQueue::Settings settings;
+  settings.tag = options.tag;
+  settings.queueFile = options.paramsQueueFile;
+  settings.doneFile = options.paramsDoneFile;
+
   blockOut->reset(
-      new spipe::blocks::RunPotentialParamsQueue(&options.paramsQueueFile,
-          &options.paramsDoneFile, options.pipe));
+      new spipe::blocks::RunPotentialParamsQueue(settings, options.pipe));
   return true;
 }
 
@@ -234,6 +226,19 @@ BlockFactory::createBlock(BlockHandle * const blockOut,
   if(options.pairDistances)
     sep->setPairDistances(*options.pairDistances);
   blockOut->reset(sep.release());
+  return true;
+}
+
+bool
+BlockFactory::createBlock(BlockHandle * const blockOut,
+    blocks::Shrink & options) const
+{
+  ssp::IPotentialPtr potential = mySplFactory.createPotential(
+      options.potential);
+  if(!potential.get())
+    return false;
+
+  blockOut->reset(new spipe::blocks::Shrink(potential, options.paramsTag));
   return true;
 }
 

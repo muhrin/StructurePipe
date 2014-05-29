@@ -96,6 +96,7 @@ struct GeomOptimise : spl::factory::OptimiserSettings
   spl::factory::Optimiser optimiser;
   bool writeSummary;
   FailAction::Value failAction;
+  boost::optional< std::string> paramsTag;
 };
 
 SCHEMER_MAP(GeomOptimiseSchema, GeomOptimise)
@@ -104,7 +105,8 @@ SCHEMER_MAP(GeomOptimiseSchema, GeomOptimise)
   element("optimiser", &GeomOptimise::optimiser);
   element("writeSummary", &GeomOptimise::writeSummary)->defaultValue(false);
   element("failAction", &GeomOptimise::failAction)->defaultValue(
-      FailAction::CONTINUE);
+      FailAction::DROP);
+  element("paramsTag", &GeomOptimise::paramsTag);
 }
 
 struct KeepStableCompositions
@@ -167,10 +169,21 @@ SCHEMER_MAP(RemoveDuplicatesSchema, RemoveDuplicates)
   element("comparator", &RemoveDuplicates::comparator);
 }
 
+struct Rescale
+{
+  double scaleFactor;
+};
+
+SCHEMER_MAP(RescaleSchema, Rescale)
+{
+  element("scaleFactor", &Rescale::scaleFactor)->defaultValue(1.5);
+}
+
 struct RunPotentialParamsQueue
 {
   std::string paramsQueueFile;
   std::string paramsDoneFile;
+  std::string tag;
   BlockHandle pipe;
 };
 
@@ -181,6 +194,7 @@ SCHEMER_MAP(RunPotentialParamsQueueSchema, RunPotentialParamsQueue)
   element("doneFile", &RunPotentialParamsQueue::paramsDoneFile)->defaultValue(
       spipe::blocks::RunPotentialParamsQueue::DEFAULT_PARAMS_DONE_FILE);
   element< io::BlockLoaderType>("pipe", &RunPotentialParamsQueue::pipe);
+  element("paramsTag", &RunPotentialParamsQueue::tag);
 }
 
 struct SearchStoichiometries
@@ -209,6 +223,18 @@ SCHEMER_MAP(SeparateAtomsType, SeparateAtoms)
   element("pairDistances", &SeparateAtoms::pairDistances);
   element("failAction", &SeparateAtoms::failAction)->defaultValue(
       FailAction::CONTINUE);
+}
+
+struct Shrink
+{
+  spl::factory::Potential potential;
+  boost::optional< std::string> paramsTag;
+};
+
+SCHEMER_MAP(ShrinkSchema, Shrink)
+{
+  element("potential", &Shrink::potential);
+  element("paramsTag", &Shrink::paramsTag);
 }
 
 struct WriteStructures

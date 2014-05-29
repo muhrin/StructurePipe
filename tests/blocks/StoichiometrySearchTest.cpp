@@ -29,18 +29,18 @@
 #include <spipe/blocks/BuildStructures.h>
 #include <spipe/blocks/SearchStoichiometries.h>
 
-namespace splbc = ::spl::build_cell;
-namespace ssc = ::spl::common;
-namespace blocks = ::spipe::blocks;
+namespace splbc = spl::build_cell;
+namespace ssc = spl::common;
+namespace blocks = spipe::blocks;
 
-typedef ::spipe::blocks::SearchStoichiometries::CountRange Range;
-typedef ::spipe::blocks::SearchStoichiometries::AtomRanges AtomRanges;
+typedef spipe::blocks::SearchStoichiometries::CountRange Range;
+typedef spipe::blocks::SearchStoichiometries::AtomRanges AtomRanges;
 
-class StoichiometrySink : public ::spipe::FinishedSink
+class StoichiometrySink : public spipe::FinishedSink
 {
-  typedef ::spipe::StructureDataUniquePtr StructureDataPtr;
-  typedef ::std::set< size_t> CountSet;
-  typedef ::std::map< ::std::string, CountSet> AtomCounts;
+  typedef spipe::StructureDataUniquePtr StructureDataPtr;
+  typedef std::set< size_t> CountSet;
+  typedef std::map< std::string, CountSet> AtomCounts;
 public:
   StoichiometrySink(const AtomRanges & atomRanges)
   {
@@ -53,12 +53,9 @@ public:
   }
 
   virtual void
-  finished(StructureDataPtr structureData)
+  finished(StructureDataPtr structure)
   {
-    typedef ::std::set< ssc::AtomSpeciesId::Value> Species;
-
-    const ssc::Structure * const structure = structureData->getStructure();
-    BOOST_REQUIRE(structure != NULL);
+    typedef std::set< ssc::AtomSpeciesId::Value> Species;
 
     // Tick off this structure species count
     Species species;

@@ -33,39 +33,31 @@
 namespace spipe {
 namespace blocks {
 
-class BuildStructures : public virtual StartBlock,
-    public virtual PipeBlock,
-    ::boost::noncopyable
+class BuildStructures : public virtual StartBlock, boost::noncopyable
 {
 public:
-  typedef ::spl::build_cell::IStructureGeneratorPtr IStructureGeneratorPtr;
+  typedef spl::build_cell::IStructureGeneratorPtr IStructureGeneratorPtr;
 
   static const int DEFAULT_MAX_ATTEMPTS;
 
-  template <typename GeneratorPtr>
-  BuildStructures(const int numToGenerate,
-      GeneratorPtr structureGenerator);
+  template< typename GeneratorPtr>
+    BuildStructures(const int numToGenerate, GeneratorPtr structureGenerator);
 
-  template <typename GeneratorPtr>
-  BuildStructures(const float atomsMultiplierGenerate,
-      GeneratorPtr structureGenerator);
+  template< typename GeneratorPtr>
+    BuildStructures(const float atomsMultiplierGenerate,
+        GeneratorPtr structureGenerator);
 
   // From StartBlock ///
   virtual void
   start();
   // End from StartBlock
 
-  // From PipeBlock //
-  virtual void
-  in(::spipe::common::StructureData * const data);
-  // End from PipeBlock
-
 private:
-  typedef ::boost::scoped_ptr< ::spl::build_cell::StructureGenerator> StructureGeneratorPtr;
+  typedef boost::scoped_ptr< spl::build_cell::StructureGenerator> StructureGeneratorPtr;
 
-  ::std::string
+  std::string
   generateStructureName(const size_t structureNum) const;
-  ::spl::common::StructurePtr
+  spl::common::StructurePtr
   generateStructure() const;
 
   const IStructureGeneratorPtr myStructureGenerator;
@@ -74,28 +66,28 @@ private:
   const float myAtomsMultiplierGenerate;
   const int myMaxAttempts;
 #ifdef SPIPE_USE_BOOST_THREAD
-  ::boost::mutex myBuildStructuresMutex;
+  boost::mutex myBuildStructuresMutex;
 #endif
 };
 
-template <typename GeneratorPtr>
-BuildStructures::BuildStructures(const int numToGenerate,
-    GeneratorPtr structureGenerator):
-    Block("Generate Random structures"), myStructureGenerator(
-        structureGenerator), myFixedNumGenerate(true), myNumToGenerate(
-        numToGenerate), myAtomsMultiplierGenerate(0.0), myMaxAttempts(
-        DEFAULT_MAX_ATTEMPTS)
-    {
-    }
+template< typename GeneratorPtr>
+  BuildStructures::BuildStructures(const int numToGenerate,
+      GeneratorPtr structureGenerator) :
+      Block("Generate Random structures"), myStructureGenerator(
+          structureGenerator), myFixedNumGenerate(true), myNumToGenerate(
+          numToGenerate), myAtomsMultiplierGenerate(0.0), myMaxAttempts(
+          DEFAULT_MAX_ATTEMPTS)
+  {
+  }
 
-template <typename GeneratorPtr>
-BuildStructures::BuildStructures(const float atomsMultiplierGenerate,
-    GeneratorPtr structureGenerator) :
-    Block("Generate Random structures"), myStructureGenerator(
-        structureGenerator), myFixedNumGenerate(false), myNumToGenerate(0), myAtomsMultiplierGenerate(
-        atomsMultiplierGenerate), myMaxAttempts(DEFAULT_MAX_ATTEMPTS)
-    {
-    }
+template< typename GeneratorPtr>
+  BuildStructures::BuildStructures(const float atomsMultiplierGenerate,
+      GeneratorPtr structureGenerator) :
+      Block("Generate Random structures"), myStructureGenerator(
+          structureGenerator), myFixedNumGenerate(false), myNumToGenerate(0), myAtomsMultiplierGenerate(
+          atomsMultiplierGenerate), myMaxAttempts(DEFAULT_MAX_ATTEMPTS)
+  {
+  }
 
 }
 }

@@ -53,19 +53,18 @@ PasteFragment::pipelineInitialising()
 }
 
 void
-PasteFragment::in(StructureDataType * const data)
+PasteFragment::in(spl::common::Structure * const structure)
 {
-  if(data->getStructure() && myFragment.getNumAtoms() != 0)
+  if(myFragment.getNumAtoms() != 0)
   {
-    spl::common::Structure & structure = *data->getStructure();
     BOOST_FOREACH(const spl::common::Atom & atom,
         boost::make_iterator_range(myFragment.atomsBegin(), myFragment.atomsEnd()))
     {
-      structure.newAtom(atom).setPosition(
+      structure->newAtom(atom).setPosition(
           spl::math::transformCopy(atom.getPosition(), myTransform));
     }
   }
-  out(data);
+  out(structure);
 }
 
 }

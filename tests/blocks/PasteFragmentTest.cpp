@@ -43,9 +43,9 @@ public:
   virtual void
   start()
   {
-    common::StructureData * const strData = getEngine()->createData();
-    strData->setStructure(myStructure.clone());
-    out(strData);
+    StructureDataType * const structure = getEngine()->createData();
+    *structure = myStructure;
+    out(structure);
   }
 private:
   splc::Structure myStructure;
@@ -80,21 +80,18 @@ PasteTester::PasteTester(const splc::Structure & structure,
 }
 
 void
-PasteTester::finished(StructureDataPtr data)
+PasteTester::finished(StructureDataPtr structure)
 {
-  BOOST_REQUIRE(data->getStructure());
-  const splc::Structure & structure = *data->getStructure();
-
   const size_t totalAtoms = myOriginalStructure.getNumAtoms()
       + myPastedFragment.getNumAtoms();
-  BOOST_REQUIRE_EQUAL(structure.getNumAtoms(), totalAtoms);
+  BOOST_REQUIRE_EQUAL(structure->getNumAtoms(), totalAtoms);
 
   // Now check all the atoms are as expected
   arma::vec3 origPos, newPos;
   for(size_t i = 0; i < myOriginalStructure.getNumAtoms(); ++i)
   {
     origPos = myOriginalStructure.getAtom(i).getPosition();
-    newPos = structure.getAtom(i).getPosition();
+    newPos = structure->getAtom(i).getPosition();
     checkEqual(origPos, newPos);
   }
   // Now check the 'pasted atoms'
@@ -102,7 +99,8 @@ PasteTester::finished(StructureDataPtr data)
   {
     origPos = spl::math::transformCopy(
         myPastedFragment.getAtom(i).getPosition(), myFragmentTransform);
-    newPos = structure.getAtom(i + myOriginalStructure.getNumAtoms()).getPosition();
+    newPos =
+        structure->getAtom(i + myOriginalStructure.getNumAtoms()).getPosition();
     checkEqual(origPos, newPos);
   }
 }

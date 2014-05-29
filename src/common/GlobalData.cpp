@@ -57,11 +57,32 @@ GlobalData::setWorkingDir(const ::boost::filesystem::path & workingDir)
 }
 
 void
-GlobalData::reset()
+GlobalData::setParameters(const std::string & tag, const Parameters & params)
 {
-  objectsStore.clear();
-  myWorkingDir.clear();
-  mySeedName.clear();
+  if(params.empty())
+  {
+    std::map< std::string, Parameters>::iterator it = myParameters.find(
+        tag);
+    if(it != myParameters.end())
+      myParameters.erase(it);
+  }
+  else
+    myParameters[tag] = params;
+}
+
+bool
+GlobalData::updateParameterisable(const std::string & tag,
+    spl::potential::IParameterisable * const parameterisable) const
+{
+  if(tag.empty())
+    return false;
+
+  std::map< std::string, Parameters>::const_iterator it = myParameters.find(
+      tag);
+  if(it == myParameters.end())
+    return false;
+
+  return parameterisable->setParams(it->second, NULL);
 }
 
 }

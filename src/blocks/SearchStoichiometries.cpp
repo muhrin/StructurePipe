@@ -143,14 +143,12 @@ SearchStoichiometries::releaseBufferedStructures(
 
   ssio::ResourceLocator lastSavedRelative;
 
-  const ssc::Structure * structure;
   const double * internalEnergy;
 
   unsigned int * spacegroup;
-  BOOST_FOREACH(StructureDataTyp * const strData, myBuffer)
+  BOOST_FOREACH(StructureDataType * const structure, myBuffer)
   {
-    structure = strData->getStructure();
-    lastSavedRelative = strData->getRelativeSavePath(workingDir());
+    lastSavedRelative = common::getRelativeSavePath(*structure, workingDir());
 
     if(!lastSavedRelative.empty())
     {
@@ -158,7 +156,7 @@ SearchStoichiometries::releaseBufferedStructures(
       table.insert(tableKey, "lowest", lastSavedRelative.string());
     }
 
-    spacegroup = strData->objectsStore.find(
+    spacegroup = structure->getProperty(
         structure_properties::general::SPACEGROUP_NUMBER);
     if(spacegroup)
     {
@@ -178,7 +176,7 @@ SearchStoichiometries::releaseBufferedStructures(
     }
 
     // Pass the structure on
-    out(strData);
+    out(structure);
   }
   myBuffer.clear();
 }

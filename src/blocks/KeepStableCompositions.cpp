@@ -26,16 +26,6 @@ namespace splu = spl::utility;
 namespace spipe {
 namespace blocks {
 
-struct GetStructure : public std::unary_function< common::StructureData * const,
-    splc::Structure * const >
-{
-  splc::Structure *
-  operator()(common::StructureData * const structureData) const
-  {
-    return structureData->getStructure();
-  }
-};
-
 KeepStableCompositions::KeepStableCompositions() :
     Block("Keep stable compositions"), myWriteHull(false)
 {
@@ -58,18 +48,12 @@ KeepStableCompositions::pipelineInitialised()
 }
 
 void
-KeepStableCompositions::in(common::StructureData * const data)
+KeepStableCompositions::in(spl::common::Structure * const structure)
 {
-  if(!data->getStructure())
-  {
-    drop(data);
-    return;
-  }
-
 #ifdef SPIPE_USE_BOOST_THREAD
   boost::lock_guard< boost::mutex> lock(myMutex);
 #endif
-  myStructureStore.insert(data);
+  myStructureStore.insert(structure);
   myConvexHullStructures.reset();
 }
 
@@ -86,7 +70,7 @@ KeepStableCompositions::release()
   if(!myConvexHullStructures.get())
   {
     const size_t numReleased = myStructureStore.size();
-    BOOST_FOREACH(common::StructureData * const str, myStructureStore)
+    BOOST_FOREACH(spl::common::Structure * const str, myStructureStore)
       out(str);
     myStructureStore.clear();
     return numReleased;
@@ -103,7 +87,7 @@ KeepStableCompositions::release()
   while(!myStructureStore.empty())
   {
     it = myStructureStore.begin();
-    if(myConvexHullStructures->getStability(*(*it)->getStructure())
+    if(myConvexHullStructures->getStability(**it)
         == spla::ConvexHullStructures::Stability::STABLE)
     {
       out(*it);
@@ -121,25 +105,19 @@ KeepStableCompositions::release()
 bool
 KeepStableCompositions::hasData() const
 {
-  typedef boost::transform_iterator< GetStructure,
-      StructureStore::const_iterator> StructuresIterator;
-
-  static const GetStructure GET_STRUCTURE = GetStructure();
-
   if(myStructureStore.empty())
     return false;
 
-  StructuresIterator first(myStructureStore.begin(), GET_STRUCTURE);
-  StructuresIterator end(myStructureStore.end(), GET_STRUCTURE);
-
   const spla::ConvexHullStructures::EndpointLabels endpoints =
-      spla::ConvexHullStructures::generateEndpoints(first, end);
+      spla::ConvexHullStructures::generateEndpoints(myStructureStore.begin(),
+          myStructureStore.end());
 
   if(endpoints.size() < 2)
     return true; // We're going to release all the structures in this case
 
   myConvexHullStructures.reset(new spla::ConvexHullStructures(endpoints));
-  myConvexHullStructures->insert(first, end);
+  myConvexHullStructures->insert(myStructureStore.begin(),
+      myStructureStore.end());
 
   return myConvexHullStructures->numStable() != 0;
 }

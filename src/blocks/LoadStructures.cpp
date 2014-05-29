@@ -57,17 +57,16 @@ LoadStructures::start()
 
   BOOST_FOREACH(const spl::common::Structure & str, myStructures)
   {
-    StructureData * const data = getEngine()->createData();
-    ssc::Structure & structure = data->setStructure(
-        UniquePtr< ssc::Structure>::Type(new ssc::Structure(str)));
+    spl::common::Structure * const structure = getEngine()->createData();
+    *structure = str;
 
     // Set up the structure name if needed
-    if(structure.getName().empty())
-      structure.setName(
+    if(structure->getName().empty())
+      structure->setName(
           common::generateStructureName(getEngine()->globalData()));
 
     // Send it on its way
-    out(data);
+    out(structure);
   }
 }
 

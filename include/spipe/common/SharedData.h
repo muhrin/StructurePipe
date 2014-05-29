@@ -46,9 +46,6 @@ public:
   setWorkingDir(const boost::filesystem::path & workingDir);
 
 private:
-  void
-  reset();
-
   spl::common::AtomSpeciesDatabase mySpeciesDb;
   boost::filesystem::path myWorkingDir;
   std::string myInstanceName;

@@ -21,7 +21,7 @@
 namespace spipe {
 namespace blocks {
 
-class Clone : public PipeBlock, ::boost::noncopyable
+class Clone : public PipeBlock, boost::noncopyable
 {
 public:
   Clone(const int times);
@@ -29,7 +29,7 @@ public:
 
   // From Block /////////////////
   virtual void
-  in(common::StructureData * const data);
+  in(spl::common::Structure * const data);
   // End from Block /////////////
 
 private:

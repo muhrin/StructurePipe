@@ -15,7 +15,6 @@
 
 #include <pipelib/pipelib.h>
 
-
 #include <spl/common/AtomSpeciesDatabase.h>
 #include <spl/common/Structure.h>
 
@@ -26,61 +25,73 @@
 #include <spipe/common/StructureData.h>
 #include <spipe/blocks/KeepTopN.h>
 
-namespace ssc = ::spl::common;
-namespace blocks = ::spipe::blocks;
+namespace ssc = spl::common;
+namespace blocks = spipe::blocks;
 namespace structure_properties = ssc::structure_properties;
 
-class StructureSink : public ::spipe::FinishedSink
+class StructureSink : public spipe::FinishedSink
 {
-  typedef ::spipe::StructureDataUniquePtr StructureDataPtr;
+  typedef spipe::StructureDataUniquePtr StructureDataPtr;
 public:
 
-  StructureSink():myNumReceived(0) {}
+  StructureSink() :
+      myNumReceived(0)
+  {
+  }
 
-  virtual void finished(StructureDataPtr data)
-  { ++myNumReceived; }
+  virtual void
+  finished(StructureDataPtr data)
+  {
+    ++myNumReceived;
+  }
 
-  unsigned int getNumReceived()
-  { return myNumReceived; }
+  unsigned int
+  getNumReceived()
+  {
+    return myNumReceived;
+  }
 
-  void reset() { myNumReceived = 0; }
+  void
+  reset()
+  {
+    myNumReceived = 0;
+  }
 
 private:
   unsigned int myNumReceived;
 };
 
-class StructuresSender : public ::spipe::StartBlock
+class StructuresSender : public spipe::StartBlock
 {
 public:
-  typedef ::spipe::StructureDataType StructureDataType;
+  typedef spipe::StructureDataType StructureDataType;
 
-  StructuresSender(const unsigned int numToGenerate):
-  ::spipe::Block("Send structures"),
-  myNumToGenerate(numToGenerate) {}
-
-  virtual void start()
+  StructuresSender(const unsigned int numToGenerate) :
+      spipe::Block("Send structures"), myNumToGenerate(numToGenerate)
   {
-    typedef ::spl::UniquePtr<ssc::Structure>::Type StructurePtr;
-    typedef ::spipe::StructureDataType StructureDataType;
-    typedef ::spl::UniquePtr<StructureDataType>::Type StructureDataPtr;
+  }
+
+  virtual void
+  start()
+  {
+    typedef spl::UniquePtr< ssc::Structure>::Type StructurePtr;
+    typedef spipe::StructureDataType StructureDataType;
+    typedef spl::UniquePtr< StructureDataType>::Type StructureDataPtr;
 
     for(size_t i = 0; i < myNumToGenerate; ++i)
     {
-      StructureDataPtr structureData(new StructureDataType());
-      StructurePtr structure(new ssc::Structure());
-      structure->setProperty(
-        structure_properties::general::ENTHALPY,
-        -static_cast<double>(i) // Set the energy to be the negative of the index (easy to remember)
-      );
-      structureData->setStructure(structure);
-      
+      StructureDataPtr structure(new StructureDataType());
+      structure->setProperty(structure_properties::general::ENTHALPY,
+          -static_cast< double>(i) // Set the energy to be the negative of the index (easy to remember)
+          );
+
       // Register the data and send it on
-      out(getEngine()->registerData(structureData));
+      out(getEngine()->registerData(structure));
     }
   }
 
 private:
-  typedef ::std::vector<StructureDataType *> Structures;
+  typedef std::vector< StructureDataType *> Structures;
 
   const unsigned int myNumToGenerate;
 };

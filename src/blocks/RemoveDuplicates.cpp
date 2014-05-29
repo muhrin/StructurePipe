@@ -22,8 +22,8 @@
 namespace spipe {
 namespace blocks {
 
-namespace ssc = ::spl::common;
-namespace ssu = ::spl::utility;
+namespace ssc = spl::common;
+namespace ssu = spl::utility;
 namespace structure_properties = ssc::structure_properties;
 
 RemoveDuplicates::RemoveDuplicates(ssu::IStructureComparatorPtr comparator) :
@@ -38,41 +38,33 @@ RemoveDuplicates::RemoveDuplicates(
 }
 
 void
-RemoveDuplicates::in(common::StructureData * const data)
+RemoveDuplicates::in(spl::common::Structure * const structure)
 {
-  if(!data->getStructure())
-  {
-    out(data);
-    return;
-  }
-
 #ifdef SPIPE_USE_BOOST_THREAD
-  boost::lock_guard<boost::mutex> guard(myMutex);
+  boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
 
-  const StructureSet::insert_return_type result = myStructureSet.insert(data,
-      *data->getStructure());
+  const StructureSet::insert_return_type result = myStructureSet.insert(structure);
 
   if(result.second)
   {
     // Inserted
-    data->getStructure()->setProperty(
-        structure_properties::searching::TIMES_FOUND,
-        static_cast<unsigned int>(1));
+    structure->setProperty(structure_properties::searching::TIMES_FOUND,
+        static_cast< unsigned int>(1));
   }
   else
   {
     // The structure is not unique so discard it
-    drop(data);
+    drop(structure);
 
     // Up the 'times found' counter on the original structure
-    ::spipe::common::StructureData * const origStrData = *result.first;
-    unsigned int * const timesFound = origStrData->getStructure()->getProperty(
+    spl::common::Structure * const originalStructure = *result.first;
+    unsigned int * const timesFound = originalStructure->getProperty(
         structure_properties::searching::TIMES_FOUND);
     if(timesFound)
       *timesFound += 1;
     else
-      origStrData->getStructure()->setProperty(
+      originalStructure->setProperty(
           structure_properties::searching::TIMES_FOUND,
           static_cast< unsigned int>(1));
   }
@@ -89,10 +81,9 @@ RemoveDuplicates::release()
 {
   const size_t numUnique = myStructureSet.size();
 
-  BOOST_FOREACH(common::StructureData * const data, myStructureSet)
-  {
-    out(data);
-  }
+  BOOST_FOREACH(spl::common::Structure * const structure, myStructureSet)
+    out(structure);
+
   myStructureSet.clear();
 
   return numUnique;

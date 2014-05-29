@@ -28,7 +28,7 @@ namespace structure_properties = ssc::structure_properties;
 StructureData &
 StructureData::operator =(const StructureData & rhs)
 {
-  objectsStore = rhs.objectsStore;
+  //objectsStore = rhs.objectsStore;
   if(rhs.myStructure.get())
     myStructure.reset(new ssc::Structure(*rhs.myStructure));
   return *this;
@@ -58,31 +58,6 @@ StructureData::setStructure(ssio::StructuresContainer::auto_type structure)
   return *myStructure.get();
 }
 
-ssio::ResourceLocator
-StructureData::getRelativeSavePath(const ::boost::filesystem::path & relativeTo) const
-{
-  ssio::ResourceLocator relativeLocator;
-
-  const ssc::Structure * const structure = getStructure();
-
-  // If no structure, return empty locator
-  if(!structure)
-    return relativeLocator;
-
-  const ssio::ResourceLocator * lastSaved = structure->getProperty(
-      structure_properties::io::LAST_ABS_FILE_PATH);
-
-  if(lastSaved)
-  {
-    relativeLocator = *lastSaved;
-    fs::path relativePath = lastSaved->path();
-    // Make the path relative if necessary
-    relativePath = ssio::make_relative(relativeTo, relativePath);
-    relativeLocator.setPath(relativePath);
-  }
-
-  return relativeLocator;
-}
 
 }
 }

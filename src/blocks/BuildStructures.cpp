@@ -58,9 +58,9 @@ BuildStructures::start()
       {
         generatedStructure = true;
 
-        StructureData * const data = getEngine()->createData();
-        data->setStructure(str);
-        data->getStructure()->setName(generateStructureName(i));
+        spl::common::Structure * const structure = getEngine()->createData();
+        *structure = *str;
+        structure->setName(generateStructureName(i));
 
         if(!myFixedNumGenerate)
         {
@@ -71,40 +71,10 @@ BuildStructures::start()
         }
 
         // Send it down the pipe
-        out(data);
+        out(structure);
       }
     }
   }
-}
-
-void
-BuildStructures::in(::spipe::common::StructureData * const data)
-{
-#ifdef SPIPE_USE_BOOST_THREAD
-  myBuildStructuresMutex.lock();
-#endif
-
-  // Create the random structure
-  ssc::StructurePtr str = generateStructure();
-
-#ifdef SPIPE_USE_BOOST_THREAD
-  myBuildStructuresMutex.unlock();
-#endif
-
-  if(str.get())
-  {
-    data->setStructure(str);
-
-    // Build up the name
-    if(data->getStructure()->getName().empty())
-      data->getStructure()->setName(
-          common::generateStructureName(getEngine()->globalData()));
-
-    // Send it down the pipe
-    out(data);
-  }
-  else
-    drop(data);
 }
 
 std::string

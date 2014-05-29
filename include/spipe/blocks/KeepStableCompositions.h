@@ -46,7 +46,7 @@ public:
   virtual void
   pipelineInitialised();
   virtual void
-  in(common::StructureData * const data);
+  in(spl::common::Structure * const data);
   virtual void
   pipelineFinishing();
   // End from Block /////////////
@@ -59,7 +59,7 @@ public:
   // End from Barrier //////////////
 
 private:
-  typedef std::set< common::StructureData *> StructureStore;
+  typedef std::set< spl::common::Structure *> StructureStore;
 
   const bool myWriteHull;
   spl::UniquePtr< spl::analysis::ConvexHullOutputter>::Type myOutputter;

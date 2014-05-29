@@ -19,7 +19,7 @@
 namespace spipe {
 namespace blocks {
 
-class SeparateAtoms : public PipeBlock, ::boost::noncopyable
+class SeparateAtoms : public PipeBlock, boost::noncopyable
 {
 public:
   SeparateAtoms();

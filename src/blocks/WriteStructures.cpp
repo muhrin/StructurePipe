@@ -81,14 +81,13 @@ WriteStructures::pipelineStarting()
 }
 
 void
-WriteStructures::in(common::StructureData * const data)
+WriteStructures::in(StructureDataType * const structure)
 {
   const ssio::StructureReadWriteManager & rwMan =
       getEngine()->globalData().getStructureIo();
+
   if(myState != State::DISABLED)
   {
-    ssc::Structure * const structure = data->getStructure();
-
     const ssio::IStructureWriter * writer = NULL;
 
     if(myState == State::USE_CUSTOM_WRITER)
@@ -103,11 +102,10 @@ WriteStructures::in(common::StructureData * const data)
 
       bool writeSuccessful;
       if(myState == State::USE_CUSTOM_WRITER)
-        writeSuccessful = rwMan.writeStructure(*data->getStructure(),
-            saveLocation, myFileType);
+        writeSuccessful = rwMan.writeStructure(*structure, saveLocation,
+            myFileType);
       else
-        writeSuccessful = rwMan.writeStructure(*data->getStructure(),
-            saveLocation);
+        writeSuccessful = rwMan.writeStructure(*structure, saveLocation);
 
       if(!writeSuccessful)
       {
@@ -119,7 +117,7 @@ WriteStructures::in(common::StructureData * const data)
       // TODO: Error couldn't find writer
     }
   }
-  out(data);
+  out(structure);
 }
 
 ssio::ResourceLocator

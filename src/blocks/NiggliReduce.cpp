@@ -26,13 +26,13 @@ NiggliReduce::NiggliReduce() :
 }
 
 void
-NiggliReduce::in(common::StructureData * const data)
+NiggliReduce::in(spl::common::Structure * const structure)
 {
-  ssc::UnitCell * const cell = data->getStructure()->getUnitCell();
+  ssc::UnitCell * const cell = structure->getUnitCell();
   if(cell)
     cell->niggliReduce();
 
-  out(data);
+  out(structure);
 }
 
 }

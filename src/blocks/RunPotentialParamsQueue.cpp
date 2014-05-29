@@ -53,23 +53,19 @@ static const size_t INITIAL_NUM_WORK_ITEMS = 20;
 static const posix_time::time_duration DEFAULT_TARGET_CHUNK_TIME =
     posix_time::minutes(10);
 
-RunPotentialParamsQueue::RunPotentialParamsQueue(BlockHandle & sweepPipeline) :
-    Block("Run potential params queue"), mySweepPipeline(sweepPipeline), mySubpipeEngine(
-    NULL), myQueueFile(DEFAULT_PARAMS_QUEUE_FILE), myDoneFile(
-        DEFAULT_PARAMS_DONE_FILE), myTargetChunkTime(DEFAULT_TARGET_CHUNK_TIME)
+RunPotentialParamsQueue::Settings::Settings()
 {
-  myNumWorkItemsChunk = INITIAL_NUM_WORK_ITEMS;
+  queueFile = DEFAULT_PARAMS_QUEUE_FILE;
+  doneFile = DEFAULT_PARAMS_DONE_FILE;
+  targetChunkTime = DEFAULT_TARGET_CHUNK_TIME;
 }
 
-RunPotentialParamsQueue::RunPotentialParamsQueue(
-    const std::string * const queueFile, const std::string * const doneFile,
+RunPotentialParamsQueue::RunPotentialParamsQueue(const Settings & settings,
     BlockHandle & sweepPipeline) :
-    Block("Run potential params queue"), mySweepPipeline(sweepPipeline), mySubpipeEngine(
-    NULL), myQueueFile(queueFile ? *queueFile : DEFAULT_PARAMS_QUEUE_FILE), myDoneFile(
-        doneFile ? *doneFile : DEFAULT_PARAMS_DONE_FILE), myTargetChunkTime(
-        DEFAULT_TARGET_CHUNK_TIME)
+    Block("Run potential params queue"), mySettings(settings), mySweepPipeline(
+        sweepPipeline), mySubpipeEngine(
+    NULL), myNumWorkItemsChunk(INITIAL_NUM_WORK_ITEMS)
 {
-  myNumWorkItemsChunk = INITIAL_NUM_WORK_ITEMS;
 }
 
 void
@@ -100,14 +96,16 @@ RunPotentialParamsQueue::pipelineInitialising()
 }
 
 void
-RunPotentialParamsQueue::finished(StructureDataUniquePtr data)
+RunPotentialParamsQueue::finished(StructureDataUniquePtr structure)
 {
-  if(!data->objectsStore.find(common::GlobalKeys::POTENTIAL_PARAMS))
-    data->objectsStore[common::GlobalKeys::POTENTIAL_PARAMS] = myCurrentParams;
+
+  if(!structure->getProperty(common::GlobalKeys::POTENTIAL_PARAMS))
+    structure->setProperty(common::GlobalKeys::POTENTIAL_PARAMS,
+        myCurrentParams);
 
   // Register the data with our pipeline to transfer ownership
   // Save it in the buffer for sending down the pipe
-  myBuffer.push_back(getEngine()->registerData(data));
+  myBuffer.push_back(getEngine()->registerData(structure));
 }
 
 void
@@ -127,8 +125,7 @@ RunPotentialParamsQueue::start()
       myCurrentParams = myParamsQueue.front();
 
       // Store the potential parameters in global memory
-      getEngine()->globalData().objectsStore[common::GlobalKeys::POTENTIAL_PARAMS] =
-          myCurrentParams;
+      getEngine()->globalData().setParameters(mySettings.tag, myCurrentParams);
 
       const fs::path sweepPath = workingDir
           / common::generateParamDirName(myCurrentParams,
@@ -156,13 +153,13 @@ RunPotentialParamsQueue::start()
 bool
 RunPotentialParamsQueue::getWork()
 {
-  if(!fs::exists(myQueueFile))
+  if(!fs::exists(mySettings.queueFile))
     return false;
 
-  ip::file_lock lock(myQueueFile.string().c_str());
+  ip::file_lock lock(mySettings.queueFile.string().c_str());
   ip::scoped_lock< ip::file_lock> lockQueue(lock);
 
-  fs::fstream queueStream(myQueueFile);
+  fs::fstream queueStream(mySettings.queueFile);
   std::stringstream takenWorkItems, originalContents;
   std::string line;
   size_t numParamsRead = 0;
@@ -233,14 +230,14 @@ RunPotentialParamsQueue::readParams(const std::string & paramsLine) const
 void
 RunPotentialParamsQueue::updateDoneParams()
 {
-  if(!fs::exists(myDoneFile))
+  if(!fs::exists(mySettings.doneFile))
     return;
 
   // Update the file of finish parameters
-  ip::file_lock lock(myDoneFile.string().c_str());
+  ip::file_lock lock(mySettings.doneFile.string().c_str());
   ip::scoped_lock< ip::file_lock> lockQueue(lock);
 
-  fs::ofstream doneStream(myDoneFile, std::ios::out | std::ios::app);
+  fs::ofstream doneStream(mySettings.doneFile, std::ios::out | std::ios::app);
   std::for_each(myDoneParams.begin(), myDoneParams.end(),
       boost::bind(&RunPotentialParamsQueue::writeParams, this, _1,
           boost::ref(doneStream)));
@@ -253,7 +250,7 @@ void
 RunPotentialParamsQueue::updateWorkChunkSize()
 {
   const posix_time::time_duration meanDuration = myWorkItemsTiming.mean();
-  if(meanDuration > myTargetChunkTime)
+  if(meanDuration > mySettings.targetChunkTime)
   {
     // One work item takes longer than our target time so just do one
     // at a time
@@ -263,9 +260,9 @@ RunPotentialParamsQueue::updateWorkChunkSize()
 
   // Can't divide two times so keep multiplying up until we get the duration we want
   int i =
-      meanDuration * myNumWorkItemsChunk > myTargetChunkTime ?
+      meanDuration * myNumWorkItemsChunk > mySettings.targetChunkTime ?
           1 : myNumWorkItemsChunk + 1;
-  for(; meanDuration * i < myTargetChunkTime; ++i)
+  for(; meanDuration * i < mySettings.targetChunkTime; ++i)
   { // Nothing to do
   }
   myNumWorkItemsChunk = i;
@@ -276,14 +273,13 @@ RunPotentialParamsQueue::releaseBufferedStructures(
     const spipe::utility::DataTable::Key & key)
 {
   std::for_each(myBuffer.begin(), myBuffer.end(),
-      boost::bind(&RunPotentialParamsQueue::updateTable, this,
-          boost::ref(key), _1));
+      boost::bind(&RunPotentialParamsQueue::updateTable, this, boost::ref(key),
+          _1));
 
   // Send any finished structure data down my pipe
   BOOST_FOREACH(StructureDataType * const sweepStrData, myBuffer)
-  {
     out(sweepStrData);
-  }
+
   myBuffer.clear();
 }
 

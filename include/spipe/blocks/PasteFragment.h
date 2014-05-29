@@ -44,13 +44,12 @@ public:
   virtual void
   pipelineInitialising();
   virtual void
-  in(StructureDataType * const data);
+  in(spl::common::Structure * const data);
 
 private:
   spl::io::ResourceLocator myFragmentLoc;
   arma::mat44 myTransform;
   spl::common::Structure myFragment;
-
 };
 
 }

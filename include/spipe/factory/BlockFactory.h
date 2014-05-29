@@ -71,6 +71,9 @@ public:
       const blocks::RemoveDuplicates & options) const;
   bool
   createBlock(BlockHandle * const blockOut,
+      const blocks::Rescale & options) const;
+  bool
+  createBlock(BlockHandle * const blockOut,
       blocks::RunPotentialParamsQueue & options) const;
   bool
   createBlock(BlockHandle * const blockOut,
@@ -78,6 +81,9 @@ public:
   bool
   createBlock(BlockHandle * const blockOut,
       blocks::SeparateAtoms & options) const;
+  bool
+  createBlock(BlockHandle * const blockOut,
+      blocks::Shrink & options) const;
   bool
   createBlock(BlockHandle * const blockOut,
       const blocks::WriteStructures & options) const;
