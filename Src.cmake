@@ -55,7 +55,6 @@ source_group("Source Files\\io" FILES ${spipe_Source_Files__io})
 
 ## spipe/utility/
 set(spipe_Source_Files__utility
-  src/utility/PipeDataInitialisation.cpp
   src/utility/DataTable.cpp
   src/utility/DataTableInserters.cpp
   src/utility/DataTableSupport.cpp

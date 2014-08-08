@@ -61,7 +61,6 @@ source_group("Header Files\\io" FILES ${spipe_Header_Files__io})
 
 ## spipe/utility/
 set(spipe_Header_Files__utility
-  include/spipe/utility/PipeDataInitialisation.h
   include/spipe/utility/DataTable.h
   include/spipe/utility/DataTableInserters.h
   include/spipe/utility/DataTableSupport.h

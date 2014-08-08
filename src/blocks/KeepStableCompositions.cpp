@@ -8,7 +8,7 @@
 // INCLUDES //////////////////////////////////
 #include "spipe/blocks/KeepStableCompositions.h"
 
-#ifdef SPL_WITH_CGAL
+#ifdef SPL_USE_CGAL
 
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/thread/lock_guard.hpp>
@@ -125,4 +125,4 @@ KeepStableCompositions::hasData() const
 }
 }
 
-#endif // SPL_WITH_CGAL
+#endif // SPL_USE_CGAL

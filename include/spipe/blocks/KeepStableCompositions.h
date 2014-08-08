@@ -14,7 +14,7 @@
 
 #include <spl/SSLib.h>
 
-#ifdef SPL_WITH_CGAL
+#ifdef SPL_USE_CGAL
 
 #include <set>
 
@@ -74,5 +74,5 @@ private:
 }
 }
 
-#endif // SPL_WITH_CGAL
+#endif // SPL_USE_CGAL
 #endif /* KEEP_STABLE_COMPOSITIONS_H */

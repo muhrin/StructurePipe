@@ -32,8 +32,6 @@ class GlobalData
 public:
   typedef std::vector< std::string> Parameters;
 
-  GlobalData();
-
   const std::string &
   getSeedName() const;
   void

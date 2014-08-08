@@ -47,7 +47,7 @@ public:
   bool
   createBlock(BlockHandle * const blockOut,
       const blocks::GeomOptimise & options) const;
-#ifdef SPL_WITH_CGAL
+#ifdef SPL_USE_CGAL
   bool
   createBlock(BlockHandle * const blockOut,
       const blocks::KeepStableCompositions & options) const;

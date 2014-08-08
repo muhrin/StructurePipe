@@ -26,12 +26,19 @@
 namespace spipe {
 namespace utility {
 
-const ::std::string DataTable::KEY_COLUMN_NAME = "[key]";
-const ::std::vector< ::std::string> DataTable::DEFAULT_COLUMN_NAMES(1,
+const std::string DataTable::KEY_COLUMN_NAME = "[key]";
+const std::vector< std::string> DataTable::DEFAULT_COLUMN_NAMES(1,
     DataTable::KEY_COLUMN_NAME);
 
 DataTable::DataTable() :
     myColumnNames(DEFAULT_COLUMN_NAMES)
+{
+}
+
+DataTable::DataTable(const DataTable & toCopy) :
+    myRows(toCopy.myRows), myRowMap(toCopy.myRowMap), myColumnNames(
+        toCopy.myColumnNames), myColumnMap(toCopy.myColumnMap), myTableNotes(
+        toCopy.myTableNotes)
 {
 }
 
@@ -90,11 +97,11 @@ DataTable::notesEnd() const
 }
 
 DataTable::Coords
-DataTable::insert(const DataTable::Key & key, const ::std::string & colName,
+DataTable::insert(const DataTable::Key & key, const std::string & colName,
     const DataTable::Value & value)
 {
 #ifdef SPIPE_USE_BOOST_THREAD
-  ::boost::lock_guard< boost::mutex> guard(myTableMutex);
+  boost::lock_guard< boost::mutex> guard(myTableMutex);
 #endif
 
   const Coords coords = this->coords(key, colName);
@@ -111,29 +118,29 @@ DataTable::insert(const DataTable::Key & key, const ::std::string & colName,
 }
 
 void
-DataTable::addTableNote(const ::std::string & note)
+DataTable::addTableNote(const std::string & note)
 {
 #ifdef SPIPE_USE_BOOST_THREAD
-  ::boost::lock_guard< boost::mutex> guard(myNotesMutex);
+  boost::lock_guard< boost::mutex> guard(myNotesMutex);
 #endif
   myTableNotes.push_back(note);
 }
 
 void
-DataTable::writeToFile(const ::std::string & filename,
-    const ::std::string & colDelimiter) const
+DataTable::writeToFile(const std::string & filename,
+    const std::string & colDelimiter) const
 {
-  ::std::ofstream tableFile;
+  std::ofstream tableFile;
   tableFile.open(filename.c_str());
 
   // Print the header first
-  tableFile << "# " << ::boost::algorithm::join(myColumnNames, colDelimiter);
+  tableFile << "# " << boost::algorithm::join(myColumnNames, colDelimiter);
 
   if(hasNotes())
-    tableFile << "\n# " << ::boost::algorithm::join(myTableNotes, "\n# ");
+    tableFile << "\n# " << boost::algorithm::join(myTableNotes, "\n# ");
 
   BOOST_FOREACH(const Rows::const_reference row, myRows)
-    tableFile << "\n" << ::boost::algorithm::join(row, colDelimiter);
+    tableFile << "\n" << boost::algorithm::join(row, colDelimiter);
 
   tableFile << "\n";
 
@@ -174,7 +181,8 @@ DataTable::addDataTableChangeListener(IDataTableChangeListener * const listener)
 }
 
 bool
-DataTable::removeDataTableChangeListener(IDataTableChangeListener * const listener)
+DataTable::removeDataTableChangeListener(
+    IDataTableChangeListener * const listener)
 {
   return myListeners.erase(listener);
 }
@@ -215,7 +223,7 @@ DataTable::row(const Key & key)
 }
 
 size_t
-DataTable::col(const ::std::string & name)
+DataTable::col(const std::string & name)
 {
   SSLIB_ASSERT(!name.empty());
 
@@ -236,7 +244,7 @@ DataTable::col(const ::std::string & name)
 }
 
 DataTable::Coords
-DataTable::coords(const Key & key, const ::std::string & colName)
+DataTable::coords(const Key & key, const std::string & colName)
 {
   return Coords(row(key), col(colName));
 }

@@ -12,7 +12,7 @@
 
 #include <boost/foreach.hpp>
 
-#include <spl/SSLibConfig.h>
+#include <spl/config.h>
 
 #include "spipe/factory/YamlSchema.h"
 
@@ -32,7 +32,7 @@ BlockLoader::BlockLoader()
   registerFactoryBlockCreator< blocks::CutAndPasteSchema>("cutAndPaste");
   registerFactoryBlockCreator< blocks::FindSymmetryGroupSchema>("findSymmetry");
   registerFactoryBlockCreator< blocks::GeomOptimiseSchema>("geomOptimise");
-#ifdef SPL_WITH_CGAL
+#ifdef SPL_USE_CGAL
   registerFactoryBlockCreator< blocks::KeepStableCompositionsSchema>(
       "keepStableCompositions");
 #endif

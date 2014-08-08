@@ -112,7 +112,7 @@ BlockFactory::createBlock(BlockHandle * const blockOut,
   return true;
 }
 
-#ifdef SPL_WITH_CGAL
+#ifdef SPL_USE_CGAL
 bool
 BlockFactory::createBlock(BlockHandle * const blockOut,
     const blocks::KeepStableCompositions & options) const
