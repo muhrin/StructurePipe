@@ -34,6 +34,9 @@ class BlockFactory
 public:
   bool
   createBlock(BlockHandle * const blockOut,
+      blocks::AutoScale & options) const;
+  bool
+  createBlock(BlockHandle * const blockOut,
       const blocks::BuildStructures & options) const;
   bool
   createBlock(BlockHandle * const blockOut,
@@ -81,9 +84,6 @@ public:
   bool
   createBlock(BlockHandle * const blockOut,
       blocks::SeparateAtoms & options) const;
-  bool
-  createBlock(BlockHandle * const blockOut,
-      blocks::Shrink & options) const;
   bool
   createBlock(BlockHandle * const blockOut,
       const blocks::WriteStructures & options) const;

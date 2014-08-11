@@ -1,6 +1,7 @@
 
 ## spipe/blocks/
 set(spipe_Source_Files__blocks
+  src/blocks/AutoScale.cpp
   src/blocks/BuildStructures.cpp
   src/blocks/Clone.cpp
   src/blocks/CutAndPaste.cpp
@@ -17,7 +18,6 @@ set(spipe_Source_Files__blocks
   src/blocks/RunPotentialParamsQueue.cpp
   src/blocks/SearchStoichiometries.cpp
   src/blocks/SeparateAtoms.cpp
-  src/blocks/Shrink.cpp
   src/blocks/WriteStructures.cpp
 )
 source_group("Source Files\\blocks" FILES ${spipe_Source_Files__blocks})

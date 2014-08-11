@@ -41,6 +41,16 @@ SCHEMER_ENUM(FailActionType, FailAction::Value)
 
 namespace blocks {
 
+struct AutoScale
+{
+  boost::optional< double> packingFactor;
+};
+
+SCHEMER_MAP(AutoScaleSchema, AutoScale)
+{
+  element("packingFactor", &AutoScale::packingFactor)->defaultValue(0.4);
+}
+
 struct BuildStructures
 {
   int num;
@@ -223,18 +233,6 @@ SCHEMER_MAP(SeparateAtomsType, SeparateAtoms)
   element("pairDistances", &SeparateAtoms::pairDistances);
   element("failAction", &SeparateAtoms::failAction)->defaultValue(
       FailAction::CONTINUE);
-}
-
-struct Shrink
-{
-  spl::factory::Potential potential;
-  boost::optional< std::string> paramsTag;
-};
-
-SCHEMER_MAP(ShrinkSchema, Shrink)
-{
-  element("potential", &Shrink::potential);
-  element("paramsTag", &Shrink::paramsTag);
 }
 
 struct WriteStructures

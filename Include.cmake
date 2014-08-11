@@ -2,6 +2,7 @@
 ## spipe/blocks/
 set(spipe_Header_Files__blocks
   include/spipe/blocks/blocks.h
+  include/spipe/blocks/AutoScale.h
   include/spipe/blocks/BuildStructures.h
   include/spipe/blocks/Clone.h
   include/spipe/blocks/CutAndPaste.h
@@ -19,7 +20,6 @@ set(spipe_Header_Files__blocks
   include/spipe/blocks/RunPotentialParamsQueue.h
   include/spipe/blocks/SearchStoichiometries.h
   include/spipe/blocks/SeparateAtoms.h
-  include/spipe/blocks/Shrink.h
   include/spipe/blocks/WriteStructures.h
 )
 source_group("Header Files\\blocks" FILES ${spipe_Header_Files__blocks})

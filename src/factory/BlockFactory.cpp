@@ -29,6 +29,18 @@ namespace ssio = spl::io;
 namespace ssp = spl::potential;
 namespace ssu = spl::utility;
 
+
+bool
+BlockFactory::createBlock(BlockHandle * const blockOut,
+    blocks::AutoScale & options) const
+{
+  if(options.packingFactor)
+    blockOut->reset(new spipe::blocks::AutoScale(*options.packingFactor));
+  else
+    blockOut->reset(new spipe::blocks::AutoScale());
+  return true;
+}
+
 bool
 BlockFactory::createBlock(BlockHandle * const blockOut,
     const blocks::BuildStructures & options) const
@@ -226,19 +238,6 @@ BlockFactory::createBlock(BlockHandle * const blockOut,
   if(options.pairDistances)
     sep->setPairDistances(*options.pairDistances);
   blockOut->reset(sep.release());
-  return true;
-}
-
-bool
-BlockFactory::createBlock(BlockHandle * const blockOut,
-    blocks::Shrink & options) const
-{
-  ssp::IPotentialPtr potential = mySplFactory.createPotential(
-      options.potential);
-  if(!potential.get())
-    return false;
-
-  blockOut->reset(new spipe::blocks::Shrink(potential, options.paramsTag));
   return true;
 }
 

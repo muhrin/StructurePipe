@@ -25,6 +25,7 @@ BlockLoader::BlockLoader()
 {
   namespace blocks = spipe::factory::blocks;
 
+  registerFactoryBlockCreator< blocks::AutoScaleSchema>("autoScale");
   // TODO: Move this element
   registerFactoryBlockCreator< blocks::BuildStructuresSchema>(
       "generateStructures");
@@ -50,7 +51,6 @@ BlockLoader::BlockLoader()
   registerFactoryBlockCreator< blocks::SearchStoichiometriesSchema>(
       "searchStoichiometries");
   registerFactoryBlockCreator< blocks::SeparateAtomsType>("separateAtoms");
-  registerFactoryBlockCreator< blocks::ShrinkSchema>("shrink");
   registerFactoryBlockCreator< blocks::WriteStructuresSchema>(
       "writeStructures");
 }

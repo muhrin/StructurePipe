@@ -1,5 +1,5 @@
 
-
+#include "spipe/blocks/AutoScale.h"
 #include "spipe/blocks/BuildStructures.h"
 #include "spipe/blocks/Clone.h"
 #include "spipe/blocks/CutAndPaste.h"
@@ -16,5 +16,4 @@
 #include "spipe/blocks/RunPotentialParamsQueue.h"
 #include "spipe/blocks/SearchStoichiometries.h"
 #include "spipe/blocks/SeparateAtoms.h"
-#include "spipe/blocks/Shrink.h"
 #include "spipe/blocks/WriteStructures.h"
