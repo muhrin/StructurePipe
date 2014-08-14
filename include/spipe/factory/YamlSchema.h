@@ -48,7 +48,7 @@ struct AutoScale
 
 SCHEMER_MAP(AutoScaleSchema, AutoScale)
 {
-  element("packingFactor", &AutoScale::packingFactor)->defaultValue(0.4);
+  element("packingFactor", &AutoScale::packingFactor)->defaultValue(0.1);
 }
 
 struct BuildStructures

@@ -8,6 +8,7 @@
 // INCLUDES //////////////////////////////////
 #include "spipe/blocks/AutoScale.h"
 
+#include <spl/build_cell/Shapes.h>
 #include <spl/math/RunningStats.h>
 #include <spl/common/Constants.h>
 #include <spl/potential/IPotentialEvaluator.h>
@@ -18,7 +19,7 @@
 namespace spipe {
 namespace blocks {
 
-const double AutoScale::DEFAULT_PACKING_FACTOR = 0.3;
+const double AutoScale::DEFAULT_PACKING_FACTOR = 0.1;
 
 AutoScale::AutoScale() :
     Block("AutoScale"), myPackingFactor(DEFAULT_PACKING_FACTOR)
@@ -33,11 +34,12 @@ AutoScale::AutoScale(const double packingFactor) :
 void
 AutoScale::in(StructureDataType * const structure)
 {
-  if(spl::common::UnitCell * const unitCell = structure->getUnitCell())
+  if(const spl::common::UnitCell * const unitCell = structure->getUnitCell())
   {
     std::vector< std::string> species;
     structure->getAtomSpecies(std::back_inserter(species));
-    unitCell->setVolume(naturalVolume(species) / myPackingFactor);
+    structure->scale(
+        naturalVolume(species) / myPackingFactor / unitCell->getVolume());
   }
 
   out(structure);
@@ -46,6 +48,7 @@ AutoScale::in(StructureDataType * const structure)
 double
 AutoScale::naturalVolume(const std::vector< std::string> & particles) const
 {
+  namespace sphere = spl::build_cell::sphere;
   typedef std::map< std::string, spl::math::RunningStats> Radii;
 
   const spl::common::AtomSpeciesDatabase & db =
@@ -64,7 +67,8 @@ AutoScale::naturalVolume(const std::vector< std::string> & particles) const
       if(dist)
       {
         radii[unique[i]].insert(0.5 * *dist);
-        radii[unique[j]].insert(0.5 * *dist);
+        if(i != j)
+          radii[unique[j]].insert(0.5 * *dist);
       }
     }
   }
@@ -74,7 +78,7 @@ AutoScale::naturalVolume(const std::vector< std::string> & particles) const
   {
     const Radii::const_iterator & it = radii.find(specie);
     if(it != radii.end())
-      vol += (4.0 / 3.0) * spl::common::constants::PI * it->second.mean();
+      vol += sphere::volume(it->second.mean());
   }
 
   return vol;

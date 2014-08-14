@@ -24,12 +24,12 @@ Rescale::Rescale(const double scaleFactor) :
 void
 Rescale::in(spl::common::Structure * const structure)
 {
-  if(structure->getUnitCell())
+  if(const spl::common::UnitCell * const unitCell = structure->getUnitCell())
   {
     const spl::common::AtomsFormula & composition = structure->getComposition();
     const double naturalVolume = spl::build_cell::naturalVolume(composition,
         getEngine()->sharedData().getSpeciesDatabase(), true);
-    structure->getUnitCell()->setVolume(myScaleFactor * naturalVolume);
+    structure->scale(myScaleFactor * naturalVolume / unitCell->getVolume());
   }
 
   out(structure);
