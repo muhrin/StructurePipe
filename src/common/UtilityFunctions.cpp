@@ -120,10 +120,8 @@ getRelativeSavePath(const spl::common::Structure & structure,
 {
   ssio::ResourceLocator relativeLocator;
 
-  const ssio::ResourceLocator * lastSaved = structure.getProperty(
-      structure_properties::io::LAST_ABS_FILE_PATH);
-
-  if(lastSaved)
+  if( const ssio::ResourceLocator * const lastSaved = structure.properties().find(
+          structure_properties::io::LAST_ABS_FILE_PATH))
   {
     relativeLocator = *lastSaved;
     boost::filesystem::path relativePath = lastSaved->path();

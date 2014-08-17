@@ -99,9 +99,9 @@ void
 RunPotentialParamsQueue::finished(StructureDataUniquePtr structure)
 {
 
-  if(!structure->getProperty(common::GlobalKeys::POTENTIAL_PARAMS))
-    structure->setProperty(common::GlobalKeys::POTENTIAL_PARAMS,
-        myCurrentParams);
+  if(!structure->properties().find(common::GlobalKeys::POTENTIAL_PARAMS))
+    structure->properties()[common::GlobalKeys::POTENTIAL_PARAMS] =
+        myCurrentParams;
 
   // Register the data with our pipeline to transfer ownership
   // Save it in the buffer for sending down the pipe

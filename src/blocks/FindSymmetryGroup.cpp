@@ -20,16 +20,15 @@
 #include <spl/common/Structure.h>
 #include <spl/common/UnitCell.h>
 
-// Local includes
 #include "spipe/common/StructureData.h"
 
 // NAMESPACES ////////////////////////////////
 
 namespace spipe {
 namespace blocks {
-namespace common = ::spipe::common;
-namespace ssc = ::spl::common;
-namespace ssa = ::spl::analysis;
+namespace common = spipe::common;
+namespace ssc = spl::common;
+namespace ssa = spl::analysis;
 namespace structure_properties = ssc::structure_properties;
 
 FindSymmetryGroup::FindSymmetryGroup() :
@@ -45,11 +44,10 @@ FindSymmetryGroup::in(spl::common::Structure * const structure)
     ssa::space_group::SpacegroupInfo sgInfo;
     ssa::space_group::getSpacegroupInfo(sgInfo, *structure);
 
-    structure->setProperty(structure_properties::general::SPACEGROUP_NUMBER,
-        sgInfo.number);
-
-    structure->setProperty(structure_properties::general::SPACEGROUP_SYMBOL,
-        sgInfo.iucSymbol);
+    structure->properties()[structure_properties::general::SPACEGROUP_NUMBER] =
+        sgInfo.number;
+    structure->properties()[structure_properties::general::SPACEGROUP_SYMBOL] =
+        sgInfo.iucSymbol;
   }
 
   out(structure);

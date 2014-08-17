@@ -81,9 +81,9 @@ public:
     for(size_t i = 0; i < myNumToGenerate; ++i)
     {
       StructureDataPtr structure(new StructureDataType());
-      structure->setProperty(structure_properties::general::ENTHALPY,
-          -static_cast< double>(i) // Set the energy to be the negative of the index (easy to remember)
-          );
+      // Set the energy to be the negative of the index (easy to remember)
+      structure->properties()[structure_properties::general::ENTHALPY] =
+          -static_cast< double>(i);
 
       // Register the data and send it on
       out(getEngine()->registerData(structure));

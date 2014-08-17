@@ -143,9 +143,6 @@ SearchStoichiometries::releaseBufferedStructures(
 
   ssio::ResourceLocator lastSavedRelative;
 
-  const double * internalEnergy;
-
-  unsigned int * spacegroup;
   BOOST_FOREACH(StructureDataType * const structure, myBuffer)
   {
     lastSavedRelative = common::getRelativeSavePath(*structure, workingDir());
@@ -156,18 +153,16 @@ SearchStoichiometries::releaseBufferedStructures(
       table.insert(tableKey, "lowest", lastSavedRelative.string());
     }
 
-    spacegroup = structure->getProperty(
-        structure_properties::general::SPACEGROUP_NUMBER);
-    if(spacegroup)
+    if(const unsigned int * const spacegroup = structure->properties().find(
+        structure_properties::general::SPACEGROUP_NUMBER))
     {
       table.insert(tableKey, "sg",
           boost::lexical_cast< std::string>(*spacegroup));
     }
 
     // Try to calculate the energy/atom
-    internalEnergy = structure->getProperty(
-        structure_properties::general::ENERGY_INTERNAL);
-    if(internalEnergy)
+    if(const double * const internalEnergy = structure->properties().find(
+        structure_properties::general::ENERGY_INTERNAL))
     {
       const size_t numAtoms = structure->getNumAtoms();
       if(numAtoms != 0)

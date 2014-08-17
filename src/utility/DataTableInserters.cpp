@@ -21,18 +21,17 @@
 namespace spipe {
 namespace utility {
 
-namespace splc = ::spl::common;
-namespace splio = ::spl::io;
-namespace structure_properties = ::spl::common::structure_properties;
+namespace splc = spl::common;
+namespace splio = spl::io;
+namespace structure_properties = spl::common::structure_properties;
 
 bool
 insertStructureInfoAndPotentialParams(const utility::DataTable::Key & key,
     const StructureDataType & structure,
     const boost::filesystem::path & pathsRelativeTo, DataTable & table)
 {
-  const std::vector< std::string> * const params = structure.getProperty(
-      common::GlobalKeys::POTENTIAL_PARAMS);
-  if(params)
+  if(const std::vector< std::string> * const params =
+      structure.properties().find(common::GlobalKeys::POTENTIAL_PARAMS))
   {
     // Update the table with the current parameters
     for(size_t i = 0; i < params->size(); ++i)
@@ -42,9 +41,8 @@ insertStructureInfoAndPotentialParams(const utility::DataTable::Key & key,
     }
   }
 
-  const double * const internalEnergy = structure.getProperty(
-      structure_properties::general::ENERGY_INTERNAL);
-  if(internalEnergy)
+  if(const double * const internalEnergy = structure.properties().find(
+      structure_properties::general::ENERGY_INTERNAL))
   {
     const double energy = *internalEnergy;
     table.insert(key, "energy", common::toString(energy));

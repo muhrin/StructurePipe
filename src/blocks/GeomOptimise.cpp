@@ -110,8 +110,8 @@ GeomOptimise::in(spl::common::Structure * const structure)
       && myOptimiser->getPotential()->getParameterisable())
   {
     // Add the potential parameters to the structure data
-    structure->setProperty(common::GlobalKeys::POTENTIAL_PARAMS,
-        myOptimiser->getPotential()->getParameterisable()->getParams());
+    structure->properties()[common::GlobalKeys::POTENTIAL_PARAMS] =
+        myOptimiser->getPotential()->getParameterisable()->getParams();
   }
 
   potential::OptimisationData optData;
@@ -146,11 +146,10 @@ GeomOptimise::updateTable(const ssc::Structure & structure,
     const ::spl::potential::OptimisationData & optimisationData)
 {
   utility::DataTable & table = myTableSupport.getTable();
-  const ::std::string & strName = structure.getName();
+  const std::string & strName = structure.getName();
 
-  const double * const internalEnergy = structure.getProperty(
-      structure_properties::general::ENERGY_INTERNAL);
-  if(internalEnergy)
+  if(const double * const internalEnergy = structure.properties().find(
+      structure_properties::general::ENERGY_INTERNAL))
   {
     table.insert(strName, "energy", common::toString(*internalEnergy));
     table.insert(strName, "energy/atom",
@@ -158,7 +157,7 @@ GeomOptimise::updateTable(const ssc::Structure & structure,
             *internalEnergy / static_cast< double>(structure.getNumAtoms())));
     if(optimisationData.numIters)
       table.insert(strName, "iters",
-          ::boost::lexical_cast< ::std::string>(*optimisationData.numIters));
+          boost::lexical_cast< std::string>(*optimisationData.numIters));
   }
 }
 

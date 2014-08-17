@@ -44,10 +44,10 @@ KeepTopN::KeepTopN(const size_t keepTopN, const StructureProperty & property,
 void
 KeepTopN::in(spl::common::Structure * const structure)
 {
-  const double * const value = structure->getProperty(myStructureProperty);
+  const double * const value = structure->properties().find(myStructureProperty);
 
   // Let anything that doesn't have the property through
-  if(value == NULL)
+  if(!value)
   {
     out(structure);
     return;

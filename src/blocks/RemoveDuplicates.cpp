@@ -44,13 +44,14 @@ RemoveDuplicates::in(spl::common::Structure * const structure)
   boost::lock_guard< boost::mutex> guard(myMutex);
 #endif
 
-  const StructureSet::insert_return_type result = myStructureSet.insert(structure);
+  const StructureSet::insert_return_type result = myStructureSet.insert(
+      structure);
+  spl::utility::HeterogeneousMap & properties = structure->properties();
 
   if(result.second)
   {
     // Inserted
-    structure->setProperty(structure_properties::searching::TIMES_FOUND,
-        static_cast< unsigned int>(1));
+    properties[structure_properties::searching::TIMES_FOUND] = 1;
   }
   else
   {
@@ -59,14 +60,12 @@ RemoveDuplicates::in(spl::common::Structure * const structure)
 
     // Up the 'times found' counter on the original structure
     spl::common::Structure * const originalStructure = *result.first;
-    unsigned int * const timesFound = originalStructure->getProperty(
+    unsigned int * const timesFound = properties.find(
         structure_properties::searching::TIMES_FOUND);
     if(timesFound)
       *timesFound += 1;
     else
-      originalStructure->setProperty(
-          structure_properties::searching::TIMES_FOUND,
-          static_cast< unsigned int>(1));
+      properties[structure_properties::searching::TIMES_FOUND] = 1;
   }
 }
 

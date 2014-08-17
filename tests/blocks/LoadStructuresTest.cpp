@@ -37,7 +37,7 @@ public:
   virtual void
   finished(StructureDataPtr structure)
   {
-    const spl::io::ResourceLocator * const loc = structure->getProperty(
+    const spl::io::ResourceLocator * const loc = structure->properties().find(
         spl::common::structure_properties::io::LAST_ABS_FILE_PATH);
     BOOST_REQUIRE(loc);
 

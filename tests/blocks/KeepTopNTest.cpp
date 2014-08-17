@@ -37,8 +37,8 @@ public:
       StructureDataType * const structure = getEngine()->createData();
 
       structure->newAtom("A");
-      structure->setProperty(properties::general::ENTHALPY,
-          static_cast< double>(i));
+      structure->properties()[properties::general::ENTHALPY] =
+          static_cast< double>(i);
 
       out(structure);
     }
@@ -49,8 +49,8 @@ public:
 
       structure->newAtom("A");
       structure->newAtom("B");
-      structure->setProperty(properties::general::ENTHALPY,
-          static_cast< double>(i));
+      structure->properties()[properties::general::ENTHALPY] =
+          static_cast< double>(i);
 
       out(structure);
     }

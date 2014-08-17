@@ -41,11 +41,11 @@ template< typename T>
       const ::spl::utility::Key< T> & property,
       const ::spl::common::Structure & structure, DataTable & table)
   {
-    const T * const value = structure.getProperty(property);
+    const T * const value = structure.properties().find(property);
     if(!value)
       return false;
 
-    table.insert(key, name, ::boost::lexical_cast< ::std::string>(*value));
+    table.insert(key, name, boost::lexical_cast< ::std::string>(*value));
     return true;
   }
 
