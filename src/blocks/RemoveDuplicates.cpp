@@ -38,7 +38,7 @@ RemoveDuplicates::RemoveDuplicates(
 }
 
 void
-RemoveDuplicates::in(spl::common::Structure * const structure)
+RemoveDuplicates::in(spl::common::Structure * structure)
 {
 #ifdef SPIPE_USE_BOOST_THREAD
   boost::lock_guard< boost::mutex> guard(myMutex);
@@ -46,20 +46,20 @@ RemoveDuplicates::in(spl::common::Structure * const structure)
 
   const StructureSet::insert_return_type result = myStructureSet.insert(
       structure);
-  spl::utility::HeterogeneousMap & properties = structure->properties();
 
   if(result.second)
   {
     // Inserted
-    properties[structure_properties::searching::TIMES_FOUND] = 1;
+    structure->properties()[structure_properties::searching::TIMES_FOUND] = 1;
   }
   else
   {
     // The structure is not unique so discard it
     drop(structure);
+    structure = NULL;
 
     // Up the 'times found' counter on the original structure
-    spl::common::Structure * const originalStructure = *result.first;
+    spl::utility::HeterogeneousMap & properties = (*result.first)->properties();
     unsigned int * const timesFound = properties.find(
         structure_properties::searching::TIMES_FOUND);
     if(timesFound)

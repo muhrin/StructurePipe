@@ -43,7 +43,7 @@ public:
   RemoveDuplicates(const spl::utility::IStructureComparator & comparator);
 
   virtual void
-  in(spl::common::Structure * const data);
+  in(spl::common::Structure * data);
 
   // From Block /////////////////////////
   virtual void
