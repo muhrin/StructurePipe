@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set(SPIPE_VERSION_MAJOR 0)
 set(SPIPE_VERSION_MINOR 3)
-set(SPIPE_VERSION_PATCH 2)
+set(SPIPE_VERSION_PATCH 3)
 set(SPIPE_VERSION "${SPIPE_VERSION_MAJOR}.${SPIPE_VERSION_MINOR}.${SPIPE_VERSION_PATCH}")
 
 project(SPipe)
@@ -32,11 +32,10 @@ foreach(p LIB BIN INCLUDE CMAKE)
 endforeach()
 
 # Build settings
-set(SPIPE_USE_YAML TRUE CACHE BOOL "Build ${CMAKE_PROJECT} with YAML support (requires yaml-cpp).")
-set(SPIPE_USE_BOOST_THREAD TRUE CACHE BOOL
-  "Enable threading support in ${CMAKE_PROJECT} (requires Boost thread).")
+option(SPIPE_USE_YAML "Build ${CMAKE_PROJECT} with YAML support (requires yaml-cpp)." ON)
+option(SPIPE_USE_BOOST_THREAD "Enable threading support in ${CMAKE_PROJECT} (requires Boost thread)." ON)
 set(PIPELIB_USE_BOOST_THREAD ${SPIPE_USE_THREAD} CACHE INTERNAL "Tell pipelib to enable thread.") 
-set(SPIPE_BUILD_TESTS FALSE CACHE BOOL "Build ${CMAKE_PROJECT} tests.")
+option(SPIPE_BUILD_TESTS "Build ${CMAKE_PROJECT} tests." ON)
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/include/spipe/Version.h.in"
@@ -72,15 +71,15 @@ find_package_or_install(SPL)
 ## Now StructurePipe ####################################
 
 # Include directories with header files
-include_directories(
+include_directories(BEFORE
   ${PROJECT_BINARY_DIR}/include  # So that we find SPipeConfig.h
   ${PROJECT_SOURCE_DIR}/include
   ${Boost_INCLUDE_DIRS}
   ${ARMADILLO_INCLUDE_DIRS}
+  ${SPGLIB_INCLUDE_DIRS}
   ${PIPELIB_INCLUDE_DIRS}
   ${SCHEMER_INCLUDE_DIRS}
   ${SPL_INCLUDE_DIRS}
-  ${SPGLIB_INCLUDE_DIRS}
   ${SPIPE_INCLUDE_DIRS}
 )
 
